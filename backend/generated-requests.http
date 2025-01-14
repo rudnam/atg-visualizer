@@ -1,0 +1,9 @@
+GET http://localhost:8000/fruits
+Accept: application/json
+
+POST http://localhost:8000/fruits
+Content-Type: application/json
+
+{
+    "name": "Pear"
+}
