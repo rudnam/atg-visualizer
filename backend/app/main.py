@@ -14,7 +14,7 @@ class Fruits(BaseModel):
 
 app = FastAPI()
 
-origins = ["http://localhost:3000"]
+origins = ["http://localhost:3000", "https://atg-visualizer.vercel.app/"]
 
 app.add_middleware(
     CORSMiddleware,
