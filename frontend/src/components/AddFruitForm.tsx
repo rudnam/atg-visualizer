@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { TextInput, Button } from "@mantine/core";
 
 interface AddFruitFormProps {
   addFruit: (fruit: string) => void;
@@ -16,14 +17,20 @@ const AddFruitForm: React.FC<AddFruitFormProps> = ({ addFruit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-md mx-auto mt-4 p-4 bg-white shadow-md rounded-lg"
+    >
+      <TextInput
+        label="Fruit Name"
+        placeholder="Enter fruit name"
         value={fruitName}
         onChange={(e) => setFruitName(e.target.value)}
-        placeholder="Enter fruit name"
+        required
       />
-      <button type="submit">Add Fruit</button>
+      <Button type="submit" fullWidth className="mt-4">
+        Add Fruit
+      </Button>
     </form>
   );
 };

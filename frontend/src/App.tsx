@@ -1,16 +1,21 @@
 import "./App.css";
+import "@mantine/core/styles.css";
+
+import { MantineProvider } from "@mantine/core";
 import FruitList from "./components/Fruits";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <h1 className="text-3xl underline">Fruit Management App</h1>
-      </header>
-      <main>
-        <FruitList />
-      </main>
-    </div>
+    <MantineProvider>
+      <div className="App">
+        <header className="App-header">
+          <h1 className="text-4xl font-bold">Fruit Management App</h1>
+        </header>
+        <main>
+          <FruitList />
+        </main>
+      </div>
+    </MantineProvider>
   );
 }
 
