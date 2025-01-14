@@ -11,7 +11,7 @@ Web-based visualization tool for adjacent transposition graphs (ATGs) and associ
    python3 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
-   python3 main.py
+   fastapi run
    ```
 
 2. Set up frontend
