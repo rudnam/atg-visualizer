@@ -46,7 +46,7 @@ const InputForm: React.FC = () => {
 
   return (
     <>
-      <div className="w-72 flex flex-col mt-4 mx-auto md:mx-0 gap-4">
+      <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
         <div className="text-2xl font-bold">INPUT</div>
         <InputWrapper>
           <InputLabel>Size</InputLabel>
@@ -77,7 +77,7 @@ const InputForm: React.FC = () => {
         <Button
           className="mx-auto"
           variant="gradient"
-          gradient={{ from: "blue", to: "cyan", deg: 90 }}
+          gradient={{ from: "purple", to: "maroon", deg: 90 }}
           onClick={() => fetchPlotData()}
         >
           Generate

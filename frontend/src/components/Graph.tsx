@@ -18,7 +18,7 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
           modeBarButtonsToRemove: [
             "zoom3d",
             "pan3d",
-            // "resetCameraDefault3d",
+            "resetCameraDefault3d",
             "resetCameraLastSave3d",
             "orbitRotation",
             "tableRotation",
@@ -34,7 +34,7 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
   }, [data, layout]);
 
   return (
-    <div className="flex flex-col grow shadow-lg p-8 rounded-xl h-full max-h-[36rem]">
+    <div className="flex flex-col p-8 w-full max-w-3xl h-full max-h-[36rem] bg-[#fefefe] rounded-xl shadow-lg">
       <div className="text-2xl font-bold">ADJACENT TRANSPOSITION GRAPH</div>
       {loading ? (
         <div className="flex items-center justify-center w-full h-full sm:h-96">
@@ -43,7 +43,7 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
       ) : (
         <></>
       )}
-      <div className="grow w-full min-h-80 h-full sm:h-96" ref={plotRef} />
+      <div className="p-4 grow w-full min-h-80 h-full sm:h-96" ref={plotRef} />
     </div>
   );
 };
