@@ -38,3 +38,8 @@ def get_graph(
 
     graph_json = pio.to_json(graph_data)
     return JSONResponse(content=graph_json)
+
+
+@app.get("/health")
+def test_health():
+    return JSONResponse(content={"message": "good"})

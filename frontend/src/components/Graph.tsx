@@ -1,83 +1,49 @@
 import React, { useEffect, useRef } from "react";
 import Plotly, { Layout } from "plotly.js-dist";
-import api from "../api";
 
-const GraphComponent: React.FC = () => {
+interface GraphProps {
+  loading: boolean;
+  data: Plotly.Data[] | null;
+  layout: Partial<Layout> | null;
+}
+
+const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
   const plotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchAndRenderPlot = async () => {
-      try {
-        const response = await api.get("/graph?sequence=1234");
-        const parsedData = JSON.parse(response.data);
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const traces = parsedData.data.map((trace: any) => ({
-          x: trace.x,
-          y: trace.y,
-          z: trace.z,
-          mode: trace.mode,
-          type: trace.type,
-          name: trace.name,
-          line: trace.line,
-        }));
-
-        const layout: Partial<Layout> = {
-          margin: { l: 0, r: 0, b: 0, t: 0 },
-          scene: { aspectmode: "cube" },
-          showlegend: false,
-        };
-
+    if (plotRef.current) {
+      if (data !== null && layout !== null) {
         const config: Partial<Plotly.Config> = {
           displaylogo: false,
           modeBarButtonsToRemove: [
-            "zoom2d",
-            "pan2d",
-            "select2d",
-            "lasso2d",
-            "zoomIn2d",
-            "zoomOut2d",
-            "autoScale2d",
-            "resetScale2d",
-            "hoverClosestCartesian",
-            "hoverCompareCartesian",
             "zoom3d",
             "pan3d",
-            "resetCameraDefault3d",
+            // "resetCameraDefault3d",
             "resetCameraLastSave3d",
-            "hoverClosest3d",
             "orbitRotation",
             "tableRotation",
-            "zoomInGeo",
-            "zoomOutGeo",
-            "resetGeo",
-            "hoverClosestGeo",
             "toImage",
-            "sendDataToCloud",
-            "hoverClosestGl2d",
-            "hoverClosestPie",
-            "toggleHover",
-            "resetViews",
-            "toggleSpikelines",
-            "resetViewMapbox",
           ],
         };
 
-        if (plotRef.current) {
-          Plotly.newPlot(plotRef.current, traces, layout, config);
-        }
-      } catch (error) {
-        console.error("Error rendering the plot:", error);
+        Plotly.react(plotRef.current, data, layout, config);
+      } else {
+        Plotly.purge(plotRef.current);
       }
-    };
-
-    fetchAndRenderPlot();
-  }, []);
+    }
+  }, [data, layout]);
 
   return (
-    <div className="flex flex-col shadow-lg p-8 rounded-xl">
+    <div className="flex flex-col grow shadow-lg p-8 rounded-xl h-full max-h-[36rem]">
       <div className="text-2xl font-bold">ADJACENT TRANSPOSITION GRAPH</div>
-      <div className="w-full h-64 sm:h-96" ref={plotRef} />
+      {loading ? (
+        <div className="flex items-center justify-center w-full h-full sm:h-96">
+          <span>Loading graph data...</span>
+        </div>
+      ) : (
+        <></>
+      )}
+      <div className="grow w-full min-h-80 h-full sm:h-96" ref={plotRef} />
     </div>
   );
 };

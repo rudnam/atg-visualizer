@@ -46,7 +46,7 @@ def create_graph(
     sequence: str, selected_nodes: list | None = None, opacity_others: float = 0.1
 ):
     """
-    Create and return the graph as a plotly JSON object.
+    Create and visualize the graph, with options to highlight specific nodes
 
     Parameters:
     sequence: str - The original sequence (e.g., '12345')
@@ -73,7 +73,7 @@ def create_graph(
                 edges_by_swap[swapped_nums].append((perm_strings[i], perm_strings[j]))
                 G.add_edge(perm_strings[i], perm_strings[j])
 
-    node_pos = nx.spring_layout(G, dim=3, iterations=100)
+    node_pos = nx.spring_layout(G, dim=3)
 
     edge_traces = []
     for number_pair, edges in edges_by_swap.items():
@@ -112,7 +112,7 @@ def create_graph(
                     mode="lines",
                     line=dict(color=pair_to_color[number_pair], width=2),
                     name=f"Swap {number_pair[0]}-{number_pair[1]}",
-                    hoverinfo="name",
+                    hoverinfo="skip",
                 )
             )
 
@@ -131,13 +131,70 @@ def create_graph(
                 )
             )
 
+    selected_nodes_x = []
+    selected_nodes_y = []
+    selected_nodes_z = []
+    selected_nodes_text = []
+    other_nodes_x = []
+    other_nodes_y = []
+    other_nodes_z = []
+    other_nodes_text = []
+
+    for node in G.nodes():
+        pos = node_pos[node]
+        if selected_nodes is None or node in selected_nodes:
+            selected_nodes_x.append(pos[0])
+            selected_nodes_y.append(pos[1])
+            selected_nodes_z.append(pos[2])
+            selected_nodes_text.append(node)
+        else:
+            other_nodes_x.append(pos[0])
+            other_nodes_y.append(pos[1])
+            other_nodes_z.append(pos[2])
+            other_nodes_text.append(node)
+
+    if selected_nodes_x:
+        node_trace_selected = go.Scatter3d(
+            x=selected_nodes_x,
+            y=selected_nodes_y,
+            z=selected_nodes_z,
+            mode="markers+text",
+            marker=dict(size=3, color="black"),
+            text=selected_nodes_text,
+            textposition="top center",
+            hoverinfo="skip",
+            name="Permutations",
+        )
+        edge_traces.append(node_trace_selected)
+
+    if other_nodes_x:
+        node_trace_others = go.Scatter3d(
+            x=other_nodes_x,
+            y=other_nodes_y,
+            z=other_nodes_z,
+            mode="markers+text",
+            marker=dict(size=3, color="black"),
+            text=other_nodes_text,
+            textposition="top center",
+            opacity=opacity_others,
+            hoverinfo="skip",
+            name="Other Permutations",
+            showlegend=False,
+        )
+        edge_traces.append(node_trace_others)
+
     layout = go.Layout(
         scene=dict(
-            xaxis=dict(title="X-axis"),
-            yaxis=dict(title="Y-axis"),
-            zaxis=dict(title="Z-axis"),
+            xaxis_visible=False,
+            yaxis_visible=False,
+            zaxis_visible=False,
+            # xaxis=dict(title="X-axis", showgrid=False),
+            # yaxis=dict(title="Y-axis", showgrid=False),
+            # zaxis=dict(title="Z-axis", showgrid=False),
+            bgcolor="rgba(0, 0, 0, 0)",
         ),
         margin=dict(l=0, r=0, b=0, t=0),
-        showlegend=True,
     )
+
+    fig = go.Figure(data=edge_traces, layout=layout)
     return {"data": edge_traces, "layout": layout}

@@ -3,7 +3,6 @@ import "@mantine/core/styles.css";
 
 import { createTheme, MantineProvider } from "@mantine/core";
 import Header from "./components/Header";
-import GraphComponent from "./components/Graph";
 import InputForm from "./components/InputForm";
 
 const theme = createTheme({
@@ -13,11 +12,10 @@ const theme = createTheme({
 function App() {
   return (
     <MantineProvider theme={theme}>
-      <div className="App">
+      <div className="App h-full flex flex-col">
         <Header />
-        <main className="mt-8 flex flex-col sm:flex-row justify-center gap-16">
+        <main className="px-4 md:px-8 mt-8 grow flex flex-col sm:flex-row justify-center gap-16 w-full max-w-6xl mx-auto">
           <InputForm />
-          <GraphComponent />
         </main>
       </div>
     </MantineProvider>
