@@ -47,7 +47,7 @@ const InputForm: React.FC = () => {
   return (
     <>
       <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
-        <div className="text-2xl font-bold">INPUT</div>
+        <div className="text-xl font-bold">INPUT</div>
         <InputWrapper>
           <InputLabel>Size</InputLabel>
           <Slider
