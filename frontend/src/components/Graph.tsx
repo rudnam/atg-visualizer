@@ -34,7 +34,7 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
   }, [data, layout]);
 
   return (
-    <div className="flex flex-col p-8 w-full max-w-3xl h-full max-h-[36rem] bg-[#fefefe] rounded-xl shadow-lg">
+    <div className="flex flex-col p-8 w-auto max-w-3xl h-full max-h-[36rem] bg-[#fefefe] rounded-xl shadow-lg">
       <div className="text-2xl font-bold">ADJACENT TRANSPOSITION GRAPH</div>
       {loading ? (
         <div className="flex items-center justify-center w-full h-full sm:h-96">
