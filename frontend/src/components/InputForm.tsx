@@ -15,6 +15,7 @@ const InputForm: React.FC = () => {
   const [size, setSize] = useState<number>(4);
   const [data, setData] = useState<Plotly.Data[] | null>(null);
   const [layout, setLayout] = useState<Partial<Layout> | null>(null);
+  const [textareaValue, setTextareaValue] = useState<string>("");
 
   const generateSequence = (size: number): string => {
     return Array.from({ length: size }, (_, i) => i + 1).join("");
@@ -24,9 +25,21 @@ const InputForm: React.FC = () => {
     try {
       setData(null);
       setLoading(true);
-      const response = await api.get(
-        `/graph?sequence=${generateSequence(size)}`
-      );
+
+      const selectedNodes = textareaValue
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line !== "");
+
+      const response = await api.get(`/graph`, {
+        params: {
+          sequence: generateSequence(size),
+          selected_nodes: selectedNodes,
+        },
+        paramsSerializer: {
+          indexes: null,
+        },
+      });
 
       const parsedData = JSON.parse(response.data);
 
@@ -68,9 +81,10 @@ const InputForm: React.FC = () => {
         <Textarea
           className="w-36 mx-auto"
           label="Input Y"
-          description="Input the linear orders"
+          description="Input permutations"
           placeholder={`1234\n4321\n3214`}
           resize="vertical"
+          onChange={(event) => setTextareaValue(event.currentTarget.value)}
           autosize
           minRows={4}
         />
