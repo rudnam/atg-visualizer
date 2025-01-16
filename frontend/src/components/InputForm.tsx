@@ -49,7 +49,6 @@ const InputForm: React.FC = () => {
 
       const fetchedLayout: Partial<Layout> = parsedData.layout || {};
       setLayout(fetchedLayout);
-      console.log(fetchedLayout);
     } catch (error) {
       console.error("Error rendering the plot:", error);
     } finally {

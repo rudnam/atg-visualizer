@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import Plotly, { Layout } from "plotly.js-dist";
+import { LoadingOverlay } from "@mantine/core";
 
 interface GraphProps {
   loading: boolean;
@@ -27,8 +28,6 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
         };
 
         Plotly.react(plotRef.current, data, layout, config);
-      } else {
-        Plotly.purge(plotRef.current);
       }
     }
   }, [data, layout]);
@@ -36,14 +35,12 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
   return (
     <div className="flex flex-col p-8 w-auto md:w-full max-w-3xl h-full max-h-[36rem] bg-[#fefefe] rounded-xl shadow-lg">
       <div className="text-xl font-bold">ADJACENT TRANSPOSITION GRAPH</div>
-      {loading ? (
-        <div className="flex items-center justify-center w-full h-full sm:h-96">
-          <span>Loading graph data...</span>
+      <div className="w-full min-h-80 h-full sm:h-96 grow relative">
+        <div>
+          <LoadingOverlay visible={loading} zIndex={1000} />
+          <div className="" ref={plotRef} />
         </div>
-      ) : (
-        <></>
-      )}
-      <div className="p-4 grow w-full min-h-80 h-full sm:h-96" ref={plotRef} />
+      </div>
     </div>
   );
 };
