@@ -17,7 +17,7 @@ class GraphRequest(BaseModel):
 
 app = FastAPI()
 
-origins = ["http://localhost:8080", "https://atg-visualizer.vercel.app"]
+origins = ["http://127.0.0.1:3000", "https://atg-visualizer.vercel.app"]
 
 app.add_middleware(
     CORSMiddleware,
