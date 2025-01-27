@@ -1,201 +1,120 @@
-import networkx as nx
 from itertools import permutations, combinations
-import colorsys
+import networkx as nx
+import numpy as np
+import pytest
 import plotly.graph_objects as go
 
 
-def generate_distinct_colors(n):
-    """
-    Generate n visually distinct colors using HSV color space
-    """
-    colors = []
-    for i in range(n):
-        hue = i / n
-        rgb = colorsys.hsv_to_rgb(hue, 0.9, 0.9)
-        color = "#{:02x}{:02x}{:02x}".format(
-            int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255)
-        )
-        colors.append(color)
-    return colors
+MAX_SIZE = 8
 
 
-def get_swapped_numbers(p1, p2):
-    """
-    Returns the two numbers that were swapped between permutations,
-    or None if not a valid adjacent transposition
-    """
-    if len(p1) != len(p2):
-        return None
-
-    diff_positions = [i for i in range(len(p1)) if p1[i] != p2[i]]
-
-    if len(diff_positions) != 2:
-        return None
-
-    pos1, pos2 = diff_positions
-    if abs(pos1 - pos2) != 1:
-        return None
-
-    if p1[pos1] != p2[pos2] or p1[pos2] != p2[pos1]:
-        return None
-
-    return tuple(sorted([p1[pos1], p1[pos2]]))
-
-
-def create_graph(
-    sequence: str, selected_nodes: list | None = None, opacity_others: float = 0.1
-):
-    """
-    Create and visualize the graph, with options to highlight specific nodes
-
-    Parameters:
-    sequence: str - The original sequence (e.g., '12345')
-    selected_nodes: list - List of permutations to highlight (e.g., ['12345', '21345'])
-    opacity_others: float - Opacity for non-selected nodes and edges (0.0 to 1.0)
-    """
-    permutations_list = list(permutations(sequence))
-    perm_strings = ["".join(p) for p in permutations_list]
-
-    G = nx.Graph()
-    G.add_nodes_from(perm_strings)
-
-    number_pairs = list(combinations(sequence, 2))
-    num_colors_needed = len(number_pairs)
-    colors = generate_distinct_colors(num_colors_needed)
-    pair_to_color = dict(zip(number_pairs, colors))
-
-    edges_by_swap = {pair: [] for pair in number_pairs}
-
-    for i in range(len(perm_strings)):
-        for j in range(i + 1, len(perm_strings)):
-            swapped_nums = get_swapped_numbers(perm_strings[i], perm_strings[j])
-            if swapped_nums:
-                edges_by_swap[swapped_nums].append((perm_strings[i], perm_strings[j]))
-                G.add_edge(perm_strings[i], perm_strings[j])
-
-    node_pos = nx.spring_layout(G, dim=3)
-
-    edge_traces = []
-    for number_pair, edges in edges_by_swap.items():
-        selected_edges_x = []
-        selected_edges_y = []
-        selected_edges_z = []
-        other_edges_x = []
-        other_edges_y = []
-        other_edges_z = []
-
-        for edge in edges:
-            p1, p2 = edge
-            is_selected = selected_nodes is None or (
-                p1 in selected_nodes and p2 in selected_nodes
+class PosetSolver:
+    def __init__(self, size: int):
+        if not type(size) is int:
+            raise TypeError("Invalid size. Size must be an integer.")
+        if size < 2 or size > MAX_SIZE:
+            raise Exception(
+                f"Invalid size. Size must have a value of at least 2 and at most {MAX_SIZE}"
             )
 
-            x_coords = [node_pos[p1][0], node_pos[p2][0], None]
-            y_coords = [node_pos[p1][1], node_pos[p2][1], None]
-            z_coords = [node_pos[p1][2], node_pos[p2][2], None]
+        sequence = "".join([str(x) for x in range(1, size + 1)])
+        perm_strings = ["".join(p) for p in list(permutations(sequence))]
 
-            if is_selected:
-                selected_edges_x.extend(x_coords)
-                selected_edges_y.extend(y_coords)
-                selected_edges_z.extend(z_coords)
-            else:
-                other_edges_x.extend(x_coords)
-                other_edges_y.extend(y_coords)
-                other_edges_z.extend(z_coords)
+        self.__graph = nx.Graph()
+        self.__graph.add_nodes_from(perm_strings)
 
-        if selected_edges_x:
-            edge_traces.append(
-                go.Scatter3d(
-                    x=selected_edges_x,
-                    y=selected_edges_y,
-                    z=selected_edges_z,
-                    mode="lines",
-                    line=dict(color=pair_to_color[number_pair], width=2),
-                    name=f"Swap {number_pair[0]}-{number_pair[1]}",
-                    hoverinfo="skip",
-                )
-            )
+        for i in range(len(perm_strings)):
+            for j in range(i + 1, len(perm_strings)):
+                if self._is_adjacent_swap(perm_strings[i], perm_strings[j]):
+                    self.__graph.add_edge(perm_strings[i], perm_strings[j])
 
-        if other_edges_x:
-            edge_traces.append(
-                go.Scatter3d(
-                    x=other_edges_x,
-                    y=other_edges_y,
-                    z=other_edges_z,
-                    mode="lines",
-                    line=dict(color=pair_to_color[number_pair], width=2),
-                    opacity=opacity_others,
-                    name=f"Swap {number_pair[0]}-{number_pair[1]} (other)",
-                    hoverinfo="skip",
-                    showlegend=False,
-                )
-            )
+        self.__set_up_3d()
 
-    selected_nodes_x = []
-    selected_nodes_y = []
-    selected_nodes_z = []
-    selected_nodes_text = []
-    other_nodes_x = []
-    other_nodes_y = []
-    other_nodes_z = []
-    other_nodes_text = []
+    def _is_adjacent_swap(self, p1: str, p2: str):
+        if len(p1) != len(p2):
+            raise Exception("Pair is not of the same length.")
 
-    for node in G.nodes():
-        pos = node_pos[node]
-        if selected_nodes is None or node in selected_nodes:
-            selected_nodes_x.append(pos[0])
-            selected_nodes_y.append(pos[1])
-            selected_nodes_z.append(pos[2])
-            selected_nodes_text.append(node)
-        else:
-            other_nodes_x.append(pos[0])
-            other_nodes_y.append(pos[1])
-            other_nodes_z.append(pos[2])
-            other_nodes_text.append(node)
+        if p1 == p2:
+            return False
 
-    if selected_nodes_x:
-        node_trace_selected = go.Scatter3d(
-            x=selected_nodes_x,
-            y=selected_nodes_y,
-            z=selected_nodes_z,
-            mode="markers+text",
-            marker=dict(size=3, color="black"),
-            text=selected_nodes_text,
-            textposition="top center",
-            hoverinfo="skip",
-            name="Permutations",
+        for i in range(len(p1) - 1):
+            swapped = list(p1)
+            swapped[i], swapped[i + 1] = swapped[i + 1], swapped[i]
+            swapped = "".join(swapped)
+
+            if swapped == p2:
+                return True
+
+        return False
+
+    def __set_up_3d(self):
+        pos = nx.spring_layout(self.__graph, dim=3)
+
+        node_x = [pos[node][0] for node in self.__graph.nodes()]
+        node_y = [pos[node][1] for node in self.__graph.nodes()]
+        node_z = [pos[node][2] for node in self.__graph.nodes()]
+
+        edge_x, edge_y, edge_z = [], [], []
+        for edge in self.__graph.edges():
+            x0, y0, z0 = pos[edge[0]]
+            x1, y1, z1 = pos[edge[1]]
+            edge_x.extend([x0, x1, None])
+            edge_y.extend([y0, y1, None])
+            edge_z.extend([z0, z1, None])
+
+        nodes_trace = go.Scatter3d(
+            x=node_x,
+            y=node_y,
+            z=node_z,
+            mode="markers",
+            marker=dict(size=3, color="maroon", opacity=0.8),
+            text=[node for node in self.__graph.nodes()],
+            hoverinfo="text",
         )
-        edge_traces.append(node_trace_selected)
 
-    if other_nodes_x:
-        node_trace_others = go.Scatter3d(
-            x=other_nodes_x,
-            y=other_nodes_y,
-            z=other_nodes_z,
-            mode="markers+text",
-            marker=dict(size=3, color="black"),
-            text=other_nodes_text,
-            textposition="top center",
-            opacity=opacity_others,
-            hoverinfo="skip",
-            name="Other Permutations",
-            showlegend=False,
+        edges_trace = go.Scatter3d(
+            x=edge_x,
+            y=edge_y,
+            z=edge_z,
+            mode="lines",
+            line=dict(color="gray", width=1),
+            hoverinfo="none",
         )
-        edge_traces.append(node_trace_others)
 
-    layout = go.Layout(
-        scene=dict(
-            xaxis_visible=False,
-            yaxis_visible=False,
-            zaxis_visible=False,
-            # xaxis=dict(title="X-axis", showgrid=False),
-            # yaxis=dict(title="Y-axis", showgrid=False),
-            # zaxis=dict(title="Z-axis", showgrid=False),
-            bgcolor="rgba(0, 0, 0, 0)",
-        ),
-        margin=dict(l=0, r=0, b=0, t=0),
-        paper_bgcolor="rgba(0,0,0,0)",
-    )
+        layout = go.Layout(
+            scene=dict(
+                xaxis_visible=False,
+                yaxis_visible=False,
+                zaxis_visible=False,
+                bgcolor="rgba(0, 0, 0, 0)",
+            ),
+            margin=dict(l=0, r=0, b=0, t=0),
+        )
+        self.__fig_data = [edges_trace, nodes_trace]
+        self.__fig_layout = layout
 
-    fig = go.Figure(data=edge_traces, layout=layout)
-    return {"data": edge_traces, "layout": layout}
+        self.__fig = go.Figure(data=[edges_trace, nodes_trace], layout=layout)
+
+    def show_figure(self):
+        self.__fig.show()
+
+    def get_figure_data(self):
+        return {"data": self.__fig_data, "layout": self.__fig_layout}
+
+
+def testPosetSolver():
+    with pytest.raises(Exception, match="at least 2"):
+        PosetSolver(1)
+
+    with pytest.raises(Exception, match=f"at most {MAX_SIZE}"):
+        PosetSolver(MAX_SIZE + 1)
+
+    with pytest.raises(TypeError, match="must be an integer"):
+        PosetSolver("4")  # type: ignore
+
+    p = PosetSolver(4)
+    assert p._is_adjacent_swap("1234", "1324") == True
+    assert p._is_adjacent_swap("1234", "3214") == False
+    assert p._is_adjacent_swap("1234", "2134") == True
+
+    p.show_figure()

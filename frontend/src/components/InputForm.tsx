@@ -17,10 +17,6 @@ const InputForm: React.FC = () => {
   const [layout, setLayout] = useState<Partial<Layout> | null>(null);
   const [textareaValue, setTextareaValue] = useState<string>("");
 
-  const generateSequence = (size: number): string => {
-    return Array.from({ length: size }, (_, i) => i + 1).join("");
-  };
-
   const fetchPlotData = async () => {
     try {
       setData(null);
@@ -33,7 +29,7 @@ const InputForm: React.FC = () => {
 
       const response = await api.get(`/graph`, {
         params: {
-          sequence: generateSequence(size),
+          size: size,
           selected_nodes: selectedNodes,
         },
         paramsSerializer: {

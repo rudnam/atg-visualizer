@@ -4,3 +4,4 @@ networkx
 plotly
 numpy
 scipy
+pytest
