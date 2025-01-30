@@ -8,6 +8,7 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 from app.graph import MAX_SIZE, PosetSolver
+from app.posetvisualizer import PosetVisualizer
 
 
 class GraphRequest(BaseModel):
@@ -42,17 +43,17 @@ app.add_middleware(
 
 
 @app.get("/graph", response_model=GraphData)
-def get_graph(
-    size: int,
-    selected_nodes: List[str] = Query(None),
-    opacity_others: float = 0.1,
-):
+def get_graph(size: int, selected_nodes: List[str] = Query(None)):
     try:
         if size < 2 or size > MAX_SIZE:
-            raise ValueError(f"Size must be between 2 and {MAX_SIZE}.")
+            raise ValueError(f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}.")
 
-        solver = PosetSolver(size)
-        fig_data = solver.get_figure_data()
+        visualizer = PosetVisualizer(size)
+
+        if selected_nodes:
+            visualizer.highlight_nodes(selected_nodes)
+
+        fig_data = visualizer.get_figure_data()
 
         return JSONResponse(content=pio.to_json(fig_data))
     except Exception as e:

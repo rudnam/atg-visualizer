@@ -5,3 +5,4 @@ plotly
 numpy
 scipy
 pytest
+seaborn
