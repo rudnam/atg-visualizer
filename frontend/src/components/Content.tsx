@@ -3,6 +3,7 @@ import InputForm from "./InputForm";
 import Graph from "./Graph";
 import { Layout } from "plotly.js-dist";
 import api from "../api";
+import ResultsPanel from "./ResultsPanel";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -43,6 +44,7 @@ const Content: React.FC = () => {
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
       <InputForm fetchPlotData={fetchPlotData} />
       <Graph loading={loading} data={data} layout={layout} />
+      <ResultsPanel/>
     </div>
   );
 };
