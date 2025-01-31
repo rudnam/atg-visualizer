@@ -9,7 +9,7 @@ const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [graphData, setGraphData] = useState<GraphData[]>([]);
   const [posetResults, setPosetResults] = useState<PosetResult[]>([]);
-  const [graphIndex, setGraphIndex] = useState<number>(0);
+  const [highlightedPosetIndex, setHighlightedPosetIndex] = useState<number>(-1);
 
   const fetchGraphData = async (size: number, k: number, upsilon: string[]) => {
     try {
@@ -68,9 +68,9 @@ const Content: React.FC = () => {
       <InputForm fetchGraphData={fetchGraphData} />
       <Graph
         loading={loading}
-        graphData={graphData.length > 0 ? graphData[graphIndex] : null}
+        graphData={graphData.length > 0 ? graphData[highlightedPosetIndex] : null}
       />
-      <ResultsPanel posetResults={posetResults} setGraphIndex={setGraphIndex} />
+      <ResultsPanel posetResults={posetResults} setHighlightedPosetIndex={setHighlightedPosetIndex} />
     </div>
   );
 };

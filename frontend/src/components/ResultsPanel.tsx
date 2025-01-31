@@ -4,12 +4,12 @@ import { PosetResult } from "../types";
 
 interface ResultsPanelProps {
   posetResults: PosetResult[];
-  setGraphIndex: React.Dispatch<React.SetStateAction<number>>;
+  setHighlightedPosetIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const ResultsPanel: React.FC<ResultsPanelProps> = ({
   posetResults,
-  setGraphIndex,
+  setHighlightedPosetIndex,
 }) => {
   const [activeButtonIndex, setActiveButtonIndex] = useState(0);
 
@@ -19,7 +19,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     const buttonOnClick = () => {
       if (index !== activeButtonIndex) {
         setActiveButtonIndex(index);
-        setGraphIndex(index);
+        setHighlightedPosetIndex(index);
       }
     };
 
@@ -74,7 +74,7 @@ function PosetResultComponent(
         description="Linear Extensions"
         value={linearExtensions.join("\n")}
         autosize
-        minRows={4}
+        minRows={3}
         readOnly
       />
       {withDivider ? <Divider my="sm" size="sm" /> : <></>}

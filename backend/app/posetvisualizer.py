@@ -246,7 +246,6 @@ class PosetVisualizer:
         self.selected_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
         self._edge_trace = self._compute_edge_traces()
-
         self.update_figure()
 
     def highlight_nodes(self, select_nodes: List[str]):
@@ -254,7 +253,15 @@ class PosetVisualizer:
         self.highlighted_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
         self._edge_trace = self._compute_edge_traces()
+        self.update_figure()
 
+    def select_and_highlight_nodes(
+        self, select_nodes: List[str], highlight_nodes: List[str]
+    ):
+        self.highlighted_nodes = highlight_nodes
+        self.selected_nodes = select_nodes
+        self._node_trace = self._compute_node_traces()
+        self._edge_trace = self._compute_edge_traces()
         self.update_figure()
 
     def update_figure(self):
