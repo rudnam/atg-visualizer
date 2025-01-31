@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -8,6 +9,7 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 from app.posetvisualizer import PosetVisualizer
+from app.posetsolver import PosetCover
 
 
 class GraphRequest(BaseModel):
@@ -56,6 +58,28 @@ def get_graph(size: int, selected_nodes: List[str] = Query(None)):
         fig_data = visualizer.get_figure_data()
 
         return JSONResponse(content=pio.to_json(fig_data))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/solve")
+def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query(...)):
+    try:
+        solver = PosetCover(upsilon, k)
+        result = solver.exact_k_poset_cover()
+        if result:
+            result_posets, result_linear_orders = result
+
+            return JSONResponse(
+                content=json.dumps(
+                    {
+                        "result_posets": result_posets,
+                        "result_linear_orders": result_linear_orders,
+                    }
+                )
+            )
+        else:
+            return JSONResponse(content=json.dumps({}))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -2,7 +2,7 @@ from itertools import combinations, chain
 import networkx as nx
 from typing import List, Tuple
 
-from backend.app.classes import LinearOrder
+from app.classes import LinearOrder
 
 
 class PosetUtils:
@@ -100,10 +100,10 @@ class PosetUtils:
 
 
 class PosetCover:
-    def __init__(self, upsilon, k, G):
+    def __init__(self, upsilon, k):
         self.upsilon = upsilon
         self.k = int(k)
-        self.G = G
+        self.G = PosetUtils.linearOrdersToGraph(upsilon)
 
     def find_covering_poset(self, Pstar, Upsilon):
         def covers_upsilon(linear_orders, Upsilon):
