@@ -1,6 +1,5 @@
 import { Button, Accordion, Textarea, Group } from '@mantine/core'
-import type { ButtonProps } from '@mantine/core';
-import React from 'react'
+
 
   const posetResults = [
     {
@@ -31,7 +30,7 @@ import React from 'react'
 
   interface AccordionLabelProps {
     name: string;
-    highlightLEG: any;
+    highlightLEG: () => void;
   }
 
 function AccordionLabel({ name, highlightLEG }: AccordionLabelProps) {
