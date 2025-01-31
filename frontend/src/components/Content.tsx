@@ -6,26 +6,46 @@ import { GraphData } from "../types";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [graphData, setGraphData] = useState<GraphData | null>(null);
+  const [graphData, setGraphData] = useState<GraphData[]>([]);
 
-  const fetchPlotData = async (size: number, selectedNodes: string[]) => {
+  const fetchGraphData = async (size: number, k: number, upsilon: string[]) => {
     try {
-      setGraphData(null);
+      setGraphData([]);
       setLoading(true);
 
-      const response = await api.get(`/graph`, {
+      const response = await api.get(`/solve`, {
         params: {
-          size: size,
-          selected_nodes: selectedNodes,
+          k: k,
+          upsilon: upsilon,
         },
         paramsSerializer: {
           indexes: null,
         },
       });
 
-      const parsedData: GraphData = JSON.parse(response.data);
+      const parsedData = JSON.parse(response.data);
+      console.log(parsedData);
 
-      setGraphData(parsedData);
+      if (Object.keys(parsedData).length !== 0) {
+        const resultLinearOrders = parsedData.result_linear_orders;
+
+        for (const linearOrders of resultLinearOrders) {
+          const graphResponse = await api.get(`/graph`, {
+            params: {
+              size: size,
+              selected_nodes: linearOrders,
+            },
+            paramsSerializer: {
+              indexes: null,
+            },
+          });
+
+          const parsedGraphData = JSON.parse(graphResponse.data);
+          setGraphData((data) => [...data, parsedGraphData]);
+        }
+      } else {
+        alert("No result found.");
+      }
     } catch (error) {
       console.error("Error rendering the plot:", error);
     } finally {
@@ -35,8 +55,11 @@ const Content: React.FC = () => {
 
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
-      <InputForm fetchPlotData={fetchPlotData} />
-      <Graph loading={loading} graphData={graphData} />
+      <InputForm fetchGraphData={fetchGraphData} />
+      <Graph
+        loading={loading}
+        graphData={graphData.length > 0 ? graphData[0] : null}
+      />
     </div>
   );
 };

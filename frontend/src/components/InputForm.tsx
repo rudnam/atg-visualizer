@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Button,
   InputLabel,
@@ -9,10 +8,10 @@ import {
 import { useState } from "react";
 
 interface InputFormProps {
-  fetchPlotData: (size: number, selectedNodes: string[]) => Promise<void>;
+  fetchGraphData: (size: number, k: number, upsilon: string[]) => Promise<void>;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ fetchPlotData }) => {
+const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
 
@@ -51,8 +50,9 @@ const InputForm: React.FC<InputFormProps> = ({ fetchPlotData }) => {
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
         onClick={() =>
-          fetchPlotData(
+          fetchGraphData(
             size,
+            2,
             textareaValue
               .split("\n")
               .map((line) => line.trim())
