@@ -9,6 +9,7 @@ import { useState } from "react";
 import GraphComponent from "./Graph";
 import api from "../api";
 import { Layout } from "plotly.js-dist";
+import ResultsPanel from "./ResultsPanel";
 
 const InputForm: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -93,6 +94,7 @@ const InputForm: React.FC = () => {
         </Button>
       </div>
       <GraphComponent loading={loading} data={data} layout={layout} />
+      <ResultsPanel/>
     </>
   );
 };
