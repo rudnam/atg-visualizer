@@ -1,5 +1,4 @@
-import { Button, Accordion, Textarea, Group } from '@mantine/core'
-
+import { Button, Divider, Group, ScrollArea, Textarea } from '@mantine/core'
 
   const posetResults = [
     {
@@ -25,19 +24,22 @@ import { Button, Accordion, Textarea, Group } from '@mantine/core'
       relations: [[1,2],[1,3],[1,4]],
       coverRelations: [],
       highlightLEG: () => {},
-  },
+    },
   ]
 
-  interface AccordionLabelProps {
-    name: string;
-    highlightLEG: () => void;
-  }
+interface PosetResultProps {
+  name: string;
+  linearExtensions: string[];
+  highlightLEG: () => void;
+}
 
-function AccordionLabel({ name, highlightLEG }: AccordionLabelProps) {
-  return (
-    <Group>
-        <p>{name}</p>
-        <Button
+function PosetResult({ name, linearExtensions, highlightLEG }: PosetResultProps, withDivider: boolean) {
+  console.log(withDivider);
+    return (
+      <div key={`PosetResult${name}`}>
+        <Group justify='space-between'>
+          <p>{name}</p>
+          <Button
         size="compact-xs"
         radius='lg'
         onClick={()=>{
@@ -47,36 +49,34 @@ function AccordionLabel({ name, highlightLEG }: AccordionLabelProps) {
         >
             Show {name}
         </Button>
-    </Group>
-  )
+        </Group>
+        <Textarea
+        className="w-36"
+        description="Linear Extensions"
+        value={linearExtensions.join('\n')}
+        autosize
+        minRows={4}
+        readOnly
+        />
+        {withDivider ? <Divider my="sm" size="sm"/> : <></>}
+      </div>
+    )
 }
 
 function ResultsPanel() {
-    const items = posetResults.map((item) => (
-        <Accordion.Item key={item.name} value={item.name}>
-            <Accordion.Control>
-                <AccordionLabel {...item} />
-            </Accordion.Control>
-            <Accordion.Panel>
-                <Textarea
-                className="w-36"
-                description="Relations"
-                value={item.linearExtensions.join('\n')}
-                autosize
-                minRows={4}
-                readOnly
-                />
-            </Accordion.Panel>
-        </Accordion.Item>
-      ));
+    const items = posetResults.map((item, index) => {
+      const withDivider = index !== posetResults.length-1;
+      return PosetResult(item, withDivider)
+    });
 
   return (
     <div className="h-full w-72 max-h-[36rem] mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
-        <div className="text-xl font-bold">RESULTS</div>
-        <Accordion multiple>
-            {items}
-        </Accordion>
-      </div>  )
+      <div className="text-xl font-bold">RESULTS</div>
+      <ScrollArea scrollbarSize={4} offsetScrollbars className='h-full py-4'>
+        {items}
+      </ScrollArea>  
+      </div>
+    )
 }
 
 export default ResultsPanel
