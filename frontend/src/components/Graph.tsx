@@ -6,7 +6,6 @@ interface GraphProps {
   loading: boolean;
   data: Plotly.Data[] | null;
   layout: Partial<Layout> | null;
-  message: string;
 }
 
 const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
