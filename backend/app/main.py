@@ -53,7 +53,7 @@ def get_graph(size: int, selected_nodes: List[str] = Query(None)):
         visualizer = PosetVisualizer(size)
 
         if selected_nodes:
-            visualizer.highlight_nodes(selected_nodes)
+            visualizer.select_nodes(selected_nodes)
 
         fig_data = visualizer.get_figure_data()
 
