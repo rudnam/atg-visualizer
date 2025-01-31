@@ -1,19 +1,23 @@
 import React, { useEffect, useRef } from "react";
-import Plotly, { Layout } from "plotly.js-dist";
+import Plotly from "plotly.js-dist";
 import { LoadingOverlay } from "@mantine/core";
+import { GraphData } from "../types";
 
 interface GraphProps {
   loading: boolean;
-  data: Plotly.Data[] | null;
-  layout: Partial<Layout> | null;
+  graphData: GraphData | null;
 }
 
-const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
+const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
   const plotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (plotRef.current) {
-      if (data !== null && layout !== null) {
+      if (
+        graphData !== null &&
+        graphData.data !== null &&
+        graphData.layout !== null
+      ) {
         const config: Partial<Plotly.Config> = {
           displaylogo: false,
           modeBarButtonsToRemove: [
@@ -27,10 +31,10 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, data, layout }) => {
           ],
         };
 
-        Plotly.react(plotRef.current, data, layout, config);
+        Plotly.react(plotRef.current, graphData.data, graphData.layout, config);
       }
     }
-  }, [data, layout]);
+  }, [graphData]);
 
   return (
     <div className="flex flex-col p-8 w-auto md:w-full max-w-3xl h-full max-h-[36rem] bg-[#fefefe] rounded-xl shadow-lg">

@@ -63,7 +63,7 @@ def get_graph(size: int, selected_nodes: List[str] = Query(None)):
 
 
 @app.get("/solve")
-def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query(...)):
+def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query([])):
     try:
         solver = PosetCover(upsilon, k)
         result = solver.exact_k_poset_cover()

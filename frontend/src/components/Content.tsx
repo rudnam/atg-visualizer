@@ -1,24 +1,25 @@
 import React, { useState } from "react";
 import InputForm from "./InputForm";
 import Graph from "./Graph";
-import { Layout } from "plotly.js-dist";
 import api from "../api";
+import { GraphData, PosetResult } from "../types";
 import ResultsPanel from "./ResultsPanel";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [data, setData] = useState<Plotly.Data[] | null>(null);
-  const [layout, setLayout] = useState<Partial<Layout> | null>(null);
+  const [graphData, setGraphData] = useState<GraphData[]>([]);
+  const [posetResults, setPosetResults] = useState<PosetResult[]>([]);
+  const [graphIndex, setGraphIndex] = useState<number>(0);
 
-  const fetchPlotData = async (size: number, selectedNodes: string[]) => {
+  const fetchGraphData = async (size: number, k: number, upsilon: string[]) => {
     try {
-      setData(null);
+      setGraphData([]);
       setLoading(true);
 
-      const response = await api.get(`/graph`, {
+      const response = await api.get(`/solve`, {
         params: {
-          size: size,
-          selected_nodes: selectedNodes,
+          k: k,
+          upsilon: upsilon,
         },
         paramsSerializer: {
           indexes: null,
@@ -27,12 +28,34 @@ const Content: React.FC = () => {
 
       const parsedData = JSON.parse(response.data);
 
-      const fetchedData: Plotly.Data[] = parsedData.data || [];
+      if (Object.keys(parsedData).length !== 0) {
+        const resultLinearOrders: string[][] = parsedData.result_linear_orders;
+        setPosetResults(
+          resultLinearOrders.map((result, index) => ({
+            name: `P${index + 1}`,
+            linearExtensions: result,
+          }))
+        );
 
-      setData(fetchedData);
+        for (const linearOrders of resultLinearOrders) {
+          const graphResponse = await api.get(`/graph`, {
+            params: {
+              size: size,
+              selected_nodes: linearOrders,
+            },
+            paramsSerializer: {
+              indexes: null,
+            },
+          });
 
-      const fetchedLayout: Partial<Layout> = parsedData.layout || {};
-      setLayout(fetchedLayout);
+          const parsedGraphData = JSON.parse(graphResponse.data);
+          setGraphData((data) => [...data, parsedGraphData]);
+        }
+      } else {
+        alert("No result found.");
+        setPosetResults([]);
+        setGraphData([]);
+      }
     } catch (error) {
       console.error("Error rendering the plot:", error);
     } finally {
@@ -42,9 +65,12 @@ const Content: React.FC = () => {
 
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
-      <InputForm fetchPlotData={fetchPlotData} />
-      <Graph loading={loading} data={data} layout={layout} />
-      <ResultsPanel/>
+      <InputForm fetchGraphData={fetchGraphData} />
+      <Graph
+        loading={loading}
+        graphData={graphData.length > 0 ? graphData[graphIndex] : null}
+      />
+      <ResultsPanel posetResults={posetResults} setGraphIndex={setGraphIndex} />
     </div>
   );
 };
