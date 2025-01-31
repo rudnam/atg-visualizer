@@ -7,7 +7,6 @@ from typing import List, Optional
 import plotly.graph_objects as go
 import plotly.io as pio
 
-from app.graph import MAX_SIZE, PosetSolver
 from app.posetvisualizer import PosetVisualizer
 
 
@@ -45,7 +44,7 @@ app.add_middleware(
 @app.get("/graph", response_model=GraphData)
 def get_graph(size: int, selected_nodes: List[str] = Query(None)):
     try:
-        if size < 2 or size > MAX_SIZE:
+        if size < 2 or size > PosetVisualizer.MAX_SIZE:
             raise ValueError(f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}.")
 
         visualizer = PosetVisualizer(size)
