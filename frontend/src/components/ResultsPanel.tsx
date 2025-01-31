@@ -2,54 +2,16 @@ import { Button, Divider, Group, ScrollArea, Textarea } from "@mantine/core";
 import React, { useState } from "react";
 import { PosetResult } from "../types";
 
-// const posetResults = [
-//   {
-//     name: "P1",
-//     baseSet: [1, 2, 3, 4],
-//     linearExtensions: ["1234", "1243", "1423", "4123"],
-//     relations: [
-//       [1, 2],
-//       [1, 3],
-//       [2, 3],
-//     ],
-//     coverRelations: [],
-//     highlightLEG: () => {},
-//   },
-//   {
-//     name: "P2",
-//     baseSet: [1, 2, 3, 4],
-//     linearExtensions: ["1234"],
-//     relations: [
-//       [1, 2],
-//       [1, 3],
-//       [1, 4],
-//       [2, 3],
-//       [2, 4],
-//       [3, 4],
-//     ],
-//     coverRelations: [],
-//     highlightLEG: () => {},
-//   },
-//   {
-//     name: "P3",
-//     baseSet: [1, 2, 3, 4],
-//     linearExtensions: ["1234", "1243", "1423", "1432", "1342", "1324"],
-//     relations: [
-//       [1, 2],
-//       [1, 3],
-//       [1, 4],
-//     ],
-//     coverRelations: [],
-//     highlightLEG: () => {},
-//   },
-// ];
-
 interface ResultsPanelProps {
   posetResults: PosetResult[];
+  setGraphIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const ResultsPanel: React.FC<ResultsPanelProps> = ({ posetResults }) => {
-  const [activeButtonIndex, setActiveButtonIndex] = useState(-1);
+const ResultsPanel: React.FC<ResultsPanelProps> = ({
+  posetResults,
+  setGraphIndex,
+}) => {
+  const [activeButtonIndex, setActiveButtonIndex] = useState(0);
 
   const items = posetResults.map((item, index) => {
     const withDivider = index !== posetResults.length - 1;
@@ -57,8 +19,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({ posetResults }) => {
     const buttonOnClick = () => {
       if (index !== activeButtonIndex) {
         setActiveButtonIndex(index);
-      } else {
-        setActiveButtonIndex(-1);
+        setGraphIndex(index);
       }
     };
 
@@ -101,7 +62,6 @@ function PosetResultComponent(
           size="compact-xs"
           radius="lg"
           onClick={() => {
-            // change button state to shown, clear other buttons
             buttonOnClick();
           }}
           variant={buttonVariant}
