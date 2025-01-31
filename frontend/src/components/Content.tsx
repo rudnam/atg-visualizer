@@ -27,7 +27,6 @@ const Content: React.FC = () => {
       });
 
       const parsedData = JSON.parse(response.data);
-      console.log(parsedData);
 
       if (Object.keys(parsedData).length !== 0) {
         const resultLinearOrders: string[][] = parsedData.result_linear_orders;

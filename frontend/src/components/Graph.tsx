@@ -13,7 +13,11 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
 
   useEffect(() => {
     if (plotRef.current) {
-      if (graphData !== null) {
+      if (
+        graphData !== null &&
+        graphData.data !== null &&
+        graphData.layout !== null
+      ) {
         const config: Partial<Plotly.Config> = {
           displaylogo: false,
           modeBarButtonsToRemove: [
