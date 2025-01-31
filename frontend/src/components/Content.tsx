@@ -3,6 +3,7 @@ import InputForm from "./InputForm";
 import Graph from "./Graph";
 import api from "../api";
 import { GraphData } from "../types";
+import ResultsPanel from "./ResultsPanel";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,6 +61,7 @@ const Content: React.FC = () => {
         loading={loading}
         graphData={graphData.length > 0 ? graphData[0] : null}
       />
+      <ResultsPanel/>
     </div>
   );
 };
