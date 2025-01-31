@@ -1,3 +1,4 @@
+import json
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -7,8 +8,8 @@ from typing import List, Optional
 import plotly.graph_objects as go
 import plotly.io as pio
 
-from app.graph import MAX_SIZE, PosetSolver
 from app.posetvisualizer import PosetVisualizer
+from app.posetsolver import PosetCover
 
 
 class GraphRequest(BaseModel):
@@ -36,6 +37,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex="https://atg-visualizer-.*\.vercel\.app",  # type: ignore
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -45,7 +47,7 @@ app.add_middleware(
 @app.get("/graph", response_model=GraphData)
 def get_graph(size: int, selected_nodes: List[str] = Query(None)):
     try:
-        if size < 2 or size > MAX_SIZE:
+        if size < 2 or size > PosetVisualizer.MAX_SIZE:
             raise ValueError(f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}.")
 
         visualizer = PosetVisualizer(size)
@@ -56,6 +58,28 @@ def get_graph(size: int, selected_nodes: List[str] = Query(None)):
         fig_data = visualizer.get_figure_data()
 
         return JSONResponse(content=pio.to_json(fig_data))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/solve")
+def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query(...)):
+    try:
+        solver = PosetCover(upsilon, k)
+        result = solver.exact_k_poset_cover()
+        if result:
+            result_posets, result_linear_orders = result
+
+            return JSONResponse(
+                content=json.dumps(
+                    {
+                        "result_posets": result_posets,
+                        "result_linear_orders": result_linear_orders,
+                    }
+                )
+            )
+        else:
+            return JSONResponse(content=json.dumps({}))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

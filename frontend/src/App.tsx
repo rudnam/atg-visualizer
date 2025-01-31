@@ -4,7 +4,7 @@ import "@mantine/core/styles.css";
 import { generateColors } from "@mantine/colors-generator";
 import { createTheme, MantineProvider } from "@mantine/core";
 import Header from "./components/Header";
-import InputForm from "./components/InputForm";
+import Content from "./components/Content";
 
 const theme = createTheme({
   fontFamily: "Inter, sans-serif",
@@ -19,8 +19,8 @@ function App() {
     <MantineProvider theme={theme}>
       <div className="App h-full flex flex-col">
         <Header />
-        <main className="px-4 md:px-8 my-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
-          <InputForm />
+        <main className="grow my-8">
+          <Content />
         </main>
       </div>
     </MantineProvider>
