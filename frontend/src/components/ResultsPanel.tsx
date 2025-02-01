@@ -1,29 +1,31 @@
 import { Button, Divider, Group, ScrollArea, Textarea } from "@mantine/core";
-import React, { useState } from "react";
+import React from "react";
 import { PosetResult } from "../types";
 
 interface ResultsPanelProps {
   posetResults: PosetResult[];
-  setGraphIndex: React.Dispatch<React.SetStateAction<number>>;
+  highlightedPosetIndex: number;
+  setHighlightedPosetIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
 const ResultsPanel: React.FC<ResultsPanelProps> = ({
   posetResults,
-  setGraphIndex,
+  highlightedPosetIndex,
+  setHighlightedPosetIndex,
 }) => {
-  const [activeButtonIndex, setActiveButtonIndex] = useState(0);
 
   const items = posetResults.map((item, index) => {
     const withDivider = index !== posetResults.length - 1;
 
     const buttonOnClick = () => {
-      if (index !== activeButtonIndex) {
-        setActiveButtonIndex(index);
-        setGraphIndex(index);
+      if (index === highlightedPosetIndex) {
+        setHighlightedPosetIndex(-1);
+      } else {
+        setHighlightedPosetIndex(index);
       }
     };
 
-    const buttonVariant = index === activeButtonIndex ? "filled" : "outline";
+    const buttonVariant = index === highlightedPosetIndex ? "filled" : "outline";
 
     return PosetResultComponent(
       item,
@@ -74,7 +76,7 @@ function PosetResultComponent(
         description="Linear Extensions"
         value={linearExtensions.join("\n")}
         autosize
-        minRows={4}
+        minRows={3}
         readOnly
       />
       {withDivider ? <Divider my="sm" size="sm" /> : <></>}

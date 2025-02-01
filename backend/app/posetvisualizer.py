@@ -17,23 +17,14 @@ class PosetVisualizer:
             )
 
         self.size = size
+        self.selected_nodes = []
         self.highlighted_nodes = []
 
         self._set_up_graph()
-
         self._pos = nx.spring_layout(self._graph, dim=3, seed=42)
-        self._edge_trace = self._compute_edge_trace()
-        self._node_positions = self._compute_node_positions()
-        self._node_trace = self._compute_node_trace()
-        self._fig_layout = go.Layout(
-            scene=dict(
-                xaxis_visible=False,
-                yaxis_visible=False,
-                zaxis_visible=False,
-                bgcolor="rgba(0, 0, 0, 0)",
-            ),
-            margin=dict(l=0, r=0, b=0, t=0),
-        )
+        self._edge_trace = self._compute_edge_traces()
+        self._node_trace = self._compute_node_traces()
+        self._fig_layout = self._make_fig_layout()
 
         self.update_figure()
 
@@ -90,142 +81,182 @@ class PosetVisualizer:
                     )
                     self._graph.add_edge(perm_strings[i], perm_strings[j])
 
-    def _compute_edge_trace(self):
-        """Computes edge traces."""
+    def _compute_edge_traces(self):
         edge_traces = []
-
         for number_pair, edges in self._edges_by_swap.items():
-            selected_edges_x = []
-            selected_edges_y = []
-            selected_edges_z = []
-            other_edges_x = []
-            other_edges_y = []
-            other_edges_z = []
+            highlighted_edges = []
+            selected_edges = []
+            other_edges = []
 
             for edge in edges:
                 p1, p2 = edge
-
-                is_selected = len(self.highlighted_nodes) == 0 or (
+                is_highlighted = (
                     p1 in self.highlighted_nodes and p2 in self.highlighted_nodes
                 )
-
-                x_coords = [self._pos[p1][0], self._pos[p2][0], None]
-                y_coords = [self._pos[p1][1], self._pos[p2][1], None]
-                z_coords = [self._pos[p1][2], self._pos[p2][2], None]
-
-                if is_selected:
-                    selected_edges_x.extend(x_coords)
-                    selected_edges_y.extend(y_coords)
-                    selected_edges_z.extend(z_coords)
+                is_selected = (
+                    not is_highlighted
+                    and (p1 in self.selected_nodes or p1 in self.highlighted_nodes)
+                    and (p2 in self.selected_nodes or p2 in self.highlighted_nodes)
+                )
+                if is_highlighted:
+                    highlighted_edges.append(edge)
+                elif is_selected:
+                    selected_edges.append(edge)
                 else:
-                    other_edges_x.extend(x_coords)
-                    other_edges_y.extend(y_coords)
-                    other_edges_z.extend(z_coords)
+                    other_edges.append(edge)
 
-            if selected_edges_x:
-                edge_traces.append(
-                    go.Scatter3d(
-                        x=selected_edges_x,
-                        y=selected_edges_y,
-                        z=selected_edges_z,
-                        mode="lines",
-                        line=dict(color=self._pair_to_color[number_pair], width=2),
-                        name=f"Swap {number_pair[0]}-{number_pair[1]}",
-                        hoverinfo="skip",
-                    )
+            if highlighted_edges:
+                trace = self._make_edge_trace(
+                    highlighted_edges,
+                    render_type="highlighted",
+                    number_pair=number_pair,
                 )
-
-            if other_edges_x:
-                edge_traces.append(
-                    go.Scatter3d(
-                        x=other_edges_x,
-                        y=other_edges_y,
-                        z=other_edges_z,
-                        mode="lines",
-                        line=dict(color=self._pair_to_color[number_pair], width=2),
-                        opacity=0.1,
-                        name=f"Swap {number_pair[0]}-{number_pair[1]} (other)",
-                        hoverinfo="skip",
-                        showlegend=False,
-                    )
+                edge_traces.append(trace)
+            if selected_edges:
+                trace = self._make_edge_trace(
+                    selected_edges, render_type="selected", number_pair=number_pair
                 )
+                edge_traces.append(trace)
+            if other_edges:
+                trace = self._make_edge_trace(
+                    other_edges, render_type="other", number_pair=number_pair
+                )
+                edge_traces.append(trace)
 
         return edge_traces
 
-    def _compute_node_positions(self):
-        """Computes node positions."""
-        node_x = [self._pos[node][0] for node in self._graph.nodes()]
-        node_y = [self._pos[node][1] for node in self._graph.nodes()]
-        node_z = [self._pos[node][2] for node in self._graph.nodes()]
-        return node_x, node_y, node_z
+    def _make_edge_trace(self, edges, render_type="selected", number_pair=("1", "2")):
+        selected_edges_x = []
+        selected_edges_y = []
+        selected_edges_z = []
 
-    def _compute_node_trace(self):
-        """Computes node traces"""
+        for edge in edges:
+            p1, p2 = edge
+            x_coords = [self._pos[p1][0], self._pos[p2][0], None]
+            y_coords = [self._pos[p1][1], self._pos[p2][1], None]
+            z_coords = [self._pos[p1][2], self._pos[p2][2], None]
+            selected_edges_x.extend(x_coords)
+            selected_edges_y.extend(y_coords)
+            selected_edges_z.extend(z_coords)
+
+        # set trace options according to render type
+        line_dict = (
+            dict(color="red", width=5, dash="solid")
+            if render_type == "highlighted"
+            else dict(color=self._pair_to_color[number_pair], width=2)
+        )
+        trace_opacity = 0.1 if render_type == "other" else 1
+        trace_show_legend = render_type == "selected"
+
+        return go.Scatter3d(
+            x=selected_edges_x,
+            y=selected_edges_y,
+            z=selected_edges_z,
+            mode="lines",
+            line=line_dict,
+            opacity=trace_opacity,
+            name=f"Swap {number_pair[0]}-{number_pair[1]}",
+            hoverinfo="skip",
+            showlegend=trace_show_legend,
+        )
+
+    def _compute_node_traces(self):
+        def node_is_other(node):
+            return (
+                not self._all_perms_are_selected()
+                and node not in self.selected_nodes
+                and node not in self.highlighted_nodes
+            )
+
+        selected_nodes = [
+            node for node in self.selected_nodes if node not in self.highlighted_nodes
+        ]
+        other_nodes = [node for node in self._graph.nodes() if node_is_other(node)]
 
         node_traces = []
+        if self.highlighted_nodes:
+            node_traces.append(
+                self._make_node_trace(self.highlighted_nodes, render_type="highlighted")
+            )
+        if selected_nodes:
+            node_traces.append(
+                self._make_node_trace(selected_nodes, render_type="selected")
+            )
+        if other_nodes:
+            node_traces.append(self._make_node_trace(other_nodes, render_type="other"))
+        return node_traces
+
+    def _make_node_trace(self, nodes, render_type="selected"):
+        # set trace options according to render type
+        marker_dict = (
+            dict(size=6, color="red")
+            if render_type == "highlighted"
+            else dict(size=3, color="black")
+        )
+        trace_opacity = 0.1 if render_type == "other" else 1
+        trace_show_legend = render_type == "selected"
 
         selected_nodes_x = []
         selected_nodes_y = []
         selected_nodes_z = []
         selected_nodes_text = []
-        other_nodes_x = []
-        other_nodes_y = []
-        other_nodes_z = []
-        other_nodes_text = []
 
-        for node in self._graph.nodes():
+        for node in nodes:
             pos = self._pos[node]
-            if len(self.highlighted_nodes) == 0 or node in self.highlighted_nodes:
-                selected_nodes_x.append(pos[0])
-                selected_nodes_y.append(pos[1])
-                selected_nodes_z.append(pos[2])
-                selected_nodes_text.append(node)
-            else:
-                other_nodes_x.append(pos[0])
-                other_nodes_y.append(pos[1])
-                other_nodes_z.append(pos[2])
-                other_nodes_text.append(node)
+            selected_nodes_x.append(pos[0])
+            selected_nodes_y.append(pos[1])
+            selected_nodes_z.append(pos[2])
+            selected_nodes_text.append(node)
 
-        node_x, node_y, node_z = self._node_positions
+        return go.Scatter3d(
+            x=selected_nodes_x,
+            y=selected_nodes_y,
+            z=selected_nodes_z,
+            mode="markers+text",
+            marker=marker_dict,
+            text=selected_nodes_text,
+            textposition="top center",
+            opacity=trace_opacity,
+            hoverinfo="skip",
+            name="Permutations",
+            showlegend=trace_show_legend,
+        )
 
-        if selected_nodes_x:
-            node_trace_selected = go.Scatter3d(
-                x=selected_nodes_x,
-                y=selected_nodes_y,
-                z=selected_nodes_z,
-                mode="markers+text",
-                marker=dict(size=3, color="black"),
-                text=selected_nodes_text,
-                textposition="top center",
-                hoverinfo="skip",
-                name="Permutations",
-            )
-            node_traces.append(node_trace_selected)
+    def _make_fig_layout(self):
+        return go.Layout(
+            scene=dict(
+                xaxis_visible=False,
+                yaxis_visible=False,
+                zaxis_visible=False,
+                bgcolor="rgba(0, 0, 0, 0)",
+            ),
+            margin=dict(l=0, r=0, b=0, t=0),
+        )
 
-        if other_nodes_x:
-            node_trace_others = go.Scatter3d(
-                x=other_nodes_x,
-                y=other_nodes_y,
-                z=other_nodes_z,
-                mode="markers+text",
-                marker=dict(size=3, color="black"),
-                text=other_nodes_text,
-                textposition="top center",
-                opacity=0.1,
-                hoverinfo="skip",
-                name="Other Permutations",
-                showlegend=False,
-            )
-            node_traces.append(node_trace_others)
+    def _all_perms_are_selected(self):
+        return len(self.selected_nodes) == 0
 
-        return node_traces
+    def select_nodes(self, select_nodes: List[str]):
+        """Selects specified nodes"""
+        self.selected_nodes = select_nodes
+        self._node_trace = self._compute_node_traces()
+        self._edge_trace = self._compute_edge_traces()
+        self.update_figure()
 
-    def highlight_nodes(self, highlight_nodes: List[str]):
+    def highlight_nodes(self, select_nodes: List[str]):
         """Highlights specified nodes"""
-        self.highlighted_nodes = highlight_nodes
-        self._node_trace = self._compute_node_trace()
-        self._edge_trace = self._compute_edge_trace()
+        self.highlighted_nodes = select_nodes
+        self._node_trace = self._compute_node_traces()
+        self._edge_trace = self._compute_edge_traces()
+        self.update_figure()
 
+    def select_and_highlight_nodes(
+        self, select_nodes: List[str], highlight_nodes: List[str]
+    ):
+        self.highlighted_nodes = highlight_nodes
+        self.selected_nodes = select_nodes
+        self._node_trace = self._compute_node_traces()
+        self._edge_trace = self._compute_edge_traces()
         self.update_figure()
 
     def update_figure(self):

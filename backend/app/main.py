@@ -45,15 +45,23 @@ app.add_middleware(
 
 
 @app.get("/graph", response_model=GraphData)
-def get_graph(size: int, selected_nodes: List[str] = Query(None)):
+def get_graph(
+    size: int,
+    selected_nodes: List[str] = Query(None),
+    highlighted_nodes: List[str] = Query(None),
+):
     try:
         if size < 2 or size > PosetVisualizer.MAX_SIZE:
             raise ValueError(f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}.")
 
         visualizer = PosetVisualizer(size)
 
-        if selected_nodes:
-            visualizer.highlight_nodes(selected_nodes)
+        if selected_nodes and highlighted_nodes:
+            visualizer.select_and_highlight_nodes(
+                select_nodes=selected_nodes, highlight_nodes=highlighted_nodes
+            )
+        elif selected_nodes:
+            visualizer.select_nodes(select_nodes=selected_nodes)
 
         fig_data = visualizer.get_figure_data()
 
