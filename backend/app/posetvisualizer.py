@@ -90,25 +90,20 @@ class PosetVisualizer:
 
             for edge in edges:
                 p1, p2 = edge
-
                 is_highlighted = (
                     p1 in self.highlighted_nodes and p2 in self.highlighted_nodes
                 )
-                if is_highlighted:
-                    highlighted_edges.append(edge)
-                    continue
-
                 is_selected = (
                     not is_highlighted
                     and (p1 in self.selected_nodes or p1 in self.highlighted_nodes)
                     and (p2 in self.selected_nodes or p2 in self.highlighted_nodes)
                 )
-                if is_selected:
+                if is_highlighted:
+                    highlighted_edges.append(edge)
+                elif is_selected:
                     selected_edges.append(edge)
-                    continue
-
-                # is_other = not is_highlighted and not is_selected
-                other_edges.append(edge)
+                else:
+                    other_edges.append(edge)
 
             if highlighted_edges:
                 trace = self._make_edge_trace(
