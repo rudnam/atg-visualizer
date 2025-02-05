@@ -2,16 +2,25 @@ import {
   Button,
   InputLabel,
   InputWrapper,
+  ScrollArea,
   Slider,
   Textarea,
 } from "@mantine/core";
 import { useState } from "react";
 
 interface InputFormProps {
-  fetchGraphData: (size: number, k: number, upsilon: string[]) => Promise<void>;
+  fetchEntireGraphData: (size: number) => Promise<void>;
+  fetchPosetCoverResults: (
+    size: number,
+    k: number,
+    upsilon: string[]
+  ) => Promise<void>;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
+const InputForm: React.FC<InputFormProps> = ({
+  fetchPosetCoverResults,
+  fetchEntireGraphData,
+}) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
 
@@ -34,23 +43,33 @@ const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
           ]}
         />
       </InputWrapper>
+      <ScrollArea>
+        <Textarea
+          className="w-36 mx-auto"
+          label="Input Y"
+          description="Input permutations"
+          placeholder={`1234\n4321\n3214`}
+          resize="vertical"
+          onChange={(event) => setTextareaValue(event.currentTarget.value)}
+          autosize
+          minRows={4}
+        />
+      </ScrollArea>
 
-      <Textarea
-        className="w-36 mx-auto"
-        label="Input Y"
-        description="Input permutations"
-        placeholder={`1234\n4321\n3214`}
-        resize="vertical"
-        onChange={(event) => setTextareaValue(event.currentTarget.value)}
-        autosize
-        minRows={4}
-      />
+      <Button
+        className="mx-auto"
+        variant="gradient"
+        gradient={{ from: "purple", to: "maroon", deg: 90 }}
+        onClick={() => fetchEntireGraphData(size)}
+      >
+        Draw
+      </Button>
       <Button
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
         onClick={() =>
-          fetchGraphData(
+          fetchPosetCoverResults(
             size,
             2,
             textareaValue
@@ -60,7 +79,7 @@ const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
           )
         }
       >
-        Generate
+        Solve
       </Button>
     </div>
   );

@@ -1,75 +1,70 @@
 import React, { useState } from "react";
 import InputForm from "./InputForm";
 import Graph from "./Graph";
-import api from "../api";
 import { GraphData, PosetResult } from "../types";
 import ResultsPanel from "./ResultsPanel";
+import poset from "../services/poset";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [graphData, setGraphData] = useState<GraphData[]>([]);
   const [atgGraph, setAtgGraph] = useState<GraphData | null>(null);
   const [posetResults, setPosetResults] = useState<PosetResult[]>([]);
-  const [highlightedPosetIndex, setHighlightedPosetIndex] = useState<number>(-1);
+  const [highlightedPosetIndex, setHighlightedPosetIndex] =
+    useState<number>(-1);
 
-  const fetchGraphData = async (size: number, k: number, upsilon: string[]) => {
+  const fetchEntireGraphData = async (size: number) => {
     try {
-      setGraphData([]);
       setLoading(true);
+      setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      const response = await api.get(`/solve`, {
-        params: {
-          k: k,
-          upsilon: upsilon,
-        },
-        paramsSerializer: {
-          indexes: null,
-        },
-      });
-
-      const graphResponse = await api.get(`/graph`, {
-        params: {
-          size: size,
-          selected_nodes: upsilon,
-        },
-        paramsSerializer: {
-          indexes: null,
-        },
-      });
-
-      const atgGraphData = JSON.parse(graphResponse.data);
+      const atgGraphData = await poset.getAtgGraphData(size);
       setAtgGraph(atgGraphData);
-      
-      const parsedData = JSON.parse(response.data);
-      if (Object.keys(parsedData).length !== 0) {
-        const resultLinearOrders: string[][] = parsedData.result_linear_orders;
-        setPosetResults(
-          resultLinearOrders.map((result, index) => ({
-            name: `P${index + 1}`,
-            linearExtensions: result,
-          }))
+    } catch (error) {
+      console.error("Error rendering the plot:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchPosetCoverResults = async (
+    size: number,
+    k: number,
+    upsilon: string[]
+  ) => {
+    try {
+      setLoading(true);
+      setPosetResults([]);
+      setHighlightedPosetIndex(-1);
+
+      const posetCoverResultData = await poset.solveOptimalKPosetCover(
+        k,
+        upsilon
+      );
+
+      if (posetCoverResultData !== null) {
+        const resultLinearOrders = posetCoverResultData.resultLinearOrders;
+        const resultPosets = posetCoverResultData.resultPosets;
+
+        const resolvedResults = await Promise.all(
+          resultLinearOrders.map(async (result, index) => {
+            const posetGraphData = await poset.getAtgGraphData(
+              size,
+              upsilon,
+              result
+            );
+            return {
+              name: `P${index + 1}`,
+              relations: resultPosets[index],
+              linearExtensions: result,
+              graphData: posetGraphData,
+            };
+          })
         );
 
-        for (const linearOrders of resultLinearOrders) {
-          const graphResponse = await api.get(`/graph`, {
-            params: {
-              size: size,
-              selected_nodes: upsilon,
-              highlighted_nodes: linearOrders,
-            },
-            paramsSerializer: {
-              indexes: null,
-            },
-          });
-
-          const parsedGraphData = JSON.parse(graphResponse.data);
-          setGraphData((data) => [...data, parsedGraphData]);
-        }
+        setPosetResults(resolvedResults);
       } else {
         alert("No result found.");
-        setPosetResults([]);
-        setGraphData([]);
       }
     } catch (error) {
       console.error("Error rendering the plot:", error);
@@ -80,14 +75,23 @@ const Content: React.FC = () => {
 
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
-      <InputForm fetchGraphData={fetchGraphData} />
+      <InputForm
+        fetchEntireGraphData={fetchEntireGraphData}
+        fetchPosetCoverResults={fetchPosetCoverResults}
+      />
       <Graph
         loading={loading}
         graphData={
-          highlightedPosetIndex===-1 ? atgGraph :
-          graphData.length > 0 ? graphData[highlightedPosetIndex] : null}
+          highlightedPosetIndex === -1
+            ? atgGraph
+            : posetResults[highlightedPosetIndex]?.graphData || null
+        }
       />
-      <ResultsPanel posetResults={posetResults} highlightedPosetIndex={highlightedPosetIndex} setHighlightedPosetIndex={setHighlightedPosetIndex} />
+      <ResultsPanel
+        posetResults={posetResults}
+        highlightedPosetIndex={highlightedPosetIndex}
+        setHighlightedPosetIndex={setHighlightedPosetIndex}
+      />
     </div>
   );
 };

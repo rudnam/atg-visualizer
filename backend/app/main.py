@@ -81,8 +81,8 @@ def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query([])):
             return JSONResponse(
                 content=json.dumps(
                     {
-                        "result_posets": result_posets,
-                        "result_linear_orders": result_linear_orders,
+                        "resultPosets": result_posets,
+                        "resultLinearOrders": result_linear_orders,
                     }
                 )
             )
