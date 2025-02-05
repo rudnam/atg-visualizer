@@ -90,10 +90,14 @@ class PosetVisualizer:
 
             for edge in edges:
                 p1, p2 = edge
+
+                select_all = (
+                    len(self.highlighted_nodes) == 0 and len(self.selected_nodes) == 0
+                )
                 is_highlighted = (
                     p1 in self.highlighted_nodes and p2 in self.highlighted_nodes
                 )
-                is_selected = (
+                is_selected = select_all or (
                     not is_highlighted
                     and (p1 in self.selected_nodes or p1 in self.highlighted_nodes)
                     and (p2 in self.selected_nodes or p2 in self.highlighted_nodes)
@@ -168,10 +172,19 @@ class PosetVisualizer:
                 and node not in self.highlighted_nodes
             )
 
-        selected_nodes = [
-            node for node in self.selected_nodes if node not in self.highlighted_nodes
-        ]
-        other_nodes = [node for node in self._graph.nodes() if node_is_other(node)]
+        select_all = len(self.highlighted_nodes) == 0 and len(self.selected_nodes) == 0
+        selected_nodes = []
+        other_nodes = []
+
+        if select_all:
+            selected_nodes = self._graph.nodes()
+        else:
+            selected_nodes = [
+                node
+                for node in self.selected_nodes
+                if node not in self.highlighted_nodes
+            ]
+            other_nodes = [node for node in self._graph.nodes() if node_is_other(node)]
 
         node_traces = []
         if self.highlighted_nodes:

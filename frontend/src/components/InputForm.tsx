@@ -8,10 +8,18 @@ import {
 import { useState } from "react";
 
 interface InputFormProps {
-  fetchGraphData: (size: number, k: number, upsilon: string[]) => Promise<void>;
+  fetchEntireGraphData: (size: number) => Promise<void>;
+  fetchPosetResults: (
+    size: number,
+    k: number,
+    upsilon: string[]
+  ) => Promise<void>;
 }
 
-const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
+const InputForm: React.FC<InputFormProps> = ({
+  fetchPosetResults,
+  fetchEntireGraphData,
+}) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
 
@@ -49,8 +57,16 @@ const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
+        onClick={() => fetchEntireGraphData(size)}
+      >
+        Draw
+      </Button>
+      <Button
+        className="mx-auto"
+        variant="gradient"
+        gradient={{ from: "purple", to: "maroon", deg: 90 }}
         onClick={() =>
-          fetchGraphData(
+          fetchPosetResults(
             size,
             2,
             textareaValue
@@ -60,7 +76,7 @@ const InputForm: React.FC<InputFormProps> = ({ fetchGraphData }) => {
           )
         }
       >
-        Generate
+        Solve
       </Button>
     </div>
   );
