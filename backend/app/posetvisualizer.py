@@ -244,6 +244,10 @@ class PosetVisualizer:
                 bgcolor="rgba(0, 0, 0, 0)",
             ),
             margin=dict(l=0, r=0, b=0, t=0),
+            legend=dict(
+                xanchor="right",
+                yanchor="top",
+            ),
         )
 
     def _all_perms_are_selected(self):
