@@ -247,6 +247,7 @@ class PosetVisualizer:
             legend=dict(
                 xanchor="right",
                 yanchor="top",
+                bgcolor="rgba(255, 255, 255, 0.3)",
             ),
         )
 
