@@ -9,7 +9,7 @@ import { useState } from "react";
 
 interface InputFormProps {
   fetchEntireGraphData: (size: number) => Promise<void>;
-  fetchPosetResults: (
+  fetchPosetCoverResults: (
     size: number,
     k: number,
     upsilon: string[]
@@ -17,7 +17,7 @@ interface InputFormProps {
 }
 
 const InputForm: React.FC<InputFormProps> = ({
-  fetchPosetResults,
+  fetchPosetCoverResults,
   fetchEntireGraphData,
 }) => {
   const [size, setSize] = useState<number>(4);
@@ -66,7 +66,7 @@ const InputForm: React.FC<InputFormProps> = ({
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
         onClick={() =>
-          fetchPosetResults(
+          fetchPosetCoverResults(
             size,
             2,
             textareaValue

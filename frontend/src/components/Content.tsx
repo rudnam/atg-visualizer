@@ -77,7 +77,7 @@ const Content: React.FC = () => {
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
       <InputForm
         fetchEntireGraphData={fetchEntireGraphData}
-        fetchPosetResults={fetchPosetCoverResults}
+        fetchPosetCoverResults={fetchPosetCoverResults}
       />
       <Graph
         loading={loading}
