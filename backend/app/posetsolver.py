@@ -17,6 +17,12 @@ class PosetCoverProblem:
         self.upsilon = upsilon
         self.k = k
 
+    def solve(self):
+        if self.k:
+            result = self.exact_k_poset_cover(self.upsilon, self.k)
+            return result if result else []
+        return self.minimum_poset_cover(self.upsilon)
+
     def minimum_poset_cover(
         self, upsilon=List[LinearOrder], verbose=False
     ) -> List[List[LinearOrder]]:
