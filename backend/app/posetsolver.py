@@ -18,10 +18,14 @@ class PosetCoverProblem:
         self.k = k
 
     def solve(self):
-        if self.k:
-            result = self.exact_k_poset_cover(self.upsilon, self.k)
-            return result if result else []
-        return self.minimum_poset_cover(self.upsilon)
+        legs = None
+        if self.k and False:
+            legs = self.exact_k_poset_cover(self.upsilon, self.k)
+            legs = legs if legs else []
+        else:
+            legs = self.minimum_poset_cover(self.upsilon)
+        partial_orders = [PosetUtils.get_partial_order_of_convex(leg) for leg in legs]
+        return partial_orders, legs
 
     def minimum_poset_cover(
         self, upsilon=List[LinearOrder], verbose=False
