@@ -9,7 +9,7 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 from app.posetvisualizer import PosetVisualizer
-from app.posetsolver import PosetCover
+from app.posetsolver import PosetCoverProblem
 
 
 class GraphRequest(BaseModel):
@@ -73,8 +73,8 @@ def get_graph(
 @app.get("/solve")
 def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query([])):
     try:
-        solver = PosetCover(upsilon, k)
-        result = solver.exact_k_poset_cover()
+        solver = PosetCoverProblem(upsilon, k)
+        result = solver.solve()
         if result:
             result_posets, result_linear_orders = result
 
