@@ -12,13 +12,13 @@ const Content: React.FC = () => {
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
 
-  const fetchEntireGraphData = async (size: number) => {
+  const fetchEntireGraphData = async (size: number, upsilon: string[]) => {
     try {
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      const atgGraphData = await poset.getAtgGraphData(size);
+      const atgGraphData = await poset.getAtgGraphData(size, upsilon);
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);

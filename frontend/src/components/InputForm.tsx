@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 
 interface InputFormProps {
-  fetchEntireGraphData: (size: number) => Promise<void>;
+  fetchEntireGraphData: (size: number, upsilon: string[]) => Promise<void>;
   fetchPosetCoverResults: (
     size: number,
     k: number,
@@ -60,7 +60,9 @@ const InputForm: React.FC<InputFormProps> = ({
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        onClick={() => fetchEntireGraphData(size)}
+        onClick={() => {
+          fetchEntireGraphData(size, textareaValue.trim().split("\n"));
+        }}
       >
         Draw
       </Button>
