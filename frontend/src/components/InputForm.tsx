@@ -28,7 +28,7 @@ const InputForm: React.FC<InputFormProps> = ({
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">INPUT</div>
       <InputWrapper>
-        <InputLabel>Size</InputLabel>
+        <InputLabel>Permutation Length</InputLabel>
         <Slider
           defaultValue={4}
           min={2}
@@ -43,7 +43,7 @@ const InputForm: React.FC<InputFormProps> = ({
           ]}
         />
       </InputWrapper>
-      <ScrollArea>
+      <ScrollArea.Autosize mah={"60%"}>
         <Textarea
           className="w-36 mx-auto"
           label="Input Y"
@@ -54,7 +54,7 @@ const InputForm: React.FC<InputFormProps> = ({
           autosize
           minRows={4}
         />
-      </ScrollArea>
+      </ScrollArea.Autosize>
 
       <Button
         className="mx-auto"
