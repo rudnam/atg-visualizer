@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 
 interface InputFormProps {
-  fetchEntireGraphData: (size: number, upsilon: string[]) => Promise<void>;
+  onClickDrawButton: (size: number, upsilon: string[]) => Promise<void>;
   fetchPosetCoverResults: (
     size: number,
     k: number,
@@ -19,10 +19,11 @@ interface InputFormProps {
 
 const InputForm: React.FC<InputFormProps> = ({
   fetchPosetCoverResults,
-  fetchEntireGraphData,
+  onClickDrawButton,
 }) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
+  const [isBusyDrawingOrSolving, setIsBusyDrawingOrSolving] = useState(false);
 
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
@@ -60,8 +61,17 @@ const InputForm: React.FC<InputFormProps> = ({
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        onClick={() => {
-          fetchEntireGraphData(size, textareaValue.trim().split("\n"));
+        disabled={isBusyDrawingOrSolving}
+        onClick={async () => {
+          setIsBusyDrawingOrSolving(true);
+          await onClickDrawButton(
+            size,
+            textareaValue
+              .split("\n")
+              .map((line) => line.trim())
+              .filter((line) => line !== "")
+          );
+          setIsBusyDrawingOrSolving(false);
         }}
       >
         Draw

@@ -8,6 +8,9 @@ import poset from "../services/poset";
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [atgGraph, setAtgGraph] = useState<GraphData | null>(null);
+  const [lastDrawRequestUpsilon, setLastDrawRequestUpsilon] = useState<
+    string[]
+  >([]);
   const [posetResults, setPosetResults] = useState<PosetResult[]>([]);
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
@@ -73,10 +76,24 @@ const Content: React.FC = () => {
     }
   };
 
+  const onClickDrawButton = async (size: number, upsilon: string[]) => {
+    setLoading(true);
+    const isNewRequest =
+      lastDrawRequestUpsilon.length === 0 ||
+      !lastDrawRequestUpsilon.every((val, idx) => upsilon[idx] === val);
+    if (!isNewRequest) {
+      alert("The ATG for this input has already been drawn.");
+      setLoading(false);
+      return;
+    }
+    setLastDrawRequestUpsilon(upsilon);
+    await fetchEntireGraphData(size, upsilon);
+  };
+
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
       <InputForm
-        fetchEntireGraphData={fetchEntireGraphData}
+        onClickDrawButton={onClickDrawButton}
         fetchPosetCoverResults={fetchPosetCoverResults}
       />
       <Graph
