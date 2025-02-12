@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Plotly from "plotly.js-dist";
 import { LoadingOverlay } from "@mantine/core";
-import { GraphData } from "../types";
+import { GraphData } from "../../types";
 
 interface GraphProps {
   loading: boolean;
