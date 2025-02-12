@@ -20,6 +20,11 @@ const Content: React.FC = () => {
 
   const fetchEntireGraphData = async (size: number, upsilon: string[]) => {
     try {
+      if (size !== upsilon[0].length) {
+        throw new Error(
+          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
+        );
+      }
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
@@ -38,6 +43,11 @@ const Content: React.FC = () => {
     upsilon: string[]
   ) => {
     try {
+      if (size !== upsilon[0].length) {
+        throw new Error(
+          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
+        );
+      }
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);

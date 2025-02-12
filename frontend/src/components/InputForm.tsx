@@ -25,6 +25,16 @@ const InputForm: React.FC<InputFormProps> = ({
   const [textareaValue, setTextareaValue] = useState<string>("");
   const [isBusyDrawingOrSolving, setIsBusyDrawingOrSolving] = useState(false);
 
+  const textareaOnBlur = () => {
+    const upsilon = textareaValue
+      .split("\n")
+      .map((line) => line.trim())
+      .filter((line) => line !== "");
+    if (upsilon.length > 0) {
+      setSize(upsilon[0].length);
+    }
+  };
+
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">INPUT</div>
@@ -35,6 +45,7 @@ const InputForm: React.FC<InputFormProps> = ({
           min={2}
           max={6}
           onChange={setSize}
+          value={size}
           marks={[
             { value: 2, label: 2 },
             { value: 3 },
@@ -52,6 +63,7 @@ const InputForm: React.FC<InputFormProps> = ({
           placeholder={`1234\n4321\n3214`}
           resize="vertical"
           onChange={(event) => setTextareaValue(event.currentTarget.value)}
+          onBlur={textareaOnBlur}
           autosize
           minRows={4}
         />
