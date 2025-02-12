@@ -12,8 +12,13 @@ const Content: React.FC = () => {
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
 
-  const fetchEntireGraphData = async (size: number) => {
+  const fetchEntireGraphData = async (size: number, upsilon: string[]) => {
     try {
+      if (upsilon.length > 0 && size !== upsilon[0].length) {
+        throw new Error(
+          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
+        );
+      }
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
@@ -33,6 +38,11 @@ const Content: React.FC = () => {
     upsilon: string[]
   ) => {
     try {
+      if (upsilon.length > 0 && size !== upsilon[0].length) {
+        throw new Error(
+          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
+        );
+      }
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
@@ -78,6 +88,7 @@ const Content: React.FC = () => {
       <InputForm
         fetchEntireGraphData={fetchEntireGraphData}
         fetchPosetCoverResults={fetchPosetCoverResults}
+        loading={loading}
       />
       <Graph
         loading={loading}
