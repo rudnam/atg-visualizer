@@ -130,6 +130,7 @@ const Content: React.FC = () => {
       <InputForm
         onClickDrawButton={onClickDrawButton}
         onClickSolveButton={onClickSolveButton}
+        loading={loading}
       />
       <Graph
         loading={loading}

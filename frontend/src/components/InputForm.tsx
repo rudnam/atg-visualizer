@@ -15,15 +15,16 @@ interface InputFormProps {
     k: number,
     upsilon: string[]
   ) => Promise<void>;
+  loading: boolean;
 }
 
 const InputForm: React.FC<InputFormProps> = ({
   onClickSolveButton,
   onClickDrawButton,
+  loading,
 }) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
-  const [isBusyDrawingOrSolving, setIsBusyDrawingOrSolving] = useState(false);
 
   const textareaOnBlur = () => {
     const upsilon = textareaValue
@@ -64,6 +65,7 @@ const InputForm: React.FC<InputFormProps> = ({
           resize="vertical"
           onChange={(event) => setTextareaValue(event.currentTarget.value)}
           onBlur={textareaOnBlur}
+          disabled={loading}
           autosize
           minRows={4}
         />
@@ -73,18 +75,16 @@ const InputForm: React.FC<InputFormProps> = ({
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        disabled={isBusyDrawingOrSolving}
-        onClick={async () => {
-          setIsBusyDrawingOrSolving(true);
-          await onClickDrawButton(
+        disabled={loading}
+        onClick={() =>
+          onClickDrawButton(
             size,
             textareaValue
               .split("\n")
               .map((line) => line.trim())
               .filter((line) => line !== "")
-          );
-          setIsBusyDrawingOrSolving(false);
-        }}
+          )
+        }
       >
         Draw
       </Button>
@@ -92,19 +92,17 @@ const InputForm: React.FC<InputFormProps> = ({
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        disabled={isBusyDrawingOrSolving}
-        onClick={async () => {
-          setIsBusyDrawingOrSolving(true);
-          await onClickSolveButton(
+        disabled={loading}
+        onClick={() =>
+          onClickSolveButton(
             size,
             2,
             textareaValue
               .split("\n")
               .map((line) => line.trim())
               .filter((line) => line !== "")
-          );
-          setIsBusyDrawingOrSolving(false);
-        }}
+          )
+        }
       >
         Solve
       </Button>
