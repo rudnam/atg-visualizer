@@ -8,19 +8,13 @@ import poset from "../services/poset";
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [atgGraph, setAtgGraph] = useState<GraphData | null>(null);
-  const [lastDrawRequestUpsilon, setLastDrawRequestUpsilon] = useState<
-    string[]
-  >([]);
-  const [lastSolveRequestUpsilon, setLastSolveRequestUpsilon] = useState<
-    string[]
-  >([]);
   const [posetResults, setPosetResults] = useState<PosetResult[]>([]);
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
 
   const fetchEntireGraphData = async (size: number, upsilon: string[]) => {
     try {
-      if (size !== upsilon[0].length) {
+      if (upsilon.length > 0 && size !== upsilon[0].length) {
         throw new Error(
           `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
         );
@@ -43,7 +37,7 @@ const Content: React.FC = () => {
     upsilon: string[]
   ) => {
     try {
-      if (size !== upsilon[0].length) {
+      if (upsilon.length > 0 && size !== upsilon[0].length) {
         throw new Error(
           `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
         );
@@ -88,48 +82,11 @@ const Content: React.FC = () => {
     }
   };
 
-  const onClickDrawButton = async (size: number, upsilon: string[]) => {
-    const isNewRequest =
-      lastDrawRequestUpsilon.length === 0 ||
-      !lastDrawRequestUpsilon.every((val, idx) => upsilon[idx] === val);
-    if (!isNewRequest) {
-      alert("The ATG for this input has already been drawn.");
-      return;
-    }
-    setLastDrawRequestUpsilon(upsilon);
-    await fetchEntireGraphData(size, upsilon);
-  };
-
-  const onClickSolveButton = async (
-    size: number,
-    k: number,
-    upsilon: string[]
-  ) => {
-    const isNewSolveRequest =
-      lastSolveRequestUpsilon.length === 0 ||
-      !lastSolveRequestUpsilon.every((val, idx) => upsilon[idx] === val);
-    if (!isNewSolveRequest) {
-      alert("The solution for this input graph has already been computed.");
-      return;
-    }
-    const hasntBeenDrawnYet =
-      lastDrawRequestUpsilon.length === 0 ||
-      !lastDrawRequestUpsilon.every((val, idx) => upsilon[idx] === val);
-
-    if (hasntBeenDrawnYet) {
-      setLastDrawRequestUpsilon(upsilon);
-      await fetchEntireGraphData(size, upsilon);
-    }
-
-    setLastSolveRequestUpsilon(upsilon);
-    await fetchPosetCoverResults(size, k, upsilon);
-  };
-
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
       <InputForm
-        onClickDrawButton={onClickDrawButton}
-        onClickSolveButton={onClickSolveButton}
+        fetchEntireGraphData={fetchEntireGraphData}
+        fetchPosetCoverResults={fetchPosetCoverResults}
         loading={loading}
       />
       <Graph

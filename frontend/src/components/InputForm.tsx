@@ -9,8 +9,8 @@ import {
 import { useState } from "react";
 
 interface InputFormProps {
-  onClickDrawButton: (size: number, upsilon: string[]) => Promise<void>;
-  onClickSolveButton: (
+  fetchEntireGraphData: (size: number, upsilon: string[]) => Promise<void>;
+  fetchPosetCoverResults: (
     size: number,
     k: number,
     upsilon: string[]
@@ -19,8 +19,8 @@ interface InputFormProps {
 }
 
 const InputForm: React.FC<InputFormProps> = ({
-  onClickSolveButton,
-  onClickDrawButton,
+  fetchPosetCoverResults,
+  fetchEntireGraphData,
   loading,
 }) => {
   const [size, setSize] = useState<number>(4);
@@ -77,7 +77,7 @@ const InputForm: React.FC<InputFormProps> = ({
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
         disabled={loading}
         onClick={() =>
-          onClickDrawButton(
+          fetchEntireGraphData(
             size,
             textareaValue
               .split("\n")
@@ -94,7 +94,7 @@ const InputForm: React.FC<InputFormProps> = ({
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
         disabled={loading}
         onClick={() =>
-          onClickSolveButton(
+          fetchPosetCoverResults(
             size,
             2,
             textareaValue
