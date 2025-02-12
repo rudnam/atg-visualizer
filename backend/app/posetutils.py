@@ -6,6 +6,16 @@ class PosetUtils:
     def get_linear_extensions_from_graph(
         G: DiGraph | HasseDiagram,
     ) -> List[LinearOrder]:
+        """Get the linear extensions of a poset using either its hasse or directed acyclic graph representation.
+
+        Returns a list of linear orders like ['1234','2134'].
+
+        Parameters \\
+        G (required) -- a graph representation of the poset, either hasse or DAG, which are both nx.DiGraph
+
+        Returns \\
+        List[LinearOrder] aka List[str]
+        """
         sortings = list(nx.all_topological_sorts(G))
         return sorted(["".join(map(str, sorting)) for sorting in sortings])
 
@@ -13,6 +23,19 @@ class PosetUtils:
     def get_linear_extensions_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
     ) -> List[LinearOrder]:
+        """Get the linear extensions of a poset using either its partial order or cover relation.
+
+        Returns a list of linear orders like ['1234','2134'].
+
+        Parameters \\
+        relation (required) -- the partial order or cover relation of a poset, e.g. [(1,2),(2,3)] \\
+        sequence (required) -- a sample linear order like '1234'. The relation can sometimes \\
+            not include all the nodes of a poset, like in the example above, what if 4 is also a node? \\
+            This ensures that ['1234','1243','1423','4123'] is returned and not ['123']
+
+        Returns \\
+        List[LinearOrder] aka List[str]
+        """
         G = nx.DiGraph()
         G.add_nodes_from(range(1, len(sequence) + 1))
         G.add_edges_from(relation)
@@ -22,7 +45,20 @@ class PosetUtils:
     @staticmethod
     def get_graph_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
-    ) -> nx.DiGraph:
+    ) -> DiGraph:
+        """Get the directed acyclic graph representation of a poset using either its partial order or cover relation.
+
+        Returns a DiGraph aka nx.DiGraph.
+
+        Parameters \\
+        relation (required) -- the partial order or cover relation of a poset, e.g. [(1,2),(2,3)] \\
+        sequence (required) -- a sample linear order like '1234'. The relation can sometimes \\
+            not include all the nodes of a poset, like in the example above, what if 4 is also a node? \\
+            This ensures that all four nodes are present in the graph and not just three.
+
+        Returns \\
+        DiGraph aka nx.DiGraph
+        """
         G = nx.DiGraph()
         G.add_nodes_from(range(1, len(sequence) + 1))
         G.add_edges_from(relation)
@@ -32,6 +68,21 @@ class PosetUtils:
     def get_hasse_from_partial_order(
         partial_order: PartialOrder, sequence: str
     ) -> HasseDiagram:
+        """Get the hasse representation of a poset using its partial order.
+
+        Returns a HasseDiagram aka nx.DiGraph.
+
+        Parameters \\
+        partial_order (required) -- the partial order of a poset, e.g. [(1,2),(2,3)]. \\
+            Providing the cover relation of the poset instead will still result in \\
+            the correct output as the the cover relation is already transitively reduced. \\
+        sequence (required) -- a sample linear order like '1234'. The relation can sometimes \\
+            not include all the nodes of a poset, like in the example above, what if 4 is also a node? \\
+            This ensures that all four nodes are present in the graph and not just three.
+
+        Returns \\
+        HasseDiagram aka nx.DiGraph
+        """
         G = nx.DiGraph()
         G.add_nodes_from(range(1, len(sequence) + 1))
         G.add_edges_from(partial_order)
@@ -40,16 +91,59 @@ class PosetUtils:
 
     @staticmethod
     def ancestors(node: int, G: DiGraph | HasseDiagram) -> set[int]:
-        """Used in the Algo: nx.ancestors(hasse, 4) | {4}"""
+        """Get the ancestors of a node given the hasse or directed acyclic graph representation of a poset.
+
+        Returns a set of node names like {1, 2, 3, 4}.
+
+        Parameters \\
+        node (required) -- the name of the node \\
+        G (required) -- a graph representation of the poset, either hasse or DAG, which are both nx.DiGraph
+
+        Returns \\
+        Set[int]
+
+        Notes \\
+        Example use case in the algorithm: \\
+        nx.ancestors(hasse, 4) | {4}
+        """
         return nx.ancestors(G, node)
 
     @staticmethod
     def descendants(node: int, G: DiGraph | HasseDiagram) -> set[int]:
-        """Used in the Algo: nx.descendants(hasse, 1) | {1}"""
+        """Get the descendants of a node given the hasse or directed acyclic graph representation of a poset.
+
+        Returns a set of node names like {1, 2, 3, 4}.
+
+        Parameters \\
+        node (required) -- the name of the node \\
+        G (required) -- a graph representation of the poset, either hasse or DAG, which are both nx.DiGraph
+
+        Returns \\
+        Set[int]
+
+        Notes \\
+        Example use case in the algorithm: \\
+        nx.descendants(hasse, 1) | {1}
+        """
         return nx.descendants(G, node)
 
     @staticmethod
     def hasse_dist(hasse: HasseDiagram, node1: int, node2: int) -> int | float:
+        """Get the distance between two nodes in the hasse representation of a poset.
+
+        Returns int if any of the nodes can be reached from the other, float(-inf) if not.
+        
+        Parameters \\
+        hasse (required) -- the hasse representation of a poset of type HasseDiagram aka nx.DiGraph \\
+        node1 (required) -- the name of a node \\
+        node2 (required) -- the other node; order does not matter
+        
+        Returns \\
+        int | float
+
+        Raises \\
+        Warning. Does not catch the error if any of the nodes are not in the graph.
+        """
         from_node1 = float("inf")
         from_node2 = float("inf")
         try:
@@ -64,24 +158,69 @@ class PosetUtils:
 
     @staticmethod
     def covers(hasse: HasseDiagram, node1: int, node2: int) -> bool:
-        """True if node1 is covered by node2"""
-        return node2 in hasse.successors(node2)
+        """Return true if node1 is covered by node2.
+        
+        Parameters \\
+        hasse (required) -- the hasse representation of a poset of type HasseDiagram aka nx.DiGraph \\
+        node1 (required) -- the name of the covered node \\
+        node2 (required) -- the name of the covering node
+
+        Returns \\
+        bool
+
+        Raises \\
+        Errors should not be handled.
+        """
+        return node2 in hasse.successors(node1)
 
     @staticmethod
     def x_is_covered_by_y_in_L(linear_order: LinearOrder, x: int, y: int) -> bool:
+        """Return true if x and y are adjacent in a linear order, in order.
+
+        Example: x=3, y=4, linear_order='12345' => True
+
+        Parameters \\
+        linear_order (required) -- \\
+        x (required) -- \\
+        y (required) -- \\
+        
+        Returns \\
+        bool
+        """
         x_index = linear_order.find(str(x))
         x_is_found_and_not_last = x_index not in [-1, len(linear_order) - 1]
         return x_is_found_and_not_last and linear_order[x_index + 1] == str(y)
 
     @staticmethod
     def x_is_less_than_y_in_L(linear_order: LinearOrder, x: int, y: int) -> bool:
+        """Return true if x comes before y in a linear order.
+
+        Example: x=3, y=4, linear_order='12345' => True
+
+        Parameters \\
+        linear_order (required) -- \\
+        x (required) -- \\
+        y (required) -- \\
+        
+        Returns \\
+        bool
+        """
         i = linear_order.find(str(x))
         j = linear_order.find(str(y))
         return i != -1 and j != -1 and i < j
 
     @staticmethod
     def swap_xy_in_L(linear_order: LinearOrder, x: int, y: int) -> LinearOrder:
-        """Warning. x must come before y in the linear order"""
+        """Swap two adjacent nodes in a linear order. Order matters in the input; x must come before y.
+        
+        Parameters \\
+        linear_order (required) -- \\
+        x (required) -- \\
+        y (required) -- \\
+
+        Returns \\
+        LinearOrder aka str
+        """
         x_index = linear_order.find(str(x))
         if linear_order[x_index + 1] != str(y):
             raise ValueError(
@@ -116,6 +255,14 @@ class PosetUtils:
 
     @staticmethod
     def generate_convex(linear_orders: List[LinearOrder]) -> List[LinearOrder]:
+        """Get the smallest convex set of linear orders which contains the input.
+        
+        Parameters \\
+        linear_orders (required) -- \\
+        
+        Returns \\
+        List[LinearOrder] aka List[str]
+        """
         if not linear_orders:
             raise ValueError(
                 f"Cannot get conv(L) if L is empty. linear_orders={linear_orders}"
@@ -129,6 +276,14 @@ class PosetUtils:
 
     @staticmethod
     def get_partial_order_of_convex(linear_orders: List[LinearOrder]) -> PartialOrder:
+        """Get the partial order which describes the smallest convex set of linear orders which contains the input.
+        
+        Parameters \\
+        linear_orders (required) -- 
+        
+        Returns \\
+        PartialOrder aka List[Tuple[int,int]]
+        """
         if not linear_orders:
             raise ValueError(
                 f"Cannot get conv(L) if L is empty. linear_orders={linear_orders}"
