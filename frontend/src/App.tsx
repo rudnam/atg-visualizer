@@ -1,18 +1,10 @@
 import "./App.css";
 import "@mantine/core/styles.css";
 
-import { generateColors } from "@mantine/colors-generator";
-import { createTheme, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import Header from "./components/Header/Header";
 import Content from "./components/Content/Content";
-
-const theme = createTheme({
-  fontFamily: "Inter, sans-serif",
-  primaryColor: "maroon",
-  colors: {
-    maroon: generateColors("#7f1d1d"),
-  },
-});
+import theme from "./theme";
 
 function App() {
   return (
