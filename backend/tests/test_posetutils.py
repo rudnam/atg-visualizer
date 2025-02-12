@@ -14,11 +14,40 @@ def test_get_linear_extensions_from_relation():
 
 
 def test_get_graph_from_relation():
-    pass
+    # Did I use this function? Apparently, G is either HasseDiagram or DiGraph which is undesirable
+    f = PosetUtils.get_graph_from_relation
+    cover_relation: CoverRelation = [(1, 3), (2, 3)]
+    sequence = "1234"
+    G = f(cover_relation, sequence)
+
+    assert {1, 2, 3, 4} == set(G.nodes())
+    assert (1, 3) in G.edges()
+    assert (2, 3) in G.edges()
+
+    # test for partial order input?
 
 
 def test_get_hasse_from_partial_order():
-    pass
+    f = PosetUtils.get_hasse_from_partial_order
+
+    "1 → 2 → 3 → 4 → 5"
+    partial_order: PartialOrder = [
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (1, 5),
+        (2, 3),
+        (2, 4),
+        (2, 5),
+        (3, 4),
+        (3, 5),
+        (4, 5),
+    ]
+    sequence = "12345"
+    G = f(partial_order, sequence)
+
+    assert {1, 2, 3, 4, 5} == set(G.nodes())
+    assert {(1, 2), (2, 3), (3, 4), (4, 5)} == set(G.edges())
 
 
 def test_ancestors():
