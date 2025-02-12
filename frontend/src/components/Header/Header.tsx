@@ -1,5 +1,5 @@
 import { Button } from "@mantine/core";
-import logo from "../assets/logo.svg";
+import logo from "../../assets/logo.svg";
 
 const Header: React.FC = () => {
   return (

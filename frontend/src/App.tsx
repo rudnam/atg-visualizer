@@ -3,8 +3,8 @@ import "@mantine/core/styles.css";
 
 import { generateColors } from "@mantine/colors-generator";
 import { createTheme, MantineProvider } from "@mantine/core";
-import Header from "./components/Header";
-import Content from "./components/Content";
+import Header from "./components/Header/Header";
+import Content from "./components/Content/Content";
 
 const theme = createTheme({
   fontFamily: "Inter, sans-serif",
