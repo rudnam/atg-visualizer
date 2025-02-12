@@ -29,8 +29,8 @@ class PosetCoverProblem:
 
     def minimum_poset_cover(
         self, upsilon=List[LinearOrder], verbose=False
-    ) -> List[List[LinearOrder]]:
-        """Find the minimum poset cover. May run in exp time w.r.t. the length of input"""
+    ) -> List[List[LinearOrder]] | None:
+        """A parameterized algorithm which finds the minimum poset cover"""
         n = len(upsilon)
         result = None
         for k in range(1, n + 1):
@@ -38,8 +38,8 @@ class PosetCoverProblem:
                 convex = PosetUtils.generate_convex(upsilon)
                 if set(convex) == set(upsilon):
                     result = [convex]
-            elif k == n - 1:
-                result = upsilon
+            elif k == n:
+                result = [[linear_order] for linear_order in upsilon]
             else:
                 result = self.exact_k_poset_cover(upsilon, k)
 
@@ -52,7 +52,7 @@ class PosetCoverProblem:
             if result:
                 break
 
-        return result if result else []
+        return result
 
     def exact_k_poset_cover(
         self, upsilon: List[LinearOrder], k: int, verbose=False
