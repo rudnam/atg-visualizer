@@ -1,6 +1,6 @@
 import { Button, Divider, Group, ScrollArea, Textarea } from "@mantine/core";
 import React from "react";
-import { PosetResult } from "../types";
+import { PosetResult } from "../../types";
 
 interface ResultsPanelProps {
   posetResults: PosetResult[];
@@ -13,7 +13,6 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   highlightedPosetIndex,
   setHighlightedPosetIndex,
 }) => {
-
   const items = posetResults.map((item, index) => {
     const withDivider = index !== posetResults.length - 1;
 
@@ -25,7 +24,8 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       }
     };
 
-    const buttonVariant = index === highlightedPosetIndex ? "filled" : "outline";
+    const buttonVariant =
+      index === highlightedPosetIndex ? "filled" : "outline";
 
     return PosetResultComponent(
       item,

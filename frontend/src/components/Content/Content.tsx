@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import InputForm from "./InputForm";
-import Graph from "./Graph";
-import { GraphData, PosetResult } from "../types";
-import ResultsPanel from "./ResultsPanel";
-import poset from "../services/poset";
+import InputForm from "../InputForm/InputForm";
+import Graph from "../Graph/Graph";
+import { GraphData, PosetResult } from "../../types";
+import ResultsPanel from "../ResultsPanel/ResultsPanel";
+import posetService from "../../services/poset";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -22,7 +22,8 @@ const Content: React.FC = () => {
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
-      const atgGraphData = await poset.getAtgGraphData(size, upsilon);
+
+      const atgGraphData = await posetService.getAtgGraphData(size);
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
@@ -46,7 +47,7 @@ const Content: React.FC = () => {
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      const posetCoverResultData = await poset.solveOptimalKPosetCover(
+      const posetCoverResultData = await posetService.solveOptimalKPosetCover(
         k,
         upsilon
       );
@@ -57,7 +58,7 @@ const Content: React.FC = () => {
 
         const resolvedResults = await Promise.all(
           resultLinearOrders.map(async (result, index) => {
-            const posetGraphData = await poset.getAtgGraphData(
+            const posetGraphData = await posetService.getAtgGraphData(
               size,
               upsilon,
               result
