@@ -10,7 +10,7 @@ import { useState } from "react";
 
 interface InputFormProps {
   onClickDrawButton: (size: number, upsilon: string[]) => Promise<void>;
-  fetchPosetCoverResults: (
+  onClickSolveButton: (
     size: number,
     k: number,
     upsilon: string[]
@@ -18,7 +18,7 @@ interface InputFormProps {
 }
 
 const InputForm: React.FC<InputFormProps> = ({
-  fetchPosetCoverResults,
+  onClickSolveButton,
   onClickDrawButton,
 }) => {
   const [size, setSize] = useState<number>(4);
@@ -80,16 +80,19 @@ const InputForm: React.FC<InputFormProps> = ({
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        onClick={() =>
-          fetchPosetCoverResults(
+        disabled={isBusyDrawingOrSolving}
+        onClick={async () => {
+          setIsBusyDrawingOrSolving(true);
+          await onClickSolveButton(
             size,
             2,
             textareaValue
               .split("\n")
               .map((line) => line.trim())
               .filter((line) => line !== "")
-          )
-        }
+          );
+          setIsBusyDrawingOrSolving(false);
+        }}
       >
         Solve
       </Button>

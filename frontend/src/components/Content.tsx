@@ -11,6 +11,9 @@ const Content: React.FC = () => {
   const [lastDrawRequestUpsilon, setLastDrawRequestUpsilon] = useState<
     string[]
   >([]);
+  const [lastSolveRequestUpsilon, setLastSolveRequestUpsilon] = useState<
+    string[]
+  >([]);
   const [posetResults, setPosetResults] = useState<PosetResult[]>([]);
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
@@ -20,7 +23,6 @@ const Content: React.FC = () => {
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
-
       const atgGraphData = await poset.getAtgGraphData(size, upsilon);
       setAtgGraph(atgGraphData);
     } catch (error) {
@@ -77,24 +79,47 @@ const Content: React.FC = () => {
   };
 
   const onClickDrawButton = async (size: number, upsilon: string[]) => {
-    setLoading(true);
     const isNewRequest =
       lastDrawRequestUpsilon.length === 0 ||
       !lastDrawRequestUpsilon.every((val, idx) => upsilon[idx] === val);
     if (!isNewRequest) {
       alert("The ATG for this input has already been drawn.");
-      setLoading(false);
       return;
     }
     setLastDrawRequestUpsilon(upsilon);
     await fetchEntireGraphData(size, upsilon);
   };
 
+  const onClickSolveButton = async (
+    size: number,
+    k: number,
+    upsilon: string[]
+  ) => {
+    const isNewSolveRequest =
+      lastSolveRequestUpsilon.length === 0 ||
+      !lastSolveRequestUpsilon.every((val, idx) => upsilon[idx] === val);
+    if (!isNewSolveRequest) {
+      alert("The solution for this input graph has already been computed.");
+      return;
+    }
+    const hasntBeenDrawnYet =
+      lastDrawRequestUpsilon.length === 0 ||
+      !lastDrawRequestUpsilon.every((val, idx) => upsilon[idx] === val);
+
+    if (hasntBeenDrawnYet) {
+      setLastDrawRequestUpsilon(upsilon);
+      await fetchEntireGraphData(size, upsilon);
+    }
+
+    setLastSolveRequestUpsilon(upsilon);
+    await fetchPosetCoverResults(size, k, upsilon);
+  };
+
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
       <InputForm
         onClickDrawButton={onClickDrawButton}
-        fetchPosetCoverResults={fetchPosetCoverResults}
+        onClickSolveButton={onClickSolveButton}
       />
       <Graph
         loading={loading}
