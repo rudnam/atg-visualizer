@@ -5,12 +5,66 @@ from app.classes import *
 
 
 def test_get_linear_extensions_from_graph():
-    poset_utils = PosetUtils()
-    pass
+    f = PosetUtils.get_linear_extensions_from_graph
+
+    # this hasse graph will result in a square linear extension graph
+    nodes = range(1, 5)
+    cover_relation: CoverRelation = [(1, 3), (1, 4), (2, 3), (2, 4)]
+    my_hasse: HasseDiagram = nx.DiGraph()
+    my_hasse.add_nodes_from(nodes)
+    my_hasse.add_edges_from(cover_relation)
+    assert {"1234", "1243", "2134", "2143"} == set(f(my_hasse))
+
+    "1 → 2 → 3 → 4 → 5"
+    nodes = range(1, 6)
+    partial_order: PartialOrder = [
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (1, 5),
+        (2, 3),
+        (2, 4),
+        (2, 5),
+        (3, 4),
+        (3, 5),
+        (4, 5),
+    ]
+    my_dag: DiGraph = nx.DiGraph()
+    my_dag.add_nodes_from(nodes)
+    my_dag.add_edges_from(partial_order)
+    assert {"12345"} == set(f(my_dag))
 
 
 def test_get_linear_extensions_from_relation():
-    pass
+    f = PosetUtils.get_linear_extensions_from_relation
+    partial_order: PartialOrder = [
+        (1, 2),
+        (1, 3),
+        (1, 4),
+        (1, 5),
+        (2, 3),
+        (2, 4),
+        (2, 5),
+        (3, 4),
+        (3, 5),
+        (4, 5),
+    ]
+    sequence = "12345"
+    assert set(f(partial_order, sequence)) == {"12345"}
+
+    """ 1---→ 4---→ 5
+         ↘        ↗
+           2---→ 3
+    """
+    cover_relation: CoverRelation = [
+        (1, 2),
+        (2, 3),
+        (3, 5),
+        (1, 4),
+        (4, 5),
+    ]
+    sequence = "12345"
+    assert set(f(cover_relation, sequence)) == {"14235", "12435", "12345"}
 
 
 def test_get_graph_from_relation():
