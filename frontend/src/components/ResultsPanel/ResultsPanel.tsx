@@ -20,6 +20,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       <ScrollArea scrollbarSize={4} offsetScrollbars className="h-full py-4">
         {posetResults.map((posetResult, index) => (
           <PosetResultComponent
+            key={posetResult.name}
             name={posetResult.name}
             linearExtensions={posetResult.linearExtensions}
             withDivider={index !== posetResults.length - 1}
