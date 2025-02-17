@@ -3,14 +3,18 @@ import { Button, Divider, Group, Textarea } from "@mantine/core";
 interface PosetResultComponentProps {
   name: string;
   linearExtensions: string[];
+  withDivider: boolean;
+  buttonVariant: string;
+  buttonOnClick: () => void;
 }
 
-function PosetResultComponent(
-  { name, linearExtensions }: PosetResultComponentProps,
-  withDivider: boolean,
-  buttonVariant: string,
-  buttonOnClick: () => void
-) {
+const PosetResultComponent: React.FC<PosetResultComponentProps> = ({
+  name,
+  linearExtensions,
+  withDivider,
+  buttonVariant,
+  buttonOnClick,
+}) => {
   return (
     <div key={`PosetResult${name}`} data-testid="poset-result-component">
       <Group justify="space-between">
@@ -39,6 +43,6 @@ function PosetResultComponent(
       {withDivider ? <Divider my="sm" size="sm" /> : <></>}
     </div>
   );
-}
+};
 
 export default PosetResultComponent;

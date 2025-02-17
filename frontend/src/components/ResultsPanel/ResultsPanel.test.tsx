@@ -72,9 +72,11 @@ describe("ResultsPanel", () => {
     );
     expect(extensions[0]).toHaveTextContent(mockResults[0].linearExtensions[0]);
     expect(extensions[0]).toHaveTextContent(mockResults[0].linearExtensions[1]);
+    expect(extensions[0]).toHaveTextContent(mockResults[0].linearExtensions[2]);
 
     expect(extensions[1]).toHaveTextContent(mockResults[1].linearExtensions[0]);
     expect(extensions[1]).toHaveTextContent(mockResults[1].linearExtensions[1]);
+    expect(extensions[1]).toHaveTextContent(mockResults[1].linearExtensions[2]);
   });
 
   test("applies correct button variant based on highlight state", () => {

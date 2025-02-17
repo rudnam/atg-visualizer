@@ -14,33 +14,27 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   highlightedPosetIndex,
   setHighlightedPosetIndex,
 }) => {
-  const posetResultComponents = posetResults.map((posetResult, index) => {
-    const withDivider = index !== posetResults.length - 1;
-
-    const buttonOnClick = () => {
-      if (index === highlightedPosetIndex) {
-        setHighlightedPosetIndex(-1);
-      } else {
-        setHighlightedPosetIndex(index);
-      }
-    };
-
-    const buttonVariant =
-      index === highlightedPosetIndex ? "filled" : "outline";
-
-    return PosetResultComponent(
-      posetResult,
-      withDivider,
-      buttonVariant,
-      buttonOnClick
-    );
-  });
-
   return (
     <div className="h-full w-72 max-h-[36rem] mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">RESULTS</div>
       <ScrollArea scrollbarSize={4} offsetScrollbars className="h-full py-4">
-        {posetResultComponents}
+        {posetResults.map((posetResult, index) => (
+          <PosetResultComponent
+            name={posetResult.name}
+            linearExtensions={posetResult.linearExtensions}
+            withDivider={index !== posetResults.length - 1}
+            buttonVariant={
+              index === highlightedPosetIndex ? "filled" : "outline"
+            }
+            buttonOnClick={() => {
+              if (index === highlightedPosetIndex) {
+                setHighlightedPosetIndex(-1);
+              } else {
+                setHighlightedPosetIndex(index);
+              }
+            }}
+          />
+        ))}
       </ScrollArea>
     </div>
   );
