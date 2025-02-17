@@ -1,6 +1,7 @@
-import { Button, Divider, Group, ScrollArea, Textarea } from "@mantine/core";
+import { ScrollArea } from "@mantine/core";
 import React from "react";
 import { PosetResult } from "../../types";
+import PosetResultComponent from "./PosetResultComponent";
 
 interface ResultsPanelProps {
   posetResults: PosetResult[];
@@ -13,7 +14,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
   highlightedPosetIndex,
   setHighlightedPosetIndex,
 }) => {
-  const items = posetResults.map((item, index) => {
+  const posetResultComponents = posetResults.map((posetResult, index) => {
     const withDivider = index !== posetResults.length - 1;
 
     const buttonOnClick = () => {
@@ -28,7 +29,7 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
       index === highlightedPosetIndex ? "filled" : "outline";
 
     return PosetResultComponent(
-      item,
+      posetResult,
       withDivider,
       buttonVariant,
       buttonOnClick
@@ -39,49 +40,10 @@ const ResultsPanel: React.FC<ResultsPanelProps> = ({
     <div className="h-full w-72 max-h-[36rem] mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">RESULTS</div>
       <ScrollArea scrollbarSize={4} offsetScrollbars className="h-full py-4">
-        {items}
+        {posetResultComponents}
       </ScrollArea>
     </div>
   );
 };
-
-interface PosetResultComponentProps {
-  name: string;
-  linearExtensions: string[];
-}
-
-function PosetResultComponent(
-  { name, linearExtensions }: PosetResultComponentProps,
-  withDivider: boolean,
-  buttonVariant: string,
-  buttonOnClick: () => void
-) {
-  return (
-    <div key={`PosetResult${name}`}>
-      <Group justify="space-between">
-        <p>{name}</p>
-        <Button
-          size="compact-xs"
-          radius="lg"
-          onClick={() => {
-            buttonOnClick();
-          }}
-          variant={buttonVariant}
-        >
-          Show {name}
-        </Button>
-      </Group>
-      <Textarea
-        className="w-36"
-        description="Linear Extensions"
-        value={linearExtensions.join("\n")}
-        autosize
-        minRows={3}
-        readOnly
-      />
-      {withDivider ? <Divider my="sm" size="sm" /> : <></>}
-    </div>
-  );
-}
 
 export default ResultsPanel;
