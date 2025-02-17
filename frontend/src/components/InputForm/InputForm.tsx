@@ -13,7 +13,7 @@ interface InputFormProps {
   fetchPosetCoverResults: (
     size: number,
     k: number,
-    upsilon: string[]
+    upsilon: string[],
   ) => Promise<void>;
   loading: boolean;
 }
@@ -82,7 +82,7 @@ const InputForm: React.FC<InputFormProps> = ({
             textareaValue
               .split("\n")
               .map((line) => line.trim())
-              .filter((line) => line !== "")
+              .filter((line) => line !== ""),
           )
         }
       >
@@ -100,7 +100,7 @@ const InputForm: React.FC<InputFormProps> = ({
             textareaValue
               .split("\n")
               .map((line) => line.trim())
-              .filter((line) => line !== "")
+              .filter((line) => line !== ""),
           )
         }
       >

@@ -40,7 +40,7 @@ describe("ResultsPanel", () => {
         posetResults={[]}
         highlightedPosetIndex={-1}
         setHighlightedPosetIndex={setHighlightedPosetIndex}
-      />
+      />,
     );
     expect(screen.getByText("RESULTS")).toBeInTheDocument();
   });
@@ -51,7 +51,7 @@ describe("ResultsPanel", () => {
         posetResults={mockResults}
         highlightedPosetIndex={-1}
         setHighlightedPosetIndex={setHighlightedPosetIndex}
-      />
+      />,
     );
 
     const items = screen.getAllByTestId("poset-result-component");
@@ -64,11 +64,11 @@ describe("ResultsPanel", () => {
         posetResults={mockResults}
         highlightedPosetIndex={-1}
         setHighlightedPosetIndex={setHighlightedPosetIndex}
-      />
+      />,
     );
 
     const extensions = screen.getAllByTestId(
-      "poset-result-component-linear-extensions"
+      "poset-result-component-linear-extensions",
     );
     expect(extensions[0]).toHaveTextContent(mockResults[0].linearExtensions[0]);
     expect(extensions[0]).toHaveTextContent(mockResults[0].linearExtensions[1]);
@@ -85,7 +85,7 @@ describe("ResultsPanel", () => {
         posetResults={mockResults}
         highlightedPosetIndex={1}
         setHighlightedPosetIndex={setHighlightedPosetIndex}
-      />
+      />,
     );
 
     const items = screen.getAllByTestId("poset-result-component-button");
