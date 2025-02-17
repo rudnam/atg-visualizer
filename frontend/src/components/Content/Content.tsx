@@ -23,7 +23,7 @@ const Content: React.FC = () => {
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      const atgGraphData = await posetService.getAtgGraphData(size);
+      const atgGraphData = await posetService.getAtgGraphData(size, upsilon);
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
