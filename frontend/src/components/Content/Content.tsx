@@ -16,14 +16,14 @@ const Content: React.FC = () => {
     try {
       if (upsilon.length > 0 && size !== upsilon[0].length) {
         throw new Error(
-          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
+          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`,
         );
       }
       setLoading(true);
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      const atgGraphData = await posetService.getAtgGraphData(size);
+      const atgGraphData = await posetService.getAtgGraphData(size, upsilon);
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
@@ -35,12 +35,12 @@ const Content: React.FC = () => {
   const fetchPosetCoverResults = async (
     size: number,
     k: number,
-    upsilon: string[]
+    upsilon: string[],
   ) => {
     try {
       if (upsilon.length > 0 && size !== upsilon[0].length) {
         throw new Error(
-          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`
+          `Indicated permutation length (Slider: ${size}) is not equal to length of given permutations, e.g. '${upsilon[0]}'.`,
         );
       }
       setLoading(true);
@@ -49,7 +49,7 @@ const Content: React.FC = () => {
 
       const posetCoverResultData = await posetService.solveOptimalKPosetCover(
         k,
-        upsilon
+        upsilon,
       );
 
       if (posetCoverResultData !== null) {
@@ -61,7 +61,7 @@ const Content: React.FC = () => {
             const posetGraphData = await posetService.getAtgGraphData(
               size,
               upsilon,
-              result
+              result,
             );
             return {
               name: `P${index + 1}`,
@@ -69,7 +69,7 @@ const Content: React.FC = () => {
               linearExtensions: result,
               graphData: posetGraphData,
             };
-          })
+          }),
         );
 
         setPosetResults(resolvedResults);

@@ -3,8 +3,19 @@ from app.classes import *
 
 class PosetUtils:
     @staticmethod
+    def get_atg_from_upsilon(upsilon: List[LinearOrder]):
+        G = nx.Graph()
+        G.add_nodes_from(upsilon)
+        for i in range(len(upsilon)):
+            for j in range(i + 1, len(upsilon)):
+                swapped_nums = PosetUtils.edge_label(upsilon[i], upsilon[j])
+                if swapped_nums:
+                    G.add_edge(upsilon[i], upsilon[j])
+        return G
+
+    @staticmethod
     def get_linear_extensions_from_graph(
-        G: DiGraph | HasseDiagram,
+        G: AcyclicDiGraph | HasseDiagram,
     ) -> List[LinearOrder]:
         """Get the linear extensions of a poset using either its hasse or directed acyclic graph representation.
 
@@ -45,10 +56,10 @@ class PosetUtils:
     @staticmethod
     def get_graph_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
-    ) -> DiGraph:
+    ) -> AcyclicDiGraph | HasseDiagram:
         """Get the directed acyclic graph representation of a poset using either its partial order or cover relation.
 
-        Returns a DiGraph aka nx.DiGraph.
+        Returns a AcyclicDiGraph aka nx.DiGraph.
 
         Parameters \\
         relation (required) -- the partial order or cover relation of a poset, e.g. [(1,2),(2,3)] \\
@@ -57,7 +68,7 @@ class PosetUtils:
             This ensures that all four nodes are present in the graph and not just three.
 
         Returns \\
-        DiGraph aka nx.DiGraph
+        AcyclicDiGraph aka nx.DiGraph
         """
         G = nx.DiGraph()
         G.add_nodes_from(range(1, len(sequence) + 1))
@@ -90,7 +101,7 @@ class PosetUtils:
         return TR
 
     @staticmethod
-    def ancestors(node: int, G: DiGraph | HasseDiagram) -> set[int]:
+    def ancestors(node: int, G: AcyclicDiGraph | HasseDiagram) -> set[int]:
         """Get the ancestors of a node given the hasse or directed acyclic graph representation of a poset.
 
         Returns a set of node names like {1, 2, 3, 4}.
@@ -109,7 +120,7 @@ class PosetUtils:
         return nx.ancestors(G, node)
 
     @staticmethod
-    def descendants(node: int, G: DiGraph | HasseDiagram) -> set[int]:
+    def descendants(node: int, G: AcyclicDiGraph | HasseDiagram) -> set[int]:
         """Get the descendants of a node given the hasse or directed acyclic graph representation of a poset.
 
         Returns a set of node names like {1, 2, 3, 4}.

@@ -8,7 +8,7 @@ const api = axios.create({
 const getAtgGraphData = async (
   size: number,
   selectedNodes: string[] | null = null,
-  highlightedNodes: string[] | null = null
+  highlightedNodes: string[] | null = null,
 ): Promise<GraphData> => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const params: Record<string, any> = { size };
@@ -33,7 +33,7 @@ const getAtgGraphData = async (
 
 const solveOptimalKPosetCover = async (
   k: number,
-  upsilon: string[]
+  upsilon: string[],
 ): Promise<PosetCoverResultData | null> => {
   const response = await api.get(`/solve`, {
     params: {

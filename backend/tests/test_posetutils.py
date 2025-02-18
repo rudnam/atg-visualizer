@@ -29,7 +29,7 @@ def test_get_linear_extensions_from_graph():
         (3, 5),
         (4, 5),
     ]
-    my_dag: DiGraph = nx.DiGraph()
+    my_dag: AcyclicDiGraph = nx.DiGraph()
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
     assert {"12345"} == set(f(my_dag))
@@ -68,7 +68,7 @@ def test_get_linear_extensions_from_relation():
 
 
 def test_get_graph_from_relation():
-    # Did I use this function? Apparently, G is either HasseDiagram or DiGraph which is undesirable
+    # Did I use this function? Apparently, G is either HasseDiagram or AcyclicDiGraph which is undesirable
     f = PosetUtils.get_graph_from_relation
     cover_relation: CoverRelation = [(1, 3), (2, 3)]
     sequence = "1234"
@@ -134,7 +134,7 @@ def test_ancestors():
         (3, 5),
         (4, 5),
     ]
-    my_dag: DiGraph = nx.DiGraph()
+    my_dag: AcyclicDiGraph = nx.DiGraph()
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
 
@@ -174,7 +174,7 @@ def test_descendants():
         (3, 5),
         (4, 5),
     ]
-    my_dag: DiGraph = nx.DiGraph()
+    my_dag: AcyclicDiGraph = nx.DiGraph()
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
 
