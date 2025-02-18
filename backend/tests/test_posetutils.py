@@ -280,10 +280,14 @@ def test_swap_xy_in_L():
 
 
 def test_edge_label():
-    # this function was never used
     f = PosetUtils.edge_label
-    assert f("51234", "51324") == ("2", "3")
-    assert f("4123", "1423") == ("1", "4")
+    assert f("51234", "51324") == {2, 3}
+    assert f("4123", "1423") == {1, 4}
+    assert f("1234", "2143") is None
+
+    with pytest.raises(ValueError) as excinfo:
+        f("3124", "12")
+    assert excinfo.type is ValueError
 
 
 def test_generate_convex():
