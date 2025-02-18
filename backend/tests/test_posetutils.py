@@ -4,6 +4,23 @@ from app.posetutils import PosetUtils
 from app.classes import *
 
 
+def test_get_atg_from_upsilon():
+    f = PosetUtils.get_atg_from_upsilon
+
+    # upsilon is a "path" LEG
+    upsilon = ["1234", "1243", "1423", "4123"]
+    G = f(upsilon)
+    assert set(G.nodes()) == {"1234", "1243", "1423", "4123"}
+    expected_edges = [("1234", "1243"), ("1243", "1423"), ("1423", "4123")]
+    assert all([G.has_edge(*e) for e in expected_edges])
+
+    # upsilon has no edges
+    upsilon = ["1234", "2143", "3124", "1342", "1423", "4132"]
+    G = f(upsilon)
+    assert set(G.nodes()) == {"1234", "2143", "3124", "1342", "1423", "4132"}
+    assert len(G.edges()) == 0
+
+
 def test_get_linear_extensions_from_graph():
     f = PosetUtils.get_linear_extensions_from_graph
 
