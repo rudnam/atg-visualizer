@@ -4,6 +4,14 @@ from app.classes import *
 class PosetUtils:
     @staticmethod
     def get_atg_from_upsilon(upsilon: List[LinearOrder]):
+        """Get the Adjacent Transposition Graph of upsilon.
+        
+        Parameters \\
+        upsilon (required) -- a list of linear orders. Linear orders must have equal lengths.
+
+        Returns \\
+        nx.Graph
+        """
         G = nx.Graph()
         G.add_nodes_from(upsilon)
         for i in range(len(upsilon)):
@@ -278,6 +286,9 @@ class PosetUtils:
             raise ValueError(
                 f"Cannot get conv(L) if L is empty. linear_orders={linear_orders}"
             )
+
+        if len(linear_orders) == 1:
+            return linear_orders
 
         partial_order = PosetUtils.get_partial_order_of_convex(linear_orders)
         supercover = PosetUtils.get_linear_extensions_from_relation(
