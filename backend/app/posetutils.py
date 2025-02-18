@@ -3,6 +3,17 @@ from app.classes import *
 
 class PosetUtils:
     @staticmethod
+    def get_atg_from_upsilon(upsilon: List[LinearOrder]):
+        G = nx.Graph()
+        G.add_nodes_from(upsilon)
+        for i in range(len(upsilon)):
+            for j in range(i + 1, len(upsilon)):
+                swapped_nums = PosetUtils.edge_label(upsilon[i], upsilon[j])
+                if swapped_nums:
+                    G.add_edge(upsilon[i], upsilon[j])
+        return G
+
+    @staticmethod
     def get_linear_extensions_from_graph(
         G: AcyclicDiGraph | HasseDiagram,
     ) -> List[LinearOrder]:

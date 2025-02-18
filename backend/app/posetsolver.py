@@ -1,4 +1,4 @@
-from itertools import combinations, product
+from itertools import combinations, product, chain
 from typing import List
 import copy
 
@@ -22,6 +22,26 @@ class PosetSolver:
         return partial_orders, legs
 
     def minimum_poset_cover(
+        self, upsilon=List[LinearOrder], verbose=False
+    ) -> List[List[LinearOrder]] | None:
+        G = PosetUtils.get_atg_from_upsilon(upsilon)
+        solutions: dict[frozenset[LinearOrder], List[List[LinearOrder]]] = {}
+        for connected_component in nx.connected_components(G):
+            upsilon1 = list(connected_component)
+            solutions[frozenset(connected_component)] = (
+                self.minimum_poset_cover_of_connected_component(upsilon1, verbose)
+            )
+            if verbose:
+                print(f'\n{"-"*40}\n')
+        poset_cover = list(chain.from_iterable(solutions.values()))
+        if verbose:
+            print(
+                f"Input graph has {len(solutions)} connected component{'s' if len(solutions)>1 else ''}."
+            )
+            print(f"Combined solution: {poset_cover}")
+        return poset_cover
+
+    def minimum_poset_cover_of_connected_component(
         self, upsilon=List[LinearOrder], verbose=False
     ) -> List[List[LinearOrder]] | None:
         """A parameterized algorithm which finds the minimum poset cover"""
