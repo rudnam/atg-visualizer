@@ -130,10 +130,7 @@ def test_ancestors():
     my_hasse.add_nodes_from(nodes)
     my_hasse.add_edges_from(cover_relation)
 
-    assert 1 in f(3, my_hasse)
-    assert 2 in f(3, my_hasse)
-    assert 3 not in f(3, my_hasse)
-    assert 4 not in f(3, my_hasse)
+    assert set(f(3, my_hasse)) == {1, 2}
     assert len(f(1, my_hasse)) == 0
     assert len(f(4, my_hasse)) == 0
 
@@ -155,9 +152,9 @@ def test_ancestors():
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
 
-    assert 1 in f(5, my_dag)
-    assert 2 in f(4, my_dag)
-    assert 3 not in f(2, my_dag)
+    assert set(f(5, my_dag)) == {1, 2, 3, 4}
+    assert set(f(4, my_dag)) == {1, 2, 3}
+    assert set(f(2, my_dag)) == {1}
     assert len(f(1, my_dag)) == 0
 
 
@@ -170,10 +167,9 @@ def test_descendants():
     my_hasse.add_nodes_from(nodes)
     my_hasse.add_edges_from(cover_relation)
 
-    assert 3 in f(1, my_hasse)
-    assert 3 in f(2, my_hasse)
+    assert set(f(1, my_hasse)) == {3}
+    assert set(f(2, my_hasse)) == {3}
     assert 3 not in f(3, my_hasse)
-    assert 4 not in f(1, my_hasse)
     assert len(f(1, my_hasse)) == 1
     assert len(f(4, my_hasse)) == 0
 
@@ -195,9 +191,9 @@ def test_descendants():
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
 
-    assert 5 in f(1, my_dag)
-    assert 4 in f(2, my_dag)
-    assert 2 not in f(3, my_dag)
+    assert set(f(1, my_dag)) == {2, 3, 4, 5}
+    assert set(f(2, my_dag)) == {3, 4, 5}
+    assert set(f(3, my_dag)) == {4, 5}
     assert len(f(5, my_dag)) == 0
 
 
