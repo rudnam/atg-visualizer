@@ -4,6 +4,23 @@ from app.posetutils import PosetUtils
 from app.classes import *
 
 
+def test_get_atg_from_upsilon():
+    f = PosetUtils.get_atg_from_upsilon
+
+    # upsilon is a "path" LEG
+    upsilon = ["1234", "1243", "1423", "4123"]
+    G = f(upsilon)
+    assert set(G.nodes()) == {"1234", "1243", "1423", "4123"}
+    expected_edges = [("1234", "1243"), ("1243", "1423"), ("1423", "4123")]
+    assert all([G.has_edge(*e) for e in expected_edges])
+
+    # upsilon has no edges
+    upsilon = ["1234", "2143", "3124", "1342", "1423", "4132"]
+    G = f(upsilon)
+    assert set(G.nodes()) == {"1234", "2143", "3124", "1342", "1423", "4132"}
+    assert len(G.edges()) == 0
+
+
 def test_get_linear_extensions_from_graph():
     f = PosetUtils.get_linear_extensions_from_graph
 
@@ -29,7 +46,7 @@ def test_get_linear_extensions_from_graph():
         (3, 5),
         (4, 5),
     ]
-    my_dag: DiGraph = nx.DiGraph()
+    my_dag: AcyclicDiGraph = nx.DiGraph()
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
     assert {"12345"} == set(f(my_dag))
@@ -68,7 +85,7 @@ def test_get_linear_extensions_from_relation():
 
 
 def test_get_graph_from_relation():
-    # Did I use this function? Apparently, G is either HasseDiagram or DiGraph which is undesirable
+    # Did I use this function? Apparently, G is either HasseDiagram or AcyclicDiGraph which is undesirable
     f = PosetUtils.get_graph_from_relation
     cover_relation: CoverRelation = [(1, 3), (2, 3)]
     sequence = "1234"
@@ -113,10 +130,7 @@ def test_ancestors():
     my_hasse.add_nodes_from(nodes)
     my_hasse.add_edges_from(cover_relation)
 
-    assert 1 in f(3, my_hasse)
-    assert 2 in f(3, my_hasse)
-    assert 3 not in f(3, my_hasse)
-    assert 4 not in f(3, my_hasse)
+    assert set(f(3, my_hasse)) == {1, 2}
     assert len(f(1, my_hasse)) == 0
     assert len(f(4, my_hasse)) == 0
 
@@ -134,13 +148,13 @@ def test_ancestors():
         (3, 5),
         (4, 5),
     ]
-    my_dag: DiGraph = nx.DiGraph()
+    my_dag: AcyclicDiGraph = nx.DiGraph()
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
 
-    assert 1 in f(5, my_dag)
-    assert 2 in f(4, my_dag)
-    assert 3 not in f(2, my_dag)
+    assert set(f(5, my_dag)) == {1, 2, 3, 4}
+    assert set(f(4, my_dag)) == {1, 2, 3}
+    assert set(f(2, my_dag)) == {1}
     assert len(f(1, my_dag)) == 0
 
 
@@ -153,10 +167,9 @@ def test_descendants():
     my_hasse.add_nodes_from(nodes)
     my_hasse.add_edges_from(cover_relation)
 
-    assert 3 in f(1, my_hasse)
-    assert 3 in f(2, my_hasse)
+    assert set(f(1, my_hasse)) == {3}
+    assert set(f(2, my_hasse)) == {3}
     assert 3 not in f(3, my_hasse)
-    assert 4 not in f(1, my_hasse)
     assert len(f(1, my_hasse)) == 1
     assert len(f(4, my_hasse)) == 0
 
@@ -174,13 +187,13 @@ def test_descendants():
         (3, 5),
         (4, 5),
     ]
-    my_dag: DiGraph = nx.DiGraph()
+    my_dag: AcyclicDiGraph = nx.DiGraph()
     my_dag.add_nodes_from(nodes)
     my_dag.add_edges_from(partial_order)
 
-    assert 5 in f(1, my_dag)
-    assert 4 in f(2, my_dag)
-    assert 2 not in f(3, my_dag)
+    assert set(f(1, my_dag)) == {2, 3, 4, 5}
+    assert set(f(2, my_dag)) == {3, 4, 5}
+    assert set(f(3, my_dag)) == {4, 5}
     assert len(f(5, my_dag)) == 0
 
 
@@ -267,10 +280,14 @@ def test_swap_xy_in_L():
 
 
 def test_edge_label():
-    # this function was never used
     f = PosetUtils.edge_label
-    assert f("51234", "51324") == ("2", "3")
-    assert f("4123", "1423") == ("1", "4")
+    assert f("51234", "51324") == {2, 3}
+    assert f("4123", "1423") == {1, 4}
+    assert f("1234", "2143") is None
+
+    with pytest.raises(ValueError) as excinfo:
+        f("3124", "12")
+    assert excinfo.type is ValueError
 
 
 def test_generate_convex():

@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import Optional
 
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -14,7 +14,7 @@ from app.posetsolver import PosetSolver
 
 class GraphRequest(BaseModel):
     sequence: str
-    selected_nodes: Optional[List[str]] = []
+    selected_nodes: Optional[list[str]] = []
     opacity_others: Optional[float] = 0.1
 
 
@@ -47,8 +47,8 @@ app.add_middleware(
 @app.get("/graph", response_model=GraphData)
 def get_graph(
     size: int,
-    selected_nodes: List[str] = Query(None),
-    highlighted_nodes: List[str] = Query(None),
+    selected_nodes: list[str] = Query(None),
+    highlighted_nodes: list[str] = Query(None),
 ):
     try:
         if size < 2 or size > PosetVisualizer.MAX_SIZE:
@@ -71,7 +71,7 @@ def get_graph(
 
 
 @app.get("/solve")
-def solve_optimal_k_poset_cover(k: int, upsilon: List[str] = Query([])):
+def solve_optimal_k_poset_cover(k: int, upsilon: list[str] = Query([])):
     try:
         solver = PosetSolver(upsilon, k)
         result = solver.solve()

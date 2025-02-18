@@ -1,5 +1,4 @@
-from itertools import combinations, product
-from typing import List
+from itertools import combinations, product, chain
 import copy
 
 from app.posetutils import PosetUtils
@@ -22,8 +21,28 @@ class PosetSolver:
         return partial_orders, legs
 
     def minimum_poset_cover(
-        self, upsilon=List[LinearOrder], verbose=False
-    ) -> List[List[LinearOrder]] | None:
+        self, upsilon: list[LinearOrder], verbose=False
+    ) -> list[list[LinearOrder]] | None:
+        G = PosetUtils.get_atg_from_upsilon(upsilon)
+        solutions: dict[frozenset[LinearOrder], list[list[LinearOrder]]] = {}
+        for connected_component in nx.connected_components(G):
+            upsilon1 = list(connected_component)
+            solutions[frozenset(connected_component)] = (
+                self.minimum_poset_cover_of_connected_component(upsilon1, verbose)
+            )
+            if verbose:
+                print(f'\n{"-"*40}\n')
+        poset_cover = list(chain.from_iterable(solutions.values()))
+        if verbose:
+            print(
+                f"Input graph has {len(solutions)} connected component{'s' if len(solutions)>1 else ''}."
+            )
+            print(f"Combined solution: {poset_cover}")
+        return poset_cover
+
+    def minimum_poset_cover_of_connected_component(
+        self, upsilon: list[LinearOrder], verbose=False
+    ) -> list[list[LinearOrder]] | None:
         """A parameterized algorithm which finds the minimum poset cover"""
         n = len(upsilon)
         result = None
@@ -49,8 +68,8 @@ class PosetSolver:
         return result
 
     def exact_k_poset_cover(
-        self, upsilon: List[LinearOrder], k: int, verbose=False
-    ) -> List[List[LinearOrder]] | None:
+        self, upsilon: list[LinearOrder], k: int, verbose=False
+    ) -> list[list[LinearOrder]] | None:
         """Find a k-poset cover given upsilon. Static method."""
 
         if verbose:
@@ -69,6 +88,7 @@ class PosetSolver:
             for j in range(i + 1, len(upsilon)):
                 edge = PosetUtils.edge_label(upsilon[i], upsilon[j])
                 if edge:
+                    edge = list(edge)
                     atg_edges.add((int(edge[0]), int(edge[1])))
                     atg_edges.add((int(edge[1]), int(edge[0])))
 
@@ -135,11 +155,11 @@ class PosetSolver:
 
     def maximal_poset(
         self,
-        upsilon: List[LinearOrder],
-        anchor_pairs: List[AnchorPair],
+        upsilon: list[LinearOrder],
+        anchor_pairs: list[AnchorPair],
         partial_order: PartialOrder,
         verbose=False,
-    ) -> List[LinearOrder]:
+    ) -> list[LinearOrder]:
         """
         Input: A set Y of linear orders, a set A of anchor pairs, and a poset P_A whose linear extensions are bounded by A,
             i.e L(P) subseteq Y and A subseteq P_A

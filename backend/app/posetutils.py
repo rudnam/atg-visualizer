@@ -3,9 +3,28 @@ from app.classes import *
 
 class PosetUtils:
     @staticmethod
+    def get_atg_from_upsilon(upsilon: list[LinearOrder]):
+        """Get the Adjacent Transposition Graph of upsilon.
+        
+        Parameters \\
+        upsilon (required) -- a list of linear orders. Linear orders must have equal lengths.
+
+        Returns \\
+        nx.Graph
+        """
+        G = nx.Graph()
+        G.add_nodes_from(upsilon)
+        for i in range(len(upsilon)):
+            for j in range(i + 1, len(upsilon)):
+                swapped_nums = PosetUtils.edge_label(upsilon[i], upsilon[j])
+                if swapped_nums:
+                    G.add_edge(upsilon[i], upsilon[j])
+        return G
+
+    @staticmethod
     def get_linear_extensions_from_graph(
-        G: DiGraph | HasseDiagram,
-    ) -> List[LinearOrder]:
+        G: AcyclicDiGraph | HasseDiagram,
+    ) -> list[LinearOrder]:
         """Get the linear extensions of a poset using either its hasse or directed acyclic graph representation.
 
         Returns a list of linear orders like ['1234','2134'].
@@ -22,7 +41,7 @@ class PosetUtils:
     @staticmethod
     def get_linear_extensions_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
-    ) -> List[LinearOrder]:
+    ) -> list[LinearOrder]:
         """Get the linear extensions of a poset using either its partial order or cover relation.
 
         Returns a list of linear orders like ['1234','2134'].
@@ -45,10 +64,10 @@ class PosetUtils:
     @staticmethod
     def get_graph_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
-    ) -> DiGraph:
+    ) -> AcyclicDiGraph | HasseDiagram:
         """Get the directed acyclic graph representation of a poset using either its partial order or cover relation.
 
-        Returns a DiGraph aka nx.DiGraph.
+        Returns a AcyclicDiGraph aka nx.DiGraph.
 
         Parameters \\
         relation (required) -- the partial order or cover relation of a poset, e.g. [(1,2),(2,3)] \\
@@ -57,7 +76,7 @@ class PosetUtils:
             This ensures that all four nodes are present in the graph and not just three.
 
         Returns \\
-        DiGraph aka nx.DiGraph
+        AcyclicDiGraph aka nx.DiGraph
         """
         G = nx.DiGraph()
         G.add_nodes_from(range(1, len(sequence) + 1))
@@ -90,7 +109,7 @@ class PosetUtils:
         return TR
 
     @staticmethod
-    def ancestors(node: int, G: DiGraph | HasseDiagram) -> set[int]:
+    def ancestors(node: int, G: AcyclicDiGraph | HasseDiagram) -> set[int]:
         """Get the ancestors of a node given the hasse or directed acyclic graph representation of a poset.
 
         Returns a set of node names like {1, 2, 3, 4}.
@@ -109,7 +128,7 @@ class PosetUtils:
         return nx.ancestors(G, node)
 
     @staticmethod
-    def descendants(node: int, G: DiGraph | HasseDiagram) -> set[int]:
+    def descendants(node: int, G: AcyclicDiGraph | HasseDiagram) -> set[int]:
         """Get the descendants of a node given the hasse or directed acyclic graph representation of a poset.
 
         Returns a set of node names like {1, 2, 3, 4}.
@@ -229,7 +248,7 @@ class PosetUtils:
         return f"{linear_order[:x_index]}{str(y)}{str(x)}{linear_order[x_index+2:]}"
 
     @staticmethod
-    def edge_label(linear_order1: str, linear_order2: str) -> Tuple[int, int]:
+    def edge_label(linear_order1: str, linear_order2: str) -> EdgeLabel | None:
         """
         Returns the two numbers that were swapped between permutations,
         or None if not a valid adjacent transposition
@@ -237,7 +256,9 @@ class PosetUtils:
         p1 = linear_order1
         p2 = linear_order2
         if len(p1) != len(p2):
-            return None
+            raise ValueError(
+                f"Linear orders must have equal lengths. Received {linear_order1=}, {linear_order2=}"
+            )
 
         diff_positions = [i for i in range(len(p1)) if p1[i] != p2[i]]
 
@@ -251,10 +272,12 @@ class PosetUtils:
         if p1[pos1] != p2[pos2] or p1[pos2] != p2[pos1]:
             return None
 
-        return tuple(sorted([p1[pos1], p1[pos2]]))
+        x = int(p1[pos1])
+        y = int(p1[pos2])
+        return frozenset({x, y})
 
     @staticmethod
-    def generate_convex(linear_orders: List[LinearOrder]) -> List[LinearOrder]:
+    def generate_convex(linear_orders: list[LinearOrder]) -> list[LinearOrder]:
         """Get the smallest convex set of linear orders which contains the input.
         
         Parameters \\
@@ -268,6 +291,9 @@ class PosetUtils:
                 f"Cannot get conv(L) if L is empty. linear_orders={linear_orders}"
             )
 
+        if len(linear_orders) == 1:
+            return linear_orders
+
         partial_order = PosetUtils.get_partial_order_of_convex(linear_orders)
         supercover = PosetUtils.get_linear_extensions_from_relation(
             partial_order, sequence=linear_orders[0]
@@ -275,7 +301,7 @@ class PosetUtils:
         return supercover
 
     @staticmethod
-    def get_partial_order_of_convex(linear_orders: List[LinearOrder]) -> PartialOrder:
+    def get_partial_order_of_convex(linear_orders: list[LinearOrder]) -> PartialOrder:
         """Get the partial order which describes the smallest convex set of linear orders which contains the input.
         
         Parameters \\

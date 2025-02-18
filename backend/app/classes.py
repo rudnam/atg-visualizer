@@ -1,9 +1,9 @@
 import networkx as nx
-from typing import List, Tuple
 
-PartialOrder = List[Tuple[int, int]]
-CoverRelation = List[Tuple[int, int]]
+PartialOrder = list[tuple[int, int]]
+CoverRelation = list[tuple[int, int]]
 LinearOrder = str
-DiGraph = nx.DiGraph
+AcyclicDiGraph = nx.DiGraph
 HasseDiagram = nx.DiGraph
-AnchorPair = Tuple[int, int]
+AnchorPair = tuple[int, int]
+EdgeLabel = frozenset[int, int]
