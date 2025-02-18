@@ -7,3 +7,4 @@ LinearOrder = str
 AcyclicDiGraph = nx.DiGraph
 HasseDiagram = nx.DiGraph
 AnchorPair = Tuple[int, int]
+EdgeLabel = frozenset[int, int]

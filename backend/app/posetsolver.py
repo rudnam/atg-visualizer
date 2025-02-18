@@ -89,6 +89,7 @@ class PosetSolver:
             for j in range(i + 1, len(upsilon)):
                 edge = PosetUtils.edge_label(upsilon[i], upsilon[j])
                 if edge:
+                    edge = list(edge)
                     atg_edges.add((int(edge[0]), int(edge[1])))
                     atg_edges.add((int(edge[1]), int(edge[0])))
 

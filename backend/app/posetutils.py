@@ -248,7 +248,7 @@ class PosetUtils:
         return f"{linear_order[:x_index]}{str(y)}{str(x)}{linear_order[x_index+2:]}"
 
     @staticmethod
-    def edge_label(linear_order1: str, linear_order2: str) -> Tuple[int, int]:
+    def edge_label(linear_order1: str, linear_order2: str) -> EdgeLabel | None:
         """
         Returns the two numbers that were swapped between permutations,
         or None if not a valid adjacent transposition
@@ -256,7 +256,9 @@ class PosetUtils:
         p1 = linear_order1
         p2 = linear_order2
         if len(p1) != len(p2):
-            return None
+            raise ValueError(
+                f"Linear orders must have equal lengths. Received {linear_order1=}, {linear_order2=}"
+            )
 
         diff_positions = [i for i in range(len(p1)) if p1[i] != p2[i]]
 
@@ -270,7 +272,9 @@ class PosetUtils:
         if p1[pos1] != p2[pos2] or p1[pos2] != p2[pos1]:
             return None
 
-        return tuple(sorted([p1[pos1], p1[pos2]]))
+        x = int(p1[pos1])
+        y = int(p1[pos2])
+        return frozenset({x, y})
 
     @staticmethod
     def generate_convex(linear_orders: List[LinearOrder]) -> List[LinearOrder]:
