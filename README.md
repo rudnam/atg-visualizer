@@ -4,22 +4,32 @@ Web-based visualization tool for adjacent transposition graphs (ATGs) and associ
 
 ## Setup
 
-1. Set up backend
+1. Install dependencies
 
    ```shell
    cd ./backend
    python3 -m venv .venv
    source .venv/bin/activate
    pip install -r requirements.txt
+   cd ../frontend
+   npm install
+   cd ../
+   ```
+
+2. Run backend
+
+   Note: Make sure that the environment is activated (`source .venv/bin/activate`)
+
+   ```shell
+   cd ./backend
    fastapi run
    ```
 
-2. Set up frontend
+3. Run frontend
 
-   Open up a separate terminal and then:
+   Open up another terminal and then:
 
    ```shell
    cd ./frontend
-   npm install
    npm run dev
    ```

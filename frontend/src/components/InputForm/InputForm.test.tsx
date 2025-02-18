@@ -12,7 +12,7 @@ describe("InputForm", () => {
         fetchEntireGraphData={mockFetchGraphData}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
-      />
+      />,
     );
     expect(screen.getByText("INPUT")).toBeDefined();
   });
