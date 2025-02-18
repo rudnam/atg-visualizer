@@ -1,7 +1,6 @@
 from itertools import permutations, combinations, chain
 import networkx as nx
 import plotly.graph_objects as go
-from typing import List
 import seaborn as sns
 
 
@@ -254,14 +253,14 @@ class PosetVisualizer:
     def _all_perms_are_selected(self):
         return len(self.selected_nodes) == 0
 
-    def select_nodes(self, select_nodes: List[str]):
+    def select_nodes(self, select_nodes: list[str]):
         """Selects specified nodes"""
         self.selected_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
         self._edge_trace = self._compute_edge_traces()
         self.update_figure()
 
-    def highlight_nodes(self, select_nodes: List[str]):
+    def highlight_nodes(self, select_nodes: list[str]):
         """Highlights specified nodes"""
         self.highlighted_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
@@ -269,7 +268,7 @@ class PosetVisualizer:
         self.update_figure()
 
     def select_and_highlight_nodes(
-        self, select_nodes: List[str], highlight_nodes: List[str]
+        self, select_nodes: list[str], highlight_nodes: list[str]
     ):
         self.highlighted_nodes = highlight_nodes
         self.selected_nodes = select_nodes

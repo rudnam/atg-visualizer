@@ -3,7 +3,7 @@ from app.classes import *
 
 class PosetUtils:
     @staticmethod
-    def get_atg_from_upsilon(upsilon: List[LinearOrder]):
+    def get_atg_from_upsilon(upsilon: list[LinearOrder]):
         """Get the Adjacent Transposition Graph of upsilon.
         
         Parameters \\
@@ -24,7 +24,7 @@ class PosetUtils:
     @staticmethod
     def get_linear_extensions_from_graph(
         G: AcyclicDiGraph | HasseDiagram,
-    ) -> List[LinearOrder]:
+    ) -> list[LinearOrder]:
         """Get the linear extensions of a poset using either its hasse or directed acyclic graph representation.
 
         Returns a list of linear orders like ['1234','2134'].
@@ -41,7 +41,7 @@ class PosetUtils:
     @staticmethod
     def get_linear_extensions_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
-    ) -> List[LinearOrder]:
+    ) -> list[LinearOrder]:
         """Get the linear extensions of a poset using either its partial order or cover relation.
 
         Returns a list of linear orders like ['1234','2134'].
@@ -277,7 +277,7 @@ class PosetUtils:
         return frozenset({x, y})
 
     @staticmethod
-    def generate_convex(linear_orders: List[LinearOrder]) -> List[LinearOrder]:
+    def generate_convex(linear_orders: list[LinearOrder]) -> list[LinearOrder]:
         """Get the smallest convex set of linear orders which contains the input.
         
         Parameters \\
@@ -301,7 +301,7 @@ class PosetUtils:
         return supercover
 
     @staticmethod
-    def get_partial_order_of_convex(linear_orders: List[LinearOrder]) -> PartialOrder:
+    def get_partial_order_of_convex(linear_orders: list[LinearOrder]) -> PartialOrder:
         """Get the partial order which describes the smallest convex set of linear orders which contains the input.
         
         Parameters \\
