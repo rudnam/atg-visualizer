@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
 import { render } from "../../test-utils/render";
 import ResultsPanel from "./ResultsPanel";
@@ -28,29 +28,28 @@ describe("ResultsPanel", () => {
       linearExtensions: ["1324", "1234", "2134"],
     },
   ];
-  let setHighlightedPosetIndex: React.Dispatch<React.SetStateAction<number>>;
 
-  beforeEach(() => {
-    setHighlightedPosetIndex = vi.fn();
-  });
+  const mockSetHighlightedPosetIndex: React.Dispatch<
+    React.SetStateAction<number>
+  > = vi.fn();
 
-  test("renders", () => {
+  it("renders", () => {
     render(
       <ResultsPanel
         posetResults={[]}
         highlightedPosetIndex={-1}
-        setHighlightedPosetIndex={setHighlightedPosetIndex}
+        setHighlightedPosetIndex={mockSetHighlightedPosetIndex}
       />,
     );
     expect(screen.getByText("RESULTS")).toBeInTheDocument();
   });
 
-  test("renders with correct number of items", () => {
+  it("renders with correct number of items", () => {
     render(
       <ResultsPanel
         posetResults={mockResults}
         highlightedPosetIndex={-1}
-        setHighlightedPosetIndex={setHighlightedPosetIndex}
+        setHighlightedPosetIndex={mockSetHighlightedPosetIndex}
       />,
     );
 
@@ -58,12 +57,12 @@ describe("ResultsPanel", () => {
     expect(items).toHaveLength(mockResults.length);
   });
 
-  test("renders linear extensions correctly", () => {
+  it("renders linear extensions correctly", () => {
     render(
       <ResultsPanel
         posetResults={mockResults}
         highlightedPosetIndex={-1}
-        setHighlightedPosetIndex={setHighlightedPosetIndex}
+        setHighlightedPosetIndex={mockSetHighlightedPosetIndex}
       />,
     );
 
@@ -79,12 +78,12 @@ describe("ResultsPanel", () => {
     expect(extensions[1]).toHaveTextContent(mockResults[1].linearExtensions[2]);
   });
 
-  test("applies correct button variant based on highlight state", () => {
+  it("applies correct button variant based on highlight state", () => {
     render(
       <ResultsPanel
         posetResults={mockResults}
         highlightedPosetIndex={1}
-        setHighlightedPosetIndex={setHighlightedPosetIndex}
+        setHighlightedPosetIndex={mockSetHighlightedPosetIndex}
       />,
     );
 
@@ -93,7 +92,7 @@ describe("ResultsPanel", () => {
     expect(items[1]).toHaveAttribute("data-variant", "filled");
   });
 
-  test("clicking an item highlights it and clicking again unhighlights it", () => {
+  it("highlights an item when clicked and unhighlights when clicked again", () => {
     function Wrapper() {
       const [index, setIndex] = useState(-1);
       return (
@@ -116,5 +115,9 @@ describe("ResultsPanel", () => {
 
     fireEvent.click(firstItem);
     expect(firstItem).toHaveAttribute("data-variant", "outline");
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 });

@@ -54,6 +54,7 @@ const InputForm: React.FC<InputFormProps> = ({
             { value: 5 },
             { value: 6, label: 6 },
           ]}
+          data-testid="permutation-length-slider"
         />
       </InputWrapper>
       <ScrollArea.Autosize mah={"60%"}>
@@ -68,6 +69,7 @@ const InputForm: React.FC<InputFormProps> = ({
           disabled={loading}
           autosize
           minRows={4}
+          data-testid="input-y"
         />
       </ScrollArea.Autosize>
 
@@ -85,6 +87,7 @@ const InputForm: React.FC<InputFormProps> = ({
               .filter((line) => line !== ""),
           )
         }
+        data-testid="draw-button"
       >
         Draw
       </Button>
@@ -103,6 +106,7 @@ const InputForm: React.FC<InputFormProps> = ({
               .filter((line) => line !== ""),
           )
         }
+        data-testid="solve-button"
       >
         Solve
       </Button>
