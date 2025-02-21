@@ -16,7 +16,7 @@ describe("InputForm", () => {
         loading={false}
       />,
     );
-    expect(screen.getByText("INPUT")).toBeDefined();
+    expect(screen.getByText("INPUT")).toBeInTheDocument();
   });
 
   it("renders all form elements", () => {

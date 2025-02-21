@@ -12,12 +12,8 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
   const plotRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (plotRef.current) {
-      if (
-        graphData !== null &&
-        graphData.data !== null &&
-        graphData.layout !== null
-      ) {
+    if (plotRef.current && graphData) {
+      if (graphData.data !== null && graphData.layout !== null) {
         const config: Partial<Plotly.Config> = {
           displaylogo: false,
           modeBarButtonsToRemove: [
