@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "vitest run && npx playwright test",
+    "test": "vitest --run && npx playwright test",
+    "test:unit": "vitest --run",
+    "test:e2e": "npx playwright test",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "backend": "cd ../backend && fastapi run"
   },
   "dependencies": {
     "@mantine/colors-generator": "^7.16.0",
