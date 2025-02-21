@@ -38,7 +38,7 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
       <div className="w-full min-h-80 h-full sm:h-96 grow relative">
         <div>
           <LoadingOverlay visible={loading} zIndex={1000} />
-          <div className="" ref={plotRef} />
+          <div className="" ref={plotRef} data-testid="plot-div" />
         </div>
       </div>
     </div>
