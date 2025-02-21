@@ -53,8 +53,11 @@ jobs:
       - name: Install dependencies
         run: npm ci && npx playwright install --with-deps
 
+      - name: Start backend
+        run: cd ../backend && fastapi run
+
       - name: Run Unit tests
-        run: npm run test:unit
+        run: npm run test
 
       - name: Run Playwright tests
         run: npm run test:e2e
