@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "test": "vitest --runt",
+    "test": "vitest --run",
     "test:e2e": "npx playwright test",
     "lint": "eslint .",
     "preview": "vite preview"
