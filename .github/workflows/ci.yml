@@ -54,7 +54,9 @@ jobs:
         run: npm ci && npx playwright install --with-deps
 
       - name: Start backend
-        run: cd ../backend && fastapi run
+        run: |
+          cd ../backend
+          uvicorn main:app --host 0.0.0.0 --port 8000 &
 
       - name: Run Unit tests
         run: npm run test
