@@ -52,7 +52,7 @@ const Content: React.FC = () => {
         upsilon,
       );
 
-      if (posetCoverResultData !== null) {
+      if (posetCoverResultData) {
         const resultLinearOrders = posetCoverResultData.resultLinearOrders;
         const resultPosets = posetCoverResultData.resultPosets;
 
