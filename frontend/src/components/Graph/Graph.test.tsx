@@ -15,7 +15,9 @@ vi.mock("plotly.js-dist", () => ({
 describe("Graph", () => {
   it("renders", () => {
     render(<Graph loading={false} graphData={null} />);
-    expect(screen.getByText("ADJACENT TRANSPOSITION GRAPH")).toBeDefined();
+    expect(
+      screen.getByText("ADJACENT TRANSPOSITION GRAPH"),
+    ).toBeInTheDocument();
   });
 
   it("calls Plotly.react when graphData is provided", () => {
