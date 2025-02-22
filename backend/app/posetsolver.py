@@ -79,7 +79,7 @@ class PosetSolver:
         if k == 1:
             convex = PosetUtils.generate_convex(upsilon)
             if set(convex) == set(upsilon):
-                return convex
+                return [convex]
             return None
 
         atg_edges = set()  # type. set of Tuple[int,int]
