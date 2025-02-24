@@ -10,6 +10,7 @@ import plotly.io as pio
 
 from app.posetvisualizer import PosetVisualizer
 from app.posetsolver import PosetSolver
+from app.posetutils import PosetUtils
 
 
 class GraphRequest(BaseModel):
@@ -73,21 +74,20 @@ def get_graph(
 @app.get("/solve")
 def solve_optimal_k_poset_cover(k: int, upsilon: list[str] = Query([])):
     try:
-        solver = PosetSolver(upsilon, k)
-        result = solver.solve()
-        if result:
-            result_posets, result_linear_orders = result
+        print(f"{k = }. k is not handled yet.")
+        result_linear_orders = PosetSolver.minimum_poset_cover(upsilon)
+        result_posets = [
+            PosetUtils.get_partial_order_of_convex(leg) for leg in result_linear_orders
+        ]
 
-            return JSONResponse(
-                content=json.dumps(
-                    {
-                        "resultPosets": result_posets,
-                        "resultLinearOrders": result_linear_orders,
-                    }
-                )
+        return JSONResponse(
+            content=json.dumps(
+                {
+                    "resultPosets": result_posets,
+                    "resultLinearOrders": result_linear_orders,
+                }
             )
-        else:
-            return JSONResponse(content=json.dumps({}))
+        )
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -6,29 +6,18 @@ from app.classes import *
 
 
 class PosetSolver:
-    def __init__(self, upsilon, k=None):
-        self.upsilon = upsilon
-        self.k = k
-
-    def solve(self):
-        legs = None
-        if self.k and False:
-            legs = self.exact_k_poset_cover(self.upsilon, self.k)
-            legs = legs if legs else []
-        else:
-            legs = self.minimum_poset_cover(self.upsilon)
-        partial_orders = [PosetUtils.get_partial_order_of_convex(leg) for leg in legs]
-        return partial_orders, legs
-
+    @staticmethod
     def minimum_poset_cover(
-        self, upsilon: list[LinearOrder], verbose=False
+        upsilon: list[LinearOrder], verbose=False
     ) -> list[LinearExtensions]:
         G = PosetUtils.get_atg_from_upsilon(upsilon)
         solutions: dict[frozenset[LinearOrder], list[LinearExtensions]] = {}
         for connected_component in nx.connected_components(G):
             upsilon1: list[LinearOrder] = list(connected_component)
             solutions[frozenset(connected_component)] = (
-                self.minimum_poset_cover_of_connected_component(upsilon1, verbose)
+                PosetSolver._minimum_poset_cover_of_connected_component(
+                    upsilon1, verbose
+                )
             )
             if verbose:
                 print(f'\n{"-"*40}\n')
@@ -42,8 +31,9 @@ class PosetSolver:
             print(f"Combined solution: {poset_cover}")
         return poset_cover
 
-    def minimum_poset_cover_of_connected_component(
-        self, upsilon: list[LinearOrder], verbose=False
+    @staticmethod
+    def _minimum_poset_cover_of_connected_component(
+        upsilon: list[LinearOrder], verbose=False
     ) -> list[LinearExtensions]:
         """A parameterized algorithm which finds the minimum poset cover"""
         n = len(upsilon)
@@ -56,7 +46,7 @@ class PosetSolver:
             elif k == n:
                 result = [[linear_order] for linear_order in upsilon]
             else:
-                result = self.exact_k_poset_cover(upsilon, k)
+                result = PosetSolver.exact_k_poset_cover(upsilon, k)
 
             if verbose and result:
                 print(f"Found a {k}-poset cover")
@@ -70,8 +60,9 @@ class PosetSolver:
         assert result is not None
         return result
 
+    @staticmethod
     def exact_k_poset_cover(
-        self, upsilon: list[LinearOrder], k: int, verbose=False
+        upsilon: list[LinearOrder], k: int, verbose=False
     ) -> list[LinearExtensions] | None:
         """Find a k-poset cover given upsilon. Static method."""
 
@@ -132,7 +123,7 @@ class PosetSolver:
                     print(f"is_poset: {A_is_a_poset}")
 
             if A_is_a_poset:
-                maximal_supercover_linear_extensions = self.maximal_poset(
+                maximal_supercover_linear_extensions = PosetSolver.maximal_poset(
                     upsilon, list(anchor_pairs), partial_order_A
                 )
                 if verbose:
@@ -156,8 +147,8 @@ class PosetSolver:
                 return list(solution)
         return None
 
+    @staticmethod
     def maximal_poset(
-        self,
         upsilon: list[LinearOrder],
         anchor_pairs: list[AnchorPair],
         partial_order: PartialOrder,
