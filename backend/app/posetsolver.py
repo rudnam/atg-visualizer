@@ -22,17 +22,19 @@ class PosetSolver:
 
     def minimum_poset_cover(
         self, upsilon: list[LinearOrder], verbose=False
-    ) -> list[list[LinearOrder]] | None:
+    ) -> list[LinearExtensions]:
         G = PosetUtils.get_atg_from_upsilon(upsilon)
-        solutions: dict[frozenset[LinearOrder], list[list[LinearOrder]]] = {}
+        solutions: dict[frozenset[LinearOrder], list[LinearExtensions]] = {}
         for connected_component in nx.connected_components(G):
-            upsilon1 = list(connected_component)
+            upsilon1: list[LinearOrder] = list(connected_component)
             solutions[frozenset(connected_component)] = (
                 self.minimum_poset_cover_of_connected_component(upsilon1, verbose)
             )
             if verbose:
                 print(f'\n{"-"*40}\n')
-        poset_cover = list(chain.from_iterable(solutions.values()))
+        poset_cover: list[LinearExtensions] = list(
+            chain.from_iterable(solutions.values())
+        )
         if verbose:
             print(
                 f"Input graph has {len(solutions)} connected component{'s' if len(solutions)>1 else ''}."
@@ -42,10 +44,10 @@ class PosetSolver:
 
     def minimum_poset_cover_of_connected_component(
         self, upsilon: list[LinearOrder], verbose=False
-    ) -> list[list[LinearOrder]] | None:
+    ) -> list[LinearExtensions]:
         """A parameterized algorithm which finds the minimum poset cover"""
         n = len(upsilon)
-        result = None
+        result: list[LinearExtensions] | None = None
         for k in range(1, n + 1):
             if k == 1:
                 convex = PosetUtils.generate_convex(upsilon)
@@ -62,14 +64,15 @@ class PosetSolver:
             elif verbose:
                 print(f"Failed to find a {k}-poset cover")
 
-            if result:
+            if result is not None:
                 break
 
+        assert result is not None
         return result
 
     def exact_k_poset_cover(
         self, upsilon: list[LinearOrder], k: int, verbose=False
-    ) -> list[list[LinearOrder]] | None:
+    ) -> list[LinearExtensions] | None:
         """Find a k-poset cover given upsilon. Static method."""
 
         if verbose:
@@ -159,7 +162,7 @@ class PosetSolver:
         anchor_pairs: list[AnchorPair],
         partial_order: PartialOrder,
         verbose=False,
-    ) -> list[LinearOrder]:
+    ) -> LinearExtensions:
         """
         Input: A set Y of linear orders, a set A of anchor pairs, and a poset P_A whose linear extensions are bounded by A,
             i.e L(P) subseteq Y and A subseteq P_A
