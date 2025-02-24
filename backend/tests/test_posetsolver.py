@@ -47,92 +47,90 @@ from .upsilon_constants import (
 
 
 def test_minimum_poset_cover():
-    solver = PosetSolver(upsilon=[])
-    poset_cover = solver.minimum_poset_cover(TWOMAXIMAL)
+    poset_cover = PosetSolver.minimum_poset_cover(TWOMAXIMAL)
     assert set(TWOMAXIMAL) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 3
 
-    poset_cover = solver.minimum_poset_cover(GENMAXIMAL)
+    poset_cover = PosetSolver.minimum_poset_cover(GENMAXIMAL)
     assert set(GENMAXIMAL) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 2
 
-    poset_cover = solver.minimum_poset_cover(SQHEXPLUSLINE)
+    poset_cover = PosetSolver.minimum_poset_cover(SQHEXPLUSLINE)
     assert set(SQHEXPLUSLINE) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 2
 
-    poset_cover = solver.minimum_poset_cover(LINE295)
+    poset_cover = PosetSolver.minimum_poset_cover(LINE295)
     assert set(LINE295) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 1
 
-    poset_cover = solver.minimum_poset_cover(CUBELEG)
+    poset_cover = PosetSolver.minimum_poset_cover(CUBELEG)
     assert set(CUBELEG) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 1
 
-    poset_cover = solver.minimum_poset_cover(SINGLESIX)
+    poset_cover = PosetSolver.minimum_poset_cover(SINGLESIX)
     assert set(SINGLESIX) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 1
 
-    poset_cover = solver.minimum_poset_cover(HEX2SUNGAY)
+    poset_cover = PosetSolver.minimum_poset_cover(HEX2SUNGAY)
     assert set(HEX2SUNGAY) == set.union(*(set(leg) for leg in poset_cover))
     assert len(poset_cover) == 3
 
 
 def test_exact_k_poset_cover():
-    solver = PosetSolver(upsilon=[])
-    k_poset_cover = solver.exact_k_poset_cover(TWOMAXIMAL, 1)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(TWOMAXIMAL, 1)
     assert k_poset_cover is None
-    k_poset_cover = solver.exact_k_poset_cover(TWOMAXIMAL, 2)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(TWOMAXIMAL, 2)
     assert k_poset_cover is None
-    k_poset_cover = solver.exact_k_poset_cover(TWOMAXIMAL, 3)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(TWOMAXIMAL, 3)
     assert set(TWOMAXIMAL) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 3
 
-    k_poset_cover = solver.exact_k_poset_cover(GENMAXIMAL, 1)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(GENMAXIMAL, 1)
     assert k_poset_cover is None
-    k_poset_cover = solver.exact_k_poset_cover(GENMAXIMAL, 2)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(GENMAXIMAL, 2)
     assert set(GENMAXIMAL) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 2
 
     # exact_k_poset_cover does not accept disconnected graph inputs like SQHEXPLUSLINE
 
-    k_poset_cover = solver.exact_k_poset_cover(LINE295, 1)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 1)
     assert set(LINE295) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 1
-    k_poset_cover = solver.exact_k_poset_cover(LINE295, 2)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 2)
     assert set(LINE295) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 2
 
-    # k_poset_cover = solver.exact_k_poset_cover(LINE295, 3)
+    # k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 3)
     # assert k_poset_cover is None
     # oh no. dapat pala unique yung laman ng PT*
     # next time nalang ayusin
 
     # undefined behavior for the following; needs consultation
-    # k_poset_cover = solver.exact_k_poset_cover(LINE295, 3)
+    # k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 3)
     #   it is expected to not get any result according to line 296
     #   however, the algorithm returns None because it never gets to test any set of anchor pairs canonically
     #   this is due to the fact that a square LEG only has two swaps => four tuples to choose from
     #   !! my mistake. this should be possible because the choice is k-1 i.e. A_star = combinations(fourtuples, 3-1=2)
     #
-    # k_poset_cover = solver.exact_k_poset_cover(LINE295, 4)
+    # k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 4)
     #   same case as above; this is now applicable as A_star = combinations(fourtuples, 3) => some cycle like (12,21,34) which no L will satisfy
     #   but, however, an answer is expected i.e. all of the four vertices
 
-    k_poset_cover = solver.exact_k_poset_cover(CUBELEG, 1)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(CUBELEG, 1)
     assert set(CUBELEG) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 1
     # testing for k>=2 is dubious because PT* contains duplicates
     # moreover, PT* will always contains copies of the single maximal poset, the cubeleg!
 
-    k_poset_cover = solver.exact_k_poset_cover(SINGLESIX, 1)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(SINGLESIX, 1)
     assert set(SINGLESIX) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 1
 
-    k_poset_cover = solver.exact_k_poset_cover(HEX2SUNGAY, 1)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(HEX2SUNGAY, 1)
     assert k_poset_cover is None
-    k_poset_cover = solver.exact_k_poset_cover(HEX2SUNGAY, 2)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(HEX2SUNGAY, 2)
     assert k_poset_cover is None
-    k_poset_cover = solver.exact_k_poset_cover(HEX2SUNGAY, 3)
+    k_poset_cover = PosetSolver.exact_k_poset_cover(HEX2SUNGAY, 3)
     assert set(HEX2SUNGAY) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 3
 
@@ -148,17 +146,16 @@ def test_maximal_poset():
     _4123_SNAKE = ["4123", "1423", "1243", "1234"]
 
     # for TWOMAXIMAL, we simulate k=3, meaning there are 2 anchor pairs
-    solver = PosetSolver(upsilon=[])
     seed_poset: list[LinearOrder] = ["2134"]
     anchor_pairs: list[AnchorPair] = [(2, 1), (3, 4)]
     partial_order: PartialOrder = PosetUtils.get_partial_order_of_convex(seed_poset)
-    maximal = solver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
+    maximal = PosetSolver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
     assert set(maximal) == set(_2134_SQHEX)
 
     seed_poset: list[LinearOrder] = ["3142", "3412"]
     anchor_pairs: list[AnchorPair] = [(4, 2), (3, 1)]
     partial_order: PartialOrder = PosetUtils.get_partial_order_of_convex(seed_poset)
-    maximal = solver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
+    maximal = PosetSolver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
     assert set(maximal) == set(_3412_DOWN_TO_1234)
 
     # consultation with mam. bakit po need ng anchor pairs? for example, isn't it sufficient
@@ -167,11 +164,11 @@ def test_maximal_poset():
     seed_poset: list[LinearOrder] = ["4123", "1423"]
     anchor_pairs: list[AnchorPair] = [(4, 2), (2, 3)]
     partial_order: PartialOrder = PosetUtils.get_partial_order_of_convex(seed_poset)
-    maximal = solver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
+    maximal = PosetSolver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
     assert set(maximal) == set(_4123_SNAKE)
 
     seed_poset: list[LinearOrder] = ["1432"]
     anchor_pairs: list[AnchorPair] = [(3, 2), (4, 3)]
     partial_order: PartialOrder = PosetUtils.get_partial_order_of_convex(seed_poset)
-    maximal = solver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
+    maximal = PosetSolver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
     assert set(maximal) == set(_3124_SQHEX)
