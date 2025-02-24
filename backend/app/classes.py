@@ -1,13 +1,13 @@
 import networkx as nx
 
-PartialOrder = list[tuple[int, int]]
-CoverRelation = list[tuple[int, int]]
-LinearOrder = str
-AcyclicDiGraph = nx.DiGraph
-HasseDiagram = nx.DiGraph
-AnchorPair = tuple[int, int]
-EdgeLabel = frozenset[int, int]
-AdjacentTranspositionGraph = nx.Graph
+type PartialOrder = list[tuple[int, int]]
+type CoverRelation = list[tuple[int, int]]
+type LinearOrder = str
+type AcyclicDiGraph = nx.DiGraph
+type HasseDiagram = nx.DiGraph
+type AnchorPair = tuple[int, int]
+type EdgeLabel = frozenset[int, int]
+type AdjacentTranspositionGraph = nx.Graph
 
 # not the same as upsilon: list[LinearOrder] as LinearExtensions must correspond to a poset
-LinearExtensions = list[LinearOrder]
+type LinearExtensions = list[LinearOrder]
