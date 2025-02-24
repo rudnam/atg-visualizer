@@ -137,7 +137,7 @@ def test_exact_k_poset_cover():
     assert len(k_poset_cover) == 3
 
 
-def test_maxmimal_poset():
+def test_maximal_poset():
     # list of possible maximal posets using TWOMAXIMAL
     # these are listed due to the fact that the result of maximal_poset is ambiguous that is,
     #   it can result to any of the following so long as the "seed" is a subset of the maximal posets
