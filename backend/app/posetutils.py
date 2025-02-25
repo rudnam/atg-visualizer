@@ -3,14 +3,14 @@ from app.classes import *
 
 class PosetUtils:
     @staticmethod
-    def get_atg_from_upsilon(upsilon: list[LinearOrder]):
+    def get_atg_from_upsilon(upsilon: list[LinearOrder]) -> AdjacentTranspositionGraph:
         """Get the Adjacent Transposition Graph of upsilon.
         
         Parameters \\
         upsilon (required) -- a list of linear orders. Linear orders must have equal lengths.
 
         Returns \\
-        nx.Graph
+        AdjacentTranspositionGraph aka nx.Graph
         """
         G = nx.Graph()
         G.add_nodes_from(upsilon)
@@ -24,7 +24,7 @@ class PosetUtils:
     @staticmethod
     def get_linear_extensions_from_graph(
         G: AcyclicDiGraph | HasseDiagram,
-    ) -> list[LinearOrder]:
+    ) -> LinearExtensions:
         """Get the linear extensions of a poset using either its hasse or directed acyclic graph representation.
 
         Returns a list of linear orders like ['1234','2134'].
@@ -33,7 +33,7 @@ class PosetUtils:
         G (required) -- a graph representation of the poset, either hasse or DAG, which are both nx.DiGraph
 
         Returns \\
-        List[LinearOrder] aka List[str]
+        LinearExtensions aka list[str]
         """
         sortings = list(nx.all_topological_sorts(G))
         return sorted(["".join(map(str, sorting)) for sorting in sortings])
@@ -41,7 +41,7 @@ class PosetUtils:
     @staticmethod
     def get_linear_extensions_from_relation(
         relation: PartialOrder | CoverRelation, sequence: str
-    ) -> list[LinearOrder]:
+    ) -> LinearExtensions:
         """Get the linear extensions of a poset using either its partial order or cover relation.
 
         Returns a list of linear orders like ['1234','2134'].
@@ -53,7 +53,7 @@ class PosetUtils:
             This ensures that ['1234','1243','1423','4123'] is returned and not ['123']
 
         Returns \\
-        List[LinearOrder] aka List[str]
+        LinearExtensions aka list[str]
         """
         G = nx.DiGraph()
         G.add_nodes_from(range(1, len(sequence) + 1))
@@ -119,7 +119,7 @@ class PosetUtils:
         G (required) -- a graph representation of the poset, either hasse or DAG, which are both nx.DiGraph
 
         Returns \\
-        Set[int]
+        set[int]
 
         Notes \\
         Example use case in the algorithm: \\
@@ -138,7 +138,7 @@ class PosetUtils:
         G (required) -- a graph representation of the poset, either hasse or DAG, which are both nx.DiGraph
 
         Returns \\
-        Set[int]
+        set[int]
 
         Notes \\
         Example use case in the algorithm: \\
@@ -277,14 +277,14 @@ class PosetUtils:
         return frozenset({x, y})
 
     @staticmethod
-    def generate_convex(linear_orders: list[LinearOrder]) -> list[LinearOrder]:
+    def generate_convex(linear_orders: list[LinearOrder]) -> LinearExtensions:
         """Get the smallest convex set of linear orders which contains the input.
         
         Parameters \\
         linear_orders (required) -- \\
         
         Returns \\
-        List[LinearOrder] aka List[str]
+        LinearExtensions aka list[str]
         """
         if not linear_orders:
             raise ValueError(
@@ -308,15 +308,15 @@ class PosetUtils:
         linear_orders (required) -- 
         
         Returns \\
-        PartialOrder aka List[Tuple[int,int]]
+        PartialOrder aka list[tuple[int,int]]
         """
         if not linear_orders:
             raise ValueError(
                 f"Cannot get conv(L) if L is empty. linear_orders={linear_orders}"
             )
 
-        def get_partial_order(linear_order: str) -> set:
-            partial_order = set()
+        def get_partial_order(linear_order: str) -> set[tuple[int, int]]:
+            partial_order: set[tuple[int, int]] = set()
             n = len(linear_order)
             for i in range(n):
                 for j in range(i + 1, n):
