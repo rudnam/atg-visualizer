@@ -12,6 +12,8 @@ class PosetSolver:
     ) -> list[LinearExtensions]:
         """A parameterized algorithm which finds the minimum poset cover
 
+        The adjacent transposition graph of the input linear orders may be a disconected graph. The minimum poset cover of each connected component is computed and combined into a final solution.
+
         Args:
             upsilon: A list of linear orders of equal length
             verbose: Print information while the function executes. Defaults to False.
@@ -126,7 +128,7 @@ class PosetSolver:
             print(f"ATG Edges (directed): {directed_atg_edges}\n")
 
         A_star = combinations(directed_atg_edges, k - 1)
-        legs: list[LinearExtensions] = []
+        legs: set[frozenset[LinearOrder]] = set()
         for anchor_pairs in A_star:
             upsilon_A: set[LinearOrder] = set()
             for linear_order in upsilon:
@@ -164,7 +166,7 @@ class PosetSolver:
                 )
                 if verbose:
                     print(f"my_super: {maximal_supercover_linear_extensions}")
-                legs.append(maximal_supercover_linear_extensions)
+                legs.add(frozenset(maximal_supercover_linear_extensions))
 
             if verbose:
                 print("")
@@ -172,17 +174,18 @@ class PosetSolver:
         if verbose:
             print("------------------------[LEGs Collected]---------------------------")
             for leg in legs:
-                print(leg)
+                print(set(leg))
         if verbose:
             print("-------------------------------------------------------------------")
 
         for solution in combinations(legs, k):
-            sets_in_solution = [set(leg) for leg in solution]
-            if set.union(*sets_in_solution) == set(upsilon):
+            if frozenset.union(*solution) == set(upsilon):
+                list_of_linear_extensions: list[LinearExtensions] = [
+                    list(frozen) for frozen in solution
+                ]
                 if verbose:
-                    print(f"\n[RESULT]: {list(solution)}")
-                return list(solution)
-
+                    print(f"\n[RESULT]: {list_of_linear_extensions}")
+                return list_of_linear_extensions
         return None
 
     @staticmethod
