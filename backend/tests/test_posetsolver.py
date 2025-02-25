@@ -70,6 +70,13 @@ def test_minimum_poset_cover():
 
 
 def test_exact_k_poset_cover():
+    """Limitations of the function to be tested
+
+    exact_k_poset_cover does not accept disconnected graph inputs like SQHEXPLUSLINE
+    behavior of exact_k algo for k > k_min is set to be undefined
+    if k-1 > number of edge classes (kinds of swaps), then k is not minimum for some reason
+    for example, if it returns an answer for k=1, testing for k>=2 is no longer relevant as k is not minimum
+    """
     k_poset_cover = PosetSolver.exact_k_poset_cover(TWOMAXIMAL, 1)
     assert k_poset_cover is None
     k_poset_cover = PosetSolver.exact_k_poset_cover(TWOMAXIMAL, 2)
@@ -84,15 +91,9 @@ def test_exact_k_poset_cover():
     assert set(GENMAXIMAL) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 2
 
-    # exact_k_poset_cover does not accept disconnected graph inputs like SQHEXPLUSLINE
-
     k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 1)
     assert set(LINE295) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 1
-
-    # behavior of exact_k algo for k > k_min is set to be undefined
-    # if k-1 > number of edge classes (kinds of swaps), then k is not minimum for some reason
-    # testing for k>=2 is no longer relevant as k is not minimum
 
     k_poset_cover = PosetSolver.exact_k_poset_cover(CUBELEG, 1)
     assert set(CUBELEG) == set.union(*(set(leg) for leg in k_poset_cover))
@@ -112,7 +113,7 @@ def test_exact_k_poset_cover():
 
 
 def test_maximal_poset():
-    """Limitations of this function
+    """Limitations of the function to be tested
 
     The variables below list of possible maximal posets using TWOMAXIMAL.
         These are listed due to the fact that the result of maximal_poset is ambiguous, that is,
