@@ -2,19 +2,19 @@
 Test Overview
 
 PosetSolver Class Methods
- - solve    => ✗ will not be tested; reason: unofficial/not complete
  - minimum_poset_cover  =>  ✓ for testing
- - minimum_poset_cover_of_connected_component   =>  ✗ will not be tested; reason: can be privitized
+ - _minimum_poset_cover_of_connected_component  =>  ✗ will not be tested; not meant to be called outside
  - exact_k_poset_cover  =>  ✓ for testing
  - maximal_poset    =>  ✓ for testing 
  
 Approach: hand-crafted tests
-Issue with code: The class methods for testing can be treated as static methods so class initialization is irrelevant.
 
 Short Description of Chosen Upsilons
 Upsilons from "A Parameterized Algorithm for the Poset Cover Problem"
 GENMAXIMAL. This was the example upsilon for demonsrating the generalized maximal poset algorithm. Optimal Cost: k=2.
-LINE295. Quote, "There is no feasible solution of size 3 but there is a feasible solution of size 2." This is a square LEG. Optimal Cost: k=1.
+LINE295. This is a square LEG. Optimal Cost: k=1.
+    The quoted, statement, "There is no feasible solution of size 3 but there is a feasible solution of size 2,"
+    needs further clarification from the author.
 
 Upsilons from "A Polynomial Time Algorithm for the 2-Poset Cover Problem"
 TWOMAXIMAL. This was the example upsilon for demonstrating the maximal poset algorithm for the 2-poset case. Optimal Cost: k=3.
@@ -26,10 +26,15 @@ HEX2SUNGAY. A case for 3-poset cover. Optimal Cost: k=3.
 
 SUMMARY OF ISSUES/CONCERNS
 1. Issues with how PosetSolver was written (class-based or static methods?)
+    DONE
 2. [minor] Clarification for exact-k behavior when k-1 > number_of_swap_x2
+    This means k is not minimum so exact-k algo behavior is undefined in this case.
 3. PT* should not keep duplicates. Slightly significant refactor as frozenset seems to be a nice solution for this
+    Doing.
 4. [minor] consultation with mam. bakit po need ng anchor pairs? for example, isn't it sufficient to use a "seed poset"?
+    KEEP as is. See your meeting notes Week 6.
 5. Implied refactoring, particularly in the signatures of the methods
+    DONE
 """
 
 from app.posetsolver import PosetSolver
@@ -96,25 +101,8 @@ def test_exact_k_poset_cover():
     k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 1)
     assert set(LINE295) == set.union(*(set(leg) for leg in k_poset_cover))
     assert len(k_poset_cover) == 1
-    k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 2)
-    assert set(LINE295) == set.union(*(set(leg) for leg in k_poset_cover))
-    assert len(k_poset_cover) == 2
 
-    # k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 3)
-    # assert k_poset_cover is None
-    # oh no. dapat pala unique yung laman ng PT*
-    # next time nalang ayusin
-
-    # undefined behavior for the following; needs consultation
-    # k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 3)
-    #   it is expected to not get any result according to line 296
-    #   however, the algorithm returns None because it never gets to test any set of anchor pairs canonically
-    #   this is due to the fact that a square LEG only has two swaps => four tuples to choose from
-    #   !! my mistake. this should be possible because the choice is k-1 i.e. A_star = combinations(fourtuples, 3-1=2)
-    #
-    # k_poset_cover = PosetSolver.exact_k_poset_cover(LINE295, 4)
-    #   same case as above; this is now applicable as A_star = combinations(fourtuples, 3) => some cycle like (12,21,34) which no L will satisfy
-    #   but, however, an answer is expected i.e. all of the four vertices
+    # behavior of exact_k algo for k > k_min is set to be undefined
 
     k_poset_cover = PosetSolver.exact_k_poset_cover(CUBELEG, 1)
     assert set(CUBELEG) == set.union(*(set(leg) for leg in k_poset_cover))
@@ -157,9 +145,6 @@ def test_maximal_poset():
     partial_order: PartialOrder = PosetUtils.get_partial_order_of_convex(seed_poset)
     maximal = PosetSolver.maximal_poset(TWOMAXIMAL, anchor_pairs, partial_order)
     assert set(maximal) == set(_3412_DOWN_TO_1234)
-
-    # consultation with mam. bakit po need ng anchor pairs? for example, isn't it sufficient
-    #   to use a "seed poset"?
 
     seed_poset: list[LinearOrder] = ["4123", "1423"]
     anchor_pairs: list[AnchorPair] = [(4, 2), (2, 3)]
