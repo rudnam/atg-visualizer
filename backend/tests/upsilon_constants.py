@@ -1,4 +1,4 @@
-from backend.app.classes import *
+from app.classes import *
 
 SINGLESIX: list[LinearOrder] = ["123456"]
 LINE295: list[LinearOrder] = ["12345", "12354", "13245", "13254"]

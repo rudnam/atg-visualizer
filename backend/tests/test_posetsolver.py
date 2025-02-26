@@ -25,9 +25,9 @@ SINGLESIX. Edge case for the single linear order. Optimal Cost: k=1.
 HEX2SUNGAY. A case for 3-poset cover. Optimal Cost: k=3.
 """
 
-from backend.app.posetsolver import PosetSolver
-from backend.app.posetutils import PosetUtils
-from backend.app.classes import *
+from app.posetsolver import PosetSolver
+from app.posetutils import PosetUtils
+from app.classes import *
 from .upsilon_constants import (
     TWOMAXIMAL,
     GENMAXIMAL,
