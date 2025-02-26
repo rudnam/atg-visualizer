@@ -10,32 +10,58 @@ class PosetSolver:
     def minimum_poset_cover(
         upsilon: list[LinearOrder], verbose=False
     ) -> list[LinearExtensions]:
-        G = PosetUtils.get_atg_from_upsilon(upsilon)
+        """A parameterized algorithm which finds the minimum poset cover
+
+        The adjacent transposition graph of the input linear orders may be a disconected graph. The minimum poset cover of each connected component is computed and combined into a final solution.
+
+        Args:
+            upsilon: A list of linear orders of equal length
+            verbose: Print information while the function executes. Defaults to False.
+
+        Returns:
+            list[LinearExtensions]: A list of linear extensions each corresponding to a poset in the poset cover
+        """
+        atg: AdjacentTranspositionGraph = PosetUtils.get_atg_from_upsilon(upsilon)
+
         solutions: dict[frozenset[LinearOrder], list[LinearExtensions]] = {}
-        for connected_component in nx.connected_components(G):
+        for connected_component in nx.connected_components(atg):
             upsilon1: list[LinearOrder] = list(connected_component)
             solutions[frozenset(connected_component)] = (
                 PosetSolver._minimum_poset_cover_of_connected_component(
                     upsilon1, verbose
                 )
             )
+
             if verbose:
                 print(f'\n{"-"*40}\n')
+
         poset_cover: list[LinearExtensions] = list(
             chain.from_iterable(solutions.values())
         )
+
         if verbose:
             print(
                 f"Input graph has {len(solutions)} connected component{'s' if len(solutions)>1 else ''}."
             )
             print(f"Combined solution: {poset_cover}")
+
         return poset_cover
 
     @staticmethod
     def _minimum_poset_cover_of_connected_component(
         upsilon: list[LinearOrder], verbose=False
     ) -> list[LinearExtensions]:
-        """A parameterized algorithm which finds the minimum poset cover"""
+        """A parameterized algorithm which finds the minimum poset cover (connected)
+
+        The adjacent transposition graph of the input upsilon must be connected.
+
+        Args:
+            upsilon: A list of linear orders of equal length
+            verbose: Print information while the function executes. Defaults to False.
+
+        Returns:
+            list[LinearExtensions]: A list of linear extensions each corresponding to a poset in the poset cover
+        """
         n = len(upsilon)
         result: list[LinearExtensions] | None = None
         for k in range(1, n + 1):
@@ -64,7 +90,19 @@ class PosetSolver:
     def exact_k_poset_cover(
         upsilon: list[LinearOrder], k: int, verbose=False
     ) -> list[LinearExtensions] | None:
-        """Find a k-poset cover given upsilon. Static method."""
+        """Find k posets which cover the given linear orders
+
+        The adjacent transposition graph of the input upsilon must be connected.
+        Restrictions on k. The behavior is set to be undefined if k is not minimal. This includes cases when k-1 is greater than the number of edge classes in the input upsilon.
+
+        Args:
+            upsilon: A list of linear orders of equal length
+            k: The number of posets to find
+            verbose: Print information while the function executes. Defaults to False.
+
+        Returns:
+            list[LinearExtensions] | None: A length-k list of linear extensions each corresponding to a poset in the poset cover, if any exists, else returns None
+        """
 
         if verbose:
             print(f"Input k = {k}")
@@ -76,23 +114,23 @@ class PosetSolver:
                 return [convex]
             return None
 
-        atg_edges = set()  # type. set of Tuple[int,int]
+        directed_atg_edges: set[tuple[int, int]] = set()
 
         for i in range(len(upsilon)):
             for j in range(i + 1, len(upsilon)):
                 edge = PosetUtils.edge_label(upsilon[i], upsilon[j])
                 if edge:
                     edge = list(edge)
-                    atg_edges.add((int(edge[0]), int(edge[1])))
-                    atg_edges.add((int(edge[1]), int(edge[0])))
+                    directed_atg_edges.add((int(edge[0]), int(edge[1])))
+                    directed_atg_edges.add((int(edge[1]), int(edge[0])))
 
         if verbose:
-            print(f"ATG Edges (directed): {atg_edges}\n")
+            print(f"ATG Edges (directed): {directed_atg_edges}\n")
 
-        A_star = combinations(atg_edges, k - 1)
-        legs = []
+        A_star = combinations(directed_atg_edges, k - 1)
+        legs: set[frozenset[LinearOrder]] = set()
         for anchor_pairs in A_star:
-            Y_A = set()
+            upsilon_A: set[LinearOrder] = set()
             for linear_order in upsilon:
                 linear_order_follows_anchor_pairs = all(
                     [
@@ -101,25 +139,25 @@ class PosetSolver:
                     ]
                 )
                 if linear_order_follows_anchor_pairs:
-                    Y_A.add(linear_order)
+                    upsilon_A.add(linear_order)
 
             A_is_a_poset = False
             partial_order_A = None
-            if Y_A:
-                partial_order_A = PosetUtils.get_partial_order_of_convex(Y_A)
+            if upsilon_A:
+                partial_order_A = PosetUtils.get_partial_order_of_convex(upsilon_A)
                 A_is_a_poset = (
                     set(
                         PosetUtils.get_linear_extensions_from_relation(
                             partial_order_A, upsilon[0]
                         )
                     )
-                    == Y_A
+                    == upsilon_A
                 )
 
             if verbose:
                 print(f"anchors: {anchor_pairs}")
-                print(f"Y_A: {Y_A}")
-                if Y_A:
+                print(f"upsilon_A: {upsilon_A}")
+                if upsilon_A:
                     print(f"is_poset: {A_is_a_poset}")
 
             if A_is_a_poset:
@@ -128,23 +166,26 @@ class PosetSolver:
                 )
                 if verbose:
                     print(f"my_super: {maximal_supercover_linear_extensions}")
-                legs.append(maximal_supercover_linear_extensions)
+                legs.add(frozenset(maximal_supercover_linear_extensions))
+
             if verbose:
                 print("")
 
         if verbose:
             print("------------------------[LEGs Collected]---------------------------")
             for leg in legs:
-                print(leg)
+                print(set(leg))
         if verbose:
             print("-------------------------------------------------------------------")
 
         for solution in combinations(legs, k):
-            sets_in_solution = [set(leg) for leg in solution]
-            if set.union(*sets_in_solution) == set(upsilon):
+            if frozenset.union(*solution) == set(upsilon):
+                list_of_linear_extensions: list[LinearExtensions] = [
+                    list(frozen) for frozen in solution
+                ]
                 if verbose:
-                    print(f"\n[RESULT]: {list(solution)}")
-                return list(solution)
+                    print(f"\n[RESULT]: {list_of_linear_extensions}")
+                return list_of_linear_extensions
         return None
 
     @staticmethod
@@ -154,12 +195,23 @@ class PosetSolver:
         partial_order: PartialOrder,
         verbose=False,
     ) -> LinearExtensions:
-        """
-        Input: A set Y of linear orders, a set A of anchor pairs, and a poset P_A whose linear extensions are bounded by A,
-            i.e L(P) subseteq Y and A subseteq P_A
-        I.e. the following must hold:
-            get_linear_extensions_from_relation(partial_order) is a subseteq of upsilon, and
-            anchor_pairs is a subseteq of partial_order
+        """Find a maximal poset which supercovers the poset bounded by the input anchor pairs
+
+        Preconditions:
+            anchor_pairs must be a subset of partial_order.
+            The linear extensions of the poset (determined by partial_order) must be a subset of upsilon.
+
+        Args:
+            upsilon: A list of linear orders of equal length
+            anchor_pairs: The anchor pairs denote the relations the input poset must satisfy. The anchor pairs essentially isolate/bound linear orders in upsilon.
+            partial_order: The partial order of the input poset.
+            verbose: Print information while the function executes. Defaults to False.
+
+        Returns:
+            LinearExtensions: The linear extensions of a maximal poset which supercovers the input poset.
+
+        Notes:
+            The resulting partial_order_as_set is computed but not returned.
         """
 
         if verbose:
@@ -168,20 +220,18 @@ class PosetSolver:
             print(f"anchor_pairs:  {anchor_pairs}")
             print(f"partial_order: {partial_order}\n")
 
-        upsilon = set(upsilon)
-        partial_order = set(partial_order)
+        upsilon_as_set: set[LinearOrder] = set(upsilon)
+        partial_order_as_set: set[tuple[int, int]] = set(partial_order)
 
-        Y_covered = set(
-            PosetUtils.get_linear_extensions_from_relation(
-                partial_order, list(upsilon)[0]
-            )
+        Y_covered: set[LinearOrder] = set(
+            PosetUtils.get_linear_extensions_from_relation(partial_order, upsilon[0])
         )
-        Y_uncovered = {
-            linear_order for linear_order in upsilon if linear_order not in Y_covered
-        }
-        hasse = PosetUtils.get_hasse_from_partial_order(partial_order, list(upsilon)[0])
+        Y_uncovered: set[LinearOrder] = upsilon_as_set - Y_covered
+        hasse: HasseDiagram = PosetUtils.get_hasse_from_partial_order(
+            partial_order, upsilon[0]
+        )
 
-        J_sets = [
+        J_sets: list[set[tuple[int, int]]] = [
             set(
                 product(
                     PosetUtils.ancestors(a, hasse) | {a},
@@ -190,41 +240,45 @@ class PosetSolver:
             )
             for a, b in anchor_pairs
         ]
-        J = list(set.union(*J_sets))
-        J.sort(key=lambda anchor_pair: PosetUtils.hasse_dist(hasse, *anchor_pair))
+        J_unioned: list[tuple[int, int]] = list(set.union(*J_sets))
+        J_unioned.sort(
+            key=lambda anchor_pair: PosetUtils.hasse_dist(hasse, *anchor_pair)
+        )
 
-        I = copy.deepcopy(J)
+        I = copy.deepcopy(J_unioned)
         if verbose:
             print(f"Anchor Pairs ranked by distance, I: {I}")
 
-        current_pair = I[0]
-        pair_index = 0
-        blacklist = set()
+        current_pair: tuple[int, int] | None = I[0]
+        pair_index: int = 0
+        blacklist: set[tuple[int, int]] = set()
         while True:
             x, y = current_pair
-            L = {
+            L_xy: set[LinearOrder] = {
                 linear_order
                 for linear_order in Y_covered
                 if PosetUtils.x_is_covered_by_y_in_L(linear_order, x=x, y=y)
             }
-            L_prime = {
-                PosetUtils.swap_xy_in_L(linear_order, x, y) for linear_order in L
+            L_yx: set[LinearOrder] = {
+                PosetUtils.swap_xy_in_L(linear_order, x, y) for linear_order in L_xy
             }
-            L_prime = {
-                linear_order for linear_order in L_prime if linear_order in Y_uncovered
+            L_yx: set[LinearOrder] = {
+                linear_order for linear_order in L_yx if linear_order in Y_uncovered
             }
 
             if verbose:
                 print(f"\ncurrent_pair: {x} {y}")
                 print(f"Y_covered:   {Y_covered}")
                 print(f"Y_uncovered: {Y_uncovered}")
-                print(f"L:           {L}")
-                print(f"L_prime:     {L_prime}")
+                print(f"L_xy:           {L_xy}")
+                print(f"L_yx:     {L_yx}")
 
-            if len(L) == len(L_prime) and len(L) != 0:
-                convex_of_L_prime = set(PosetUtils.generate_convex(list(L_prime)))
-                if convex_of_L_prime <= upsilon:
-                    partial_order -= {(x, y)}
+            if len(L_xy) == len(L_yx) and len(L_xy) != 0:
+                convex_of_L_prime: set[LinearOrder] = set(
+                    PosetUtils.generate_convex(list(L_yx))
+                )
+                if convex_of_L_prime <= upsilon_as_set:
+                    partial_order_as_set -= {(x, y)}
                     Y_covered |= convex_of_L_prime
                     Y_uncovered -= convex_of_L_prime
                 else:
@@ -244,7 +298,7 @@ class PosetSolver:
             if verbose:
                 print(f"blacklist: {blacklist}")
 
-            prev_pair = (x, y)
+            prev_pair: tuple[int, int] = (x, y)
 
             pair_index += 1
             current_pair = None if pair_index >= len(I) else I[pair_index]
@@ -261,4 +315,5 @@ class PosetSolver:
 
         if verbose:
             print(f"\n[RESULT]: {list(Y_covered)}")
+
         return list(Y_covered)
