@@ -1,7 +1,7 @@
 import pytest
 
-from backend.app.posetvisualizer import PosetVisualizer
-from backend.tests.testing_utils import FigureTester
+from app.posetvisualizer import PosetVisualizer
+from tests.testing_utils import FigureTester
 
 
 def testPosetVisualizer():

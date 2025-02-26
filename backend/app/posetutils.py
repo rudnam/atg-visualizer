@@ -1,4 +1,4 @@
-from backend.app.classes import *
+from app.classes import *
 
 
 class PosetUtils:

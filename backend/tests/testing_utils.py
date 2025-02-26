@@ -1,4 +1,4 @@
-from backend.app.classes import EdgeData, FigureData, NodeData
+from app.classes import EdgeData, FigureData, NodeData
 
 
 class FigureTester:
