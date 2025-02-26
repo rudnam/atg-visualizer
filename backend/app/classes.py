@@ -20,9 +20,14 @@ class FigureData(TypedDict):
     layout: go.Layout
 
 
+class MarkerData(TypedDict):
+    color: str
+    size: int
+
+
 class NodeData(TypedDict):
     hoverinfo: str
-    marker: dict
+    marker: MarkerData
     mode: str
     name: str
     opacity: float
@@ -34,9 +39,14 @@ class NodeData(TypedDict):
     z: float
 
 
+class LineData(TypedDict):
+    color: str
+    width: int
+
+
 class EdgeData(TypedDict):
     hoverinfo: str
-    line: dict
+    line: LineData
     mode: str
     name: str
     opacity: float

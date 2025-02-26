@@ -44,7 +44,7 @@ class FigureTester:
             is_edge_trace = "lines" in trace.get("mode", "")
 
             if is_edge_trace:
-                for i in range(0, len(trace["x"]), 2):
+                for i in range(0, len(trace["x"]), 3):
                     start_node = self.get_node_data_by_position(
                         trace["x"][i], trace["y"][i], trace["z"][i]
                     )
