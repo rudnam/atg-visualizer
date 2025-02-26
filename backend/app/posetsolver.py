@@ -1,8 +1,8 @@
 from itertools import combinations, product, chain
 import copy
 
-from app.posetutils import PosetUtils
-from app.classes import *
+from backend.app.posetutils import PosetUtils
+from backend.app.classes import *
 
 
 class PosetSolver:

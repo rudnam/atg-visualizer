@@ -1,7 +1,7 @@
 import pytest
 import networkx as nx
-from app.posetutils import PosetUtils
-from app.classes import *
+from backend.app.posetutils import PosetUtils
+from backend.app.classes import *
 
 
 def test_get_atg_from_upsilon():

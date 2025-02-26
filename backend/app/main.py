@@ -8,9 +8,9 @@ from typing import Optional
 import plotly.graph_objects as go
 import plotly.io as pio
 
-from app.posetvisualizer import PosetVisualizer
-from app.posetsolver import PosetSolver
-from app.posetutils import PosetUtils
+from backend.app.posetvisualizer import PosetVisualizer
+from backend.app.posetsolver import PosetSolver
+from backend.app.posetutils import PosetUtils
 
 
 class GraphRequest(BaseModel):

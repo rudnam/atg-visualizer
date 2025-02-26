@@ -1,6 +1,6 @@
 import pytest
 
-from app.posetvisualizer import PosetVisualizer
+from backend.app.posetvisualizer import PosetVisualizer
 
 
 def testPosetVisualizer():
