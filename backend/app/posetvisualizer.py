@@ -4,6 +4,8 @@ import networkx as nx
 import plotly.graph_objects as go
 import seaborn as sns
 
+from app.classes import *
+
 
 class NodeRenderSpecifiers(TypedDict):
     color: str
@@ -62,20 +64,29 @@ class PosetVisualizer:
                 f"Invalid size. Size must have a value of at least 2 and at most {self.MAX_SIZE}."
             )
 
-        self.size = size
-        self.selected_nodes = []
-        self.highlighted_nodes = []
+        self.size: int = size
+
+        self.selected_nodes: list[LinearOrder] = []
+        self.highlighted_nodes: list[LinearOrder] = []
+
+        self._graph: nx.Graph
+        # for the next properties, str means '1', '2', '3', etc. except for the values of _pair_to_color which are of course colors
+        self._pair_to_color: dict[tuple[str, str], str]
+        self._edges_by_swap: dict[
+            tuple[str, str], list[tuple[LinearOrder, LinearOrder]]
+        ]
+        self._fig: go.Figure
 
         self._set_up_graph()
         self._pos = nx.spring_layout(self._graph, dim=3, seed=42)
-        self._edge_trace = self._compute_edge_traces()
-        self._node_trace = self._compute_node_traces()
-        self._fig_layout = self._make_fig_layout()
+        self._edge_trace: list[go.Scatter3d] = self._compute_edge_traces()
+        self._node_trace: list[go.Scatter3d] = self._compute_node_traces()
+        self._fig_layout: go.Layout = self._make_fig_layout()
 
         self.update_figure()
 
     @staticmethod
-    def _get_swapped_numbers(p1: str, p2: str):
+    def _get_swapped_numbers(p1: str, p2: str) -> tuple[str, str]:
         """
         Returns the two numbers that were swapped between permutations,
         or None if not a valid adjacent transposition
@@ -104,7 +115,7 @@ class PosetVisualizer:
 
     def _set_up_graph(self):
         """Sets up graph and swap types"""
-        sequence = "".join(map(str, range(1, self.size + 1)))
+        sequence: str = "".join(map(str, range(1, self.size + 1)))
         number_pairs = list(combinations(sequence, 2))
         perm_strings = ["".join(p) for p in permutations(sequence)]
         self._graph = nx.Graph()
