@@ -7,28 +7,33 @@ import seaborn as sns
 from app.classes import *
 
 
-class NodeRenderSpecifiers(TypedDict):
+class NodeRenderSpecification(TypedDict):
     color: str
     size: int
     opacity: float
 
 
-class EdgeRenderSpecifiers(TypedDict):
+class EdgeRenderSpecification(TypedDict):
     color: str
     width: int
     opacity: float
 
 
+class EdgeRenderSpecificationForSelectedOther(TypedDict):
+    width: int
+    opacity: float
+
+
 class NodeRenderTypeSpecs(TypedDict):
-    selected: NodeRenderSpecifiers
-    highlighted: NodeRenderSpecifiers
-    other: NodeRenderSpecifiers
+    selected: NodeRenderSpecification
+    highlighted: NodeRenderSpecification
+    other: NodeRenderSpecification
 
 
 class EdgeRenderTypeSpecs(TypedDict):
-    selected: EdgeRenderSpecifiers
-    highlighted: EdgeRenderSpecifiers
-    other: EdgeRenderSpecifiers
+    selected: EdgeRenderSpecificationForSelectedOther
+    highlighted: EdgeRenderSpecification
+    other: EdgeRenderSpecificationForSelectedOther
 
 
 class RenderTypeSpecs(TypedDict):
@@ -49,9 +54,9 @@ class PosetVisualizer:
             "other": {"color": "black", "size": 3, "opacity": 0.1},
         },
         "edge": {
-            "selected": {"color": "", "width": 3, "opacity": 1},
+            "selected": {"width": 3, "opacity": 1},
             "highlighted": {"color": "red", "width": 5, "opacity": 1},
-            "other": {"color": "", "width": 3, "opacity": 0.1},
+            "other": {"width": 3, "opacity": 0.1},
         },
         # showlegend is also affected by render_type but not specified in this specs
     }
@@ -317,14 +322,14 @@ class PosetVisualizer:
     def _all_perms_are_selected(self):
         return len(self.selected_nodes) == 0
 
-    def select_nodes(self, select_nodes: list[str]):
+    def select_nodes(self, select_nodes: list[LinearOrder]):
         """Selects specified nodes"""
         self.selected_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
         self._edge_trace = self._compute_edge_traces()
         self.update_figure()
 
-    def highlight_nodes(self, select_nodes: list[str]):
+    def highlight_nodes(self, select_nodes: list[LinearOrder]):
         """Highlights specified nodes"""
         self.highlighted_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
@@ -332,7 +337,7 @@ class PosetVisualizer:
         self.update_figure()
 
     def select_and_highlight_nodes(
-        self, select_nodes: list[str], highlight_nodes: list[str]
+        self, select_nodes: list[LinearOrder], highlight_nodes: list[LinearOrder]
     ):
         self.highlighted_nodes = highlight_nodes
         self.selected_nodes = select_nodes
