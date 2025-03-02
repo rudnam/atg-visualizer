@@ -39,20 +39,6 @@ Charateristics of Nodes and Edges according to Class
         Except for the variable color (<swap_color>), colors red and black can be verified as literals "red" and "black"
         Then other attributes can be check for their numerical value
 
-Proposed Test Organization
-1. test "default" output (i.e. without selection; permutahedron). effectively the same as .select_nodes(<all_nodes>)
-    Call PosetVisualizer(n) for n = 3 to 5
-    a. edges
-    b. nodes
-2. test select_nodes
-    Call PosetVisualizer(n) for n = 3 and 4, then call .select_nodes()
-    a. edges
-    b. nodes
-3. test select_and_highlight_nodes()
-    Call PosetVisualizer(n) for n = 3 and 4, then call .select_and_highlight_nodes()
-    a. edges
-    b. nodes
-
 New Test Proposal
 Now, since it is clear we are operating with three render types, I suppose we should not test for the definition anymore.
 (Notice that the ATG in the paper does not deal with highlighted edges, nor "other" nodes.)
@@ -82,7 +68,7 @@ from .upsilon_constants import TWOMAXIMAL
 RENDER_TYPE_SPECS = PosetVisualizer.RENDER_TYPE_SPECS
 
 
-def _verify_egdes_have_the_same_color(
+def _verify_edges_have_the_same_color(
     tester: FigureTester, edges: list[tuple[str, str]]
 ) -> bool:
     """Verify edges provided all have the same color. Not applicable to lists containing highlighted edges.
@@ -160,26 +146,6 @@ def _verify_render_type_of_edges(
     return True
 
 
-def _verify_nodes_are_highlighted(tester: FigureTester, nodes: list[str]) -> bool:
-    highlighted_color = RENDER_TYPE_SPECS["node"]["highlighted"]["color"]
-    highlighted_size = RENDER_TYPE_SPECS["node"]["highlighted"]["size"]
-    highlighted_opacity = RENDER_TYPE_SPECS["node"]["highlighted"]["opacity"]
-    for node_text in nodes:
-        node_data = tester.get_node_data(node_text)
-        color = node_data["marker"]["color"]
-        size = node_data["marker"]["size"]
-        opacity = node_data["opacity"]
-        if not all(
-            [
-                color == highlighted_color,
-                size == highlighted_size,
-                opacity == highlighted_opacity,
-            ]
-        ):
-            return False
-    return True
-
-
 def test_errors_raised():
     with pytest.raises(Exception, match="at least 2"):
         PosetVisualizer(1)
@@ -217,9 +183,9 @@ def test_default_behavior():
     edge_12 = [("123", "213"), ("312", "321")]
     edge_23 = [("123", "132"), ("231", "321")]
     diff_swap = [("123", "132"), ("123", "213")]
-    assert _verify_egdes_have_the_same_color(tester, edge_23)
-    assert _verify_egdes_have_the_same_color(tester, edge_12)
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap)
+    assert _verify_edges_have_the_same_color(tester, edge_23)
+    assert _verify_edges_have_the_same_color(tester, edge_12)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap)
 
     # ============ Size 4 ============ #
     visualizer = PosetVisualizer(4)
@@ -250,9 +216,9 @@ def test_default_behavior():
     edge_14 = [("2143", "2413"), ("3214", "3241"), ("1423", "4123")]
     edge_24 = [("1243", "1423"), ("2413", "4213"), ("1324", "1342")]
     diff_swap = [("1243", "1423"), ("1423", "4123")]
-    assert _verify_egdes_have_the_same_color(tester, edge_14)
-    assert _verify_egdes_have_the_same_color(tester, edge_24)
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap)
+    assert _verify_edges_have_the_same_color(tester, edge_14)
+    assert _verify_edges_have_the_same_color(tester, edge_24)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap)
 
 
 def test_select_nodes():
@@ -288,9 +254,9 @@ def test_select_nodes():
     diff_swap1 = [("123", "132"), ("132", "312")]
     diff_swap2 = [("123", "132"), ("312", "321")]
     diff_swap3 = [("132", "312"), ("312", "321")]
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap1)
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap2)
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap3)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap1)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap2)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap3)
 
     # ============ Size 4 ============ #
     visualizer = PosetVisualizer(4)
@@ -321,10 +287,10 @@ def test_select_nodes():
     edge_13 = [("3124", "1324"), ("3142", "1342")]
     edge_23 = [("1423", "1432"), ("1234", "1324")]
     diff_swap = [("2134", "2143"), ("1234", "2134")]
-    assert _verify_egdes_have_the_same_color(tester, edge_24)
-    assert _verify_egdes_have_the_same_color(tester, edge_13)
-    assert _verify_egdes_have_the_same_color(tester, edge_23)
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap)
+    assert _verify_edges_have_the_same_color(tester, edge_24)
+    assert _verify_edges_have_the_same_color(tester, edge_13)
+    assert _verify_edges_have_the_same_color(tester, edge_23)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap)
 
 
 def test_select_and_highlight_nodes():
@@ -403,7 +369,7 @@ def test_select_and_highlight_nodes():
     edge_13 = [("3124", "1324"), ("3142", "1342")]
     edge_23 = [("1423", "1432"), ("1234", "1324")]
     diff_swap = [("2134", "2143"), ("1234", "2134")]
-    assert _verify_egdes_have_the_same_color(tester, edge_24)
-    assert _verify_egdes_have_the_same_color(tester, edge_13)
-    assert _verify_egdes_have_the_same_color(tester, edge_23)
-    assert not _verify_egdes_have_the_same_color(tester, diff_swap)
+    assert _verify_edges_have_the_same_color(tester, edge_24)
+    assert _verify_edges_have_the_same_color(tester, edge_13)
+    assert _verify_edges_have_the_same_color(tester, edge_23)
+    assert not _verify_edges_have_the_same_color(tester, diff_swap)
