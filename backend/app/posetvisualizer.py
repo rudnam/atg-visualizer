@@ -1,11 +1,65 @@
+from typing import TypedDict, Literal
 from itertools import permutations, combinations, chain
 import networkx as nx
 import plotly.graph_objects as go
 import seaborn as sns
 
+from app.classes import *
+
+
+class NodeRenderSpecification(TypedDict):
+    color: str
+    size: int
+    opacity: float
+
+
+class EdgeRenderSpecification(TypedDict):
+    color: str
+    width: int
+    opacity: float
+
+
+class EdgeRenderSpecificationForSelectedOther(TypedDict):
+    width: int
+    opacity: float
+
+
+class NodeRenderTypeSpecs(TypedDict):
+    selected: NodeRenderSpecification
+    highlighted: NodeRenderSpecification
+    other: NodeRenderSpecification
+
+
+class EdgeRenderTypeSpecs(TypedDict):
+    selected: EdgeRenderSpecificationForSelectedOther
+    highlighted: EdgeRenderSpecification
+    other: EdgeRenderSpecificationForSelectedOther
+
+
+class RenderTypeSpecs(TypedDict):
+    node: NodeRenderTypeSpecs
+    edge: EdgeRenderTypeSpecs
+
+
+type RenderType = Literal["selected", "highlighted", "other"]
+
 
 class PosetVisualizer:
     MAX_SIZE = 8
+
+    RENDER_TYPE_SPECS: RenderTypeSpecs = {
+        "node": {
+            "selected": {"color": "black", "size": 3, "opacity": 1},
+            "highlighted": {"color": "red", "size": 6, "opacity": 1},
+            "other": {"color": "black", "size": 3, "opacity": 0.1},
+        },
+        "edge": {
+            "selected": {"width": 3, "opacity": 1},
+            "highlighted": {"color": "red", "width": 5, "opacity": 1},
+            "other": {"width": 3, "opacity": 0.1},
+        },
+        # showlegend is also affected by render_type but not specified in this specs
+    }
 
     def __init__(self, size: int):
         if not isinstance(size, int):
@@ -15,20 +69,29 @@ class PosetVisualizer:
                 f"Invalid size. Size must have a value of at least 2 and at most {self.MAX_SIZE}."
             )
 
-        self.size = size
-        self.selected_nodes = []
-        self.highlighted_nodes = []
+        self.size: int = size
+
+        self.selected_nodes: list[LinearOrder] = []
+        self.highlighted_nodes: list[LinearOrder] = []
+
+        self._graph: nx.Graph
+        # for the next properties, str means '1', '2', '3', etc. except for the values of _pair_to_color which are of course colors
+        self._pair_to_color: dict[tuple[str, str], str]
+        self._edges_by_swap: dict[
+            tuple[str, str], list[tuple[LinearOrder, LinearOrder]]
+        ]
+        self._fig: go.Figure
 
         self._set_up_graph()
         self._pos = nx.spring_layout(self._graph, dim=3, seed=42)
-        self._edge_trace = self._compute_edge_traces()
-        self._node_trace = self._compute_node_traces()
-        self._fig_layout = self._make_fig_layout()
+        self._edge_trace: list[go.Scatter3d] = self._compute_edge_traces()
+        self._node_trace: list[go.Scatter3d] = self._compute_node_traces()
+        self._fig_layout: go.Layout = self._make_fig_layout()
 
         self.update_figure()
 
     @staticmethod
-    def _get_swapped_numbers(p1: str, p2: str):
+    def _get_swapped_numbers(p1: str, p2: str) -> tuple[str, str]:
         """
         Returns the two numbers that were swapped between permutations,
         or None if not a valid adjacent transposition
@@ -57,7 +120,7 @@ class PosetVisualizer:
 
     def _set_up_graph(self):
         """Sets up graph and swap types"""
-        sequence = "".join(map(str, range(1, self.size + 1)))
+        sequence: str = "".join(map(str, range(1, self.size + 1)))
         number_pairs = list(combinations(sequence, 2))
         perm_strings = ["".join(p) for p in permutations(sequence)]
         self._graph = nx.Graph()
@@ -128,7 +191,9 @@ class PosetVisualizer:
 
         return edge_traces
 
-    def _make_edge_trace(self, edges, render_type="selected", number_pair=("1", "2")):
+    def _make_edge_trace(
+        self, edges, render_type: RenderType = "selected", number_pair=("1", "2")
+    ):
         selected_edges_x = []
         selected_edges_y = []
         selected_edges_z = []
@@ -143,12 +208,18 @@ class PosetVisualizer:
             selected_edges_z.extend(z_coords)
 
         # set trace options according to render type
-        line_dict = (
-            dict(color="red", width=5, dash="solid")
+        edge_color_by_swap = self._pair_to_color[number_pair]
+        edge_color_highlighted = self.RENDER_TYPE_SPECS["edge"]["highlighted"]["color"]
+        edge_color = (
+            edge_color_highlighted
             if render_type == "highlighted"
-            else dict(color=self._pair_to_color[number_pair], width=2)
+            else edge_color_by_swap
         )
-        trace_opacity = 0.1 if render_type == "other" else 1
+        line_dict = dict(
+            color=edge_color,
+            width=self.RENDER_TYPE_SPECS["edge"][render_type]["width"],
+        )
+        trace_opacity = self.RENDER_TYPE_SPECS["edge"][render_type]["opacity"]
         trace_show_legend = render_type == "selected"
 
         return go.Scatter3d(
@@ -198,14 +269,12 @@ class PosetVisualizer:
             node_traces.append(self._make_node_trace(other_nodes, render_type="other"))
         return node_traces
 
-    def _make_node_trace(self, nodes, render_type="selected"):
-        # set trace options according to render type
-        marker_dict = (
-            dict(size=6, color="red")
-            if render_type == "highlighted"
-            else dict(size=3, color="black")
+    def _make_node_trace(self, nodes, render_type: RenderType = "selected"):
+        marker_dict = dict(
+            color=self.RENDER_TYPE_SPECS["node"][render_type]["color"],
+            size=self.RENDER_TYPE_SPECS["node"][render_type]["size"],
         )
-        trace_opacity = 0.1 if render_type == "other" else 1
+        trace_opacity = self.RENDER_TYPE_SPECS["node"][render_type]["opacity"]
         trace_show_legend = render_type == "selected"
 
         selected_nodes_x = []
@@ -253,14 +322,14 @@ class PosetVisualizer:
     def _all_perms_are_selected(self):
         return len(self.selected_nodes) == 0
 
-    def select_nodes(self, select_nodes: list[str]):
+    def select_nodes(self, select_nodes: list[LinearOrder]):
         """Selects specified nodes"""
         self.selected_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
         self._edge_trace = self._compute_edge_traces()
         self.update_figure()
 
-    def highlight_nodes(self, select_nodes: list[str]):
+    def highlight_nodes(self, select_nodes: list[LinearOrder]):
         """Highlights specified nodes"""
         self.highlighted_nodes = select_nodes
         self._node_trace = self._compute_node_traces()
@@ -268,7 +337,7 @@ class PosetVisualizer:
         self.update_figure()
 
     def select_and_highlight_nodes(
-        self, select_nodes: list[str], highlight_nodes: list[str]
+        self, select_nodes: list[LinearOrder], highlight_nodes: list[LinearOrder]
     ):
         self.highlighted_nodes = highlight_nodes
         self.selected_nodes = select_nodes

@@ -17,24 +17,26 @@ class FigureTester:
 
         for trace in self._data:
             is_node_trace = "markers" in trace.get("mode", "")
+            if not is_node_trace:
+                continue
 
-            if is_node_trace:
-                for i, node_text in enumerate(trace["text"]):
-                    if str(node_text) == text:
-                        return NodeData(
-                            hoverinfo=trace["hoverinfo"],
-                            marker=trace["marker"],
-                            mode=trace["mode"],
-                            name=trace["name"],
-                            opacity=trace["opacity"],
-                            showlegend=trace["showlegend"],
-                            text=trace["text"][i],
-                            textposition=trace["textposition"],
-                            x=trace["x"][i],
-                            y=trace["y"][i],
-                            z=trace["z"][i],
-                        )
+            for i, node_text in enumerate(trace["text"]):
+                if str(node_text) != text:
+                    continue
 
+                return NodeData(
+                    hoverinfo=trace["hoverinfo"],
+                    marker=trace["marker"],
+                    mode=trace["mode"],
+                    name=trace["name"],
+                    opacity=trace["opacity"],
+                    showlegend=trace["showlegend"],
+                    text=trace["text"][i],
+                    textposition=trace["textposition"],
+                    x=trace["x"][i],
+                    y=trace["y"][i],
+                    z=trace["z"][i],
+                )
         return None
 
     def get_edge_data(self, n1: str, n2: str) -> EdgeData | None:
@@ -42,35 +44,35 @@ class FigureTester:
 
         for trace in self._data:
             is_edge_trace = "lines" in trace.get("mode", "")
+            if not is_edge_trace:
+                continue
 
-            if is_edge_trace:
-                for i in range(0, len(trace["x"]), 3):
-                    start_node = self.get_node_data_by_position(
-                        trace["x"][i], trace["y"][i], trace["z"][i]
-                    )
-                    end_node = self.get_node_data_by_position(
-                        trace["x"][i + 1], trace["y"][i + 1], trace["z"][i + 1]
-                    )
+            for i in range(0, len(trace["x"]), 3):
+                start_node = self.get_node_data_by_position(
+                    trace["x"][i], trace["y"][i], trace["z"][i]
+                )
+                end_node = self.get_node_data_by_position(
+                    trace["x"][i + 1], trace["y"][i + 1], trace["z"][i + 1]
+                )
 
-                    if (
-                        start_node
-                        and end_node
-                        and (
-                            (start_node["text"] == n1 and end_node["text"] == n2)
-                            or (start_node["text"] == n2 and end_node["text"] == n1)
-                        )
-                    ):
-                        return EdgeData(
-                            hoverinfo=trace["hoverinfo"],
-                            line=trace["line"],
-                            mode=trace["mode"],
-                            name=trace["name"],
-                            opacity=trace["opacity"],
-                            showlegend=trace["showlegend"],
-                            x=(trace["x"][i], trace["x"][i + 1]),
-                            y=(trace["y"][i], trace["x"][i + 1]),
-                            z=(trace["z"][i], trace["x"][i + 1]),
-                        )
+                if not start_node or not end_node:
+                    continue
+                if not (start_node["text"] == n1 and end_node["text"] == n2) and not (
+                    start_node["text"] == n2 and end_node["text"] == n1
+                ):
+                    continue
+
+                return EdgeData(
+                    hoverinfo=trace["hoverinfo"],
+                    line=trace["line"],
+                    mode=trace["mode"],
+                    name=trace["name"],
+                    opacity=trace["opacity"],
+                    showlegend=trace["showlegend"],
+                    x=(trace["x"][i], trace["x"][i + 1]),
+                    y=(trace["y"][i], trace["x"][i + 1]),
+                    z=(trace["z"][i], trace["x"][i + 1]),
+                )
         return None
 
     def get_node_data_by_position(
@@ -80,21 +82,24 @@ class FigureTester:
 
         for trace in self._data:
             is_node_trace = "markers" in trace.get("mode", "")
+            if not is_node_trace:
+                continue
 
-            if is_node_trace:
-                for i in range(len(trace["text"])):
-                    if (trace["x"][i], trace["y"][i], trace["z"][i]) == (x, y, z):
-                        return NodeData(
-                            hoverinfo=trace["hoverinfo"],
-                            marker=trace["marker"],
-                            mode=trace["mode"],
-                            name=trace["name"],
-                            opacity=trace["opacity"],
-                            showlegend=trace["showlegend"],
-                            text=trace["text"][i],
-                            textposition=trace["textposition"],
-                            x=trace["x"][i],
-                            y=trace["y"][i],
-                            z=trace["z"][i],
-                        )
+            for i in range(len(trace["text"])):
+                if (trace["x"][i], trace["y"][i], trace["z"][i]) != (x, y, z):
+                    continue
+
+                return NodeData(
+                    hoverinfo=trace["hoverinfo"],
+                    marker=trace["marker"],
+                    mode=trace["mode"],
+                    name=trace["name"],
+                    opacity=trace["opacity"],
+                    showlegend=trace["showlegend"],
+                    text=trace["text"][i],
+                    textposition=trace["textposition"],
+                    x=trace["x"][i],
+                    y=trace["y"][i],
+                    z=trace["z"][i],
+                )
         return None
