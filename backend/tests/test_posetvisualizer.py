@@ -69,7 +69,7 @@ from .upsilon_constants import TWOMAXIMAL
 RENDER_TYPE_SPECS = PosetVisualizer.RENDER_TYPE_SPECS
 
 
-def _verify_edges_have_the_same_color(
+def verify_edges_have_the_same_color(
     tester: FigureTester, edges: list[tuple[str, str]]
 ) -> None:
     """Verify all edges provided have the same color. Not applicable to lists containing highlighted edges.
@@ -98,7 +98,7 @@ def _verify_edges_have_the_same_color(
         ), f"expected {{edge: {edge}, color: {color} }} to have the same color as {{edge0: {edge0}, color: {color0} }}"
 
 
-def _verify_edges_have_different_colors(
+def verify_edges_have_different_colors(
     tester: FigureTester, edge1: tuple[str, str], edge2: tuple[str, str]
 ) -> None:
     """Verify that TWO edges differ in color. Not applicable to highlighted edges"""
@@ -120,7 +120,7 @@ def _verify_edges_have_different_colors(
     ), f"expected {{edge1: {edge1}, color: {color1} }} to have a different color than {{edge2: {edge2}, color: {color2} }}"
 
 
-def _verify_edges_do_not_exist(tester, edges) -> None:
+def verify_edges_do_not_exist(tester, edges) -> None:
     """Verify if all edges provided are NOT part of the atg
 
     Any two permutations with one unreachable by an adjacent swap from the other should not constitute an edge\\
@@ -137,7 +137,7 @@ def _verify_edges_do_not_exist(tester, edges) -> None:
         ), f"edge '{(node_text1, node_text2)}', while expected to not exist, does exist in figure data"
 
 
-def _verify_render_type_of_node(
+def verify_render_type_of_node(
     tester: FigureTester, node_text: str, render_type: RenderType
 ) -> bool:
     """Verify that the node is rendered as render_type
@@ -168,7 +168,7 @@ def _verify_render_type_of_node(
     return same_color and same_size and same_opacity
 
 
-def _verify_render_type_of_edge(
+def verify_render_type_of_edge(
     tester: FigureTester, edge: tuple[str, str], render_type: RenderType
 ) -> bool:
     """Verify that the edge is rendered as render_type
@@ -200,12 +200,12 @@ def _verify_render_type_of_edge(
     return color_is_ok and same_width and same_opacity
 
 
-def _verify_render_type_of_nodes(
+def verify_render_type_of_nodes(
     tester: FigureTester, nodes: list[str], render_type: RenderType
 ) -> None:
     """Verify that the nodes are rendered as render_type"""
     for node_text in nodes:
-        is_correctly_rendered = _verify_render_type_of_node(
+        is_correctly_rendered = verify_render_type_of_node(
             tester, node_text, render_type
         )
         assert (
@@ -213,12 +213,12 @@ def _verify_render_type_of_nodes(
         ), f'expected node "{node_text}" is rendered as "{render_type}", but it\'s not'
 
 
-def _verify_render_type_of_edges(
+def verify_render_type_of_edges(
     tester: FigureTester, edges: list[tuple[str, str]], render_type: RenderType
 ) -> None:
     """Verify that the edges are rendered as render_type"""
     for edge in edges:
-        is_correctly_rendered = _verify_render_type_of_edge(tester, edge, render_type)
+        is_correctly_rendered = verify_render_type_of_edge(tester, edge, render_type)
         assert (
             is_correctly_rendered
         ), f'expected edge "{edge}" is rendered as "{render_type}", but it\'s not'
@@ -243,7 +243,7 @@ def test_default_behavior():
     # selected/highlighted nodes are part of the atg
     # for this case, there are no "highlighted", "other", and "does not exist" nodes to check
     selected_nodes = ["123", "132", "213", "231", "312", "321"]
-    _verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
+    verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
 
     # selected/highlighted edges are part of the atg, other edges are "visual aids"
     # for this case, there are no "highlighted" and "other" edges to check
@@ -254,16 +254,16 @@ def test_default_behavior():
         ("123", "231"),
         ("312", "213"),
     ]
-    _verify_render_type_of_edges(tester, selected_edges, render_type="selected")
-    _verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
+    verify_render_type_of_edges(tester, selected_edges, render_type="selected")
+    verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
 
     # edges are colored according to swap type except highlighted edges
     edge_12 = [("123", "213"), ("312", "321")]
     edge_23 = [("123", "132"), ("231", "321")]
     diff_swap = [("123", "132"), ("123", "213")]
-    _verify_edges_have_the_same_color(tester, edge_23)
-    _verify_edges_have_the_same_color(tester, edge_12)
-    _verify_edges_have_different_colors(tester, *diff_swap)
+    verify_edges_have_the_same_color(tester, edge_23)
+    verify_edges_have_the_same_color(tester, edge_12)
+    verify_edges_have_different_colors(tester, *diff_swap)
 
     # ============ Size 4 ============ #
     visualizer = PosetVisualizer(4)
@@ -272,7 +272,7 @@ def test_default_behavior():
     # selected/highlighted nodes are part of the atg
     # for this case, there are no "highlighted", "other", and "does not exist" nodes to check
     some_selected_nodes = ["1243", "1432", "2134", "2431", "4312", "3214"]
-    _verify_render_type_of_nodes(tester, some_selected_nodes, render_type="selected")
+    verify_render_type_of_nodes(tester, some_selected_nodes, render_type="selected")
 
     # selected/highlighted edges are part of the atg, other edges are "visual aids"
     # for this case, there are no "highlighted" and "other" edges to check
@@ -283,16 +283,16 @@ def test_default_behavior():
         ("1243", "2341"),
         ("4312", "4213"),
     ]
-    _verify_render_type_of_edges(tester, some_selected_edges, render_type="selected")
-    _verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
+    verify_render_type_of_edges(tester, some_selected_edges, render_type="selected")
+    verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
 
     # edges are colored according to swap type except highlighted edges
     edge_14 = [("2143", "2413"), ("3214", "3241"), ("1423", "4123")]
     edge_24 = [("1243", "1423"), ("2413", "4213"), ("1324", "1342")]
     diff_swap = [("1243", "1423"), ("1423", "4123")]
-    _verify_edges_have_the_same_color(tester, edge_14)
-    _verify_edges_have_the_same_color(tester, edge_24)
-    _verify_edges_have_different_colors(tester, *diff_swap)
+    verify_edges_have_the_same_color(tester, edge_14)
+    verify_edges_have_the_same_color(tester, edge_24)
+    verify_edges_have_different_colors(tester, *diff_swap)
 
 
 def test_select_nodes():
@@ -306,8 +306,8 @@ def test_select_nodes():
     # for this case, there are no "highlighted", and "does not exist" nodes to check
     selected_nodes = selected_nodes
     other_nodes = ["231", "213"]
-    _verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
-    _verify_render_type_of_nodes(tester, other_nodes, render_type="other")
+    verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
+    verify_render_type_of_nodes(tester, other_nodes, render_type="other")
 
     # selected edges are part of the atg, other edges are "visual aids"
     # for this case, there are no "highlighted" edges to check
@@ -319,18 +319,18 @@ def test_select_nodes():
         ("123", "231"),
         ("312", "213"),
     ]
-    _verify_render_type_of_edges(tester, selected_edges, render_type="selected")
-    _verify_render_type_of_edges(tester, other_edges, render_type="other")
-    _verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
+    verify_render_type_of_edges(tester, selected_edges, render_type="selected")
+    verify_render_type_of_edges(tester, other_edges, render_type="other")
+    verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
 
     # edges are colored according to swap type except highlighted edges
     # in this case, no "selected" edges have the same color
     diff_swap1 = [("123", "132"), ("132", "312")]
     diff_swap2 = [("123", "132"), ("312", "321")]
     diff_swap3 = [("132", "312"), ("312", "321")]
-    _verify_edges_have_different_colors(tester, *diff_swap1)
-    _verify_edges_have_different_colors(tester, *diff_swap2)
-    _verify_edges_have_different_colors(tester, *diff_swap3)
+    verify_edges_have_different_colors(tester, *diff_swap1)
+    verify_edges_have_different_colors(tester, *diff_swap2)
+    verify_edges_have_different_colors(tester, *diff_swap3)
 
     # ============ Size 4 ============ #
     visualizer = PosetVisualizer(4)
@@ -342,27 +342,27 @@ def test_select_nodes():
     # for this case, there are no "highlighted" and "does not exist" nodes to check
     selected_nodes = selected_nodes
     some_other_nodes = ["4321", "4231", "2413"]
-    _verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
-    _verify_render_type_of_nodes(tester, some_other_nodes, render_type="other")
+    verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
+    verify_render_type_of_nodes(tester, some_other_nodes, render_type="other")
 
     # selected/highlighted edges are part of the atg, other edges are "visual aids"
     # for this case, there are no "highlighted" edges to check
     some_selected_edges = [("2134", "2143"), ("1234", "1324"), ("3142", "3412")]
     some_other_edges = [("4321", "4231"), ("2143", "2413")]
     some_edges_that_dont_exist = [("1243", "3142"), ("4123", "4321"), ("1234", "2314")]
-    _verify_render_type_of_edges(tester, some_selected_edges, render_type="selected")
-    _verify_render_type_of_edges(tester, some_other_edges, render_type="other")
-    _verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
+    verify_render_type_of_edges(tester, some_selected_edges, render_type="selected")
+    verify_render_type_of_edges(tester, some_other_edges, render_type="other")
+    verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
 
     # edges are colored according to swap type except highlighted edges
     edge_24 = [("3124", "3142"), ("1324", "1342"), ("1243", "1423")]
     edge_13 = [("3124", "1324"), ("3142", "1342")]
     edge_23 = [("1423", "1432"), ("1234", "1324")]
     diff_swap = [("2134", "2143"), ("1234", "2134")]
-    _verify_edges_have_the_same_color(tester, edge_24)
-    _verify_edges_have_the_same_color(tester, edge_13)
-    _verify_edges_have_the_same_color(tester, edge_23)
-    _verify_edges_have_different_colors(tester, *diff_swap)
+    verify_edges_have_the_same_color(tester, edge_24)
+    verify_edges_have_the_same_color(tester, edge_13)
+    verify_edges_have_the_same_color(tester, edge_23)
+    verify_edges_have_different_colors(tester, *diff_swap)
 
 
 def test_select_and_highlight_nodes():
@@ -378,9 +378,9 @@ def test_select_and_highlight_nodes():
     selected_nodes = ["321"]
     other_nodes = ["231", "213"]
     highlighted_nodes = highlighted_nodes
-    _verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
-    _verify_render_type_of_nodes(tester, other_nodes, render_type="other")
-    _verify_render_type_of_nodes(tester, highlighted_nodes, render_type="highlighted")
+    verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
+    verify_render_type_of_nodes(tester, other_nodes, render_type="other")
+    verify_render_type_of_nodes(tester, highlighted_nodes, render_type="highlighted")
 
     # selected edges are part of the atg, other edges are "visual aids"
     selected_edges = [("312", "321")]
@@ -392,10 +392,10 @@ def test_select_and_highlight_nodes():
         ("123", "231"),
         ("312", "213"),
     ]
-    _verify_render_type_of_edges(tester, selected_edges, render_type="selected")
-    _verify_render_type_of_edges(tester, other_edges, render_type="other")
-    _verify_render_type_of_edges(tester, highlighted_edges, render_type="highlighted")
-    _verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
+    verify_render_type_of_edges(tester, selected_edges, render_type="selected")
+    verify_render_type_of_edges(tester, other_edges, render_type="other")
+    verify_render_type_of_edges(tester, highlighted_edges, render_type="highlighted")
+    verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
 
     # edges are colored according to swap type except highlighted edges
     # in this case, two out of three edges are highlighted, so nothing to test
@@ -412,26 +412,26 @@ def test_select_and_highlight_nodes():
     selected_nodes = list(set(TWOMAXIMAL) - set(highlighted_nodes))
     some_other_nodes = ["4321", "4231", "2413"]
     highlighted_nodes = highlighted_nodes
-    _verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
-    _verify_render_type_of_nodes(tester, some_other_nodes, render_type="other")
-    _verify_render_type_of_nodes(tester, highlighted_nodes, render_type="highlighted")
+    verify_render_type_of_nodes(tester, selected_nodes, render_type="selected")
+    verify_render_type_of_nodes(tester, some_other_nodes, render_type="other")
+    verify_render_type_of_nodes(tester, highlighted_nodes, render_type="highlighted")
 
     # selected/highlighted edges are part of the atg, other edges are "visual aids"
     some_selected_edges = [("2134", "2143"), ("1234", "1324"), ("3142", "3412")]
     some_other_edges = [("4321", "4231"), ("2143", "2413")]
     highlighted_edges = [("4123", "1423"), ("1423", "1243"), ("1243", "1234")]
     some_edges_that_dont_exist = [("1243", "3142"), ("4123", "4321"), ("1234", "2314")]
-    _verify_render_type_of_edges(tester, some_selected_edges, render_type="selected")
-    _verify_render_type_of_edges(tester, some_other_edges, render_type="other")
-    _verify_render_type_of_edges(tester, highlighted_edges, render_type="highlighted")
-    _verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
+    verify_render_type_of_edges(tester, some_selected_edges, render_type="selected")
+    verify_render_type_of_edges(tester, some_other_edges, render_type="other")
+    verify_render_type_of_edges(tester, highlighted_edges, render_type="highlighted")
+    verify_edges_do_not_exist(tester, some_edges_that_dont_exist)
 
     # edges are colored according to swap type except highlighted edges
     edge_24 = [("3124", "3142"), ("1324", "1342")]
     edge_13 = [("3124", "1324"), ("3142", "1342")]
     edge_23 = [("1423", "1432"), ("1234", "1324")]
     diff_swap = [("2134", "2143"), ("1234", "2134")]
-    _verify_edges_have_the_same_color(tester, edge_24)
-    _verify_edges_have_the_same_color(tester, edge_13)
-    _verify_edges_have_the_same_color(tester, edge_23)
-    _verify_edges_have_different_colors(tester, *diff_swap)
+    verify_edges_have_the_same_color(tester, edge_24)
+    verify_edges_have_the_same_color(tester, edge_13)
+    verify_edges_have_the_same_color(tester, edge_23)
+    verify_edges_have_different_colors(tester, *diff_swap)
