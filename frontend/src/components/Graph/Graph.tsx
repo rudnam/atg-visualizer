@@ -44,14 +44,20 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
       <div className="text-xl font-bold">ADJACENT TRANSPOSITION GRAPH</div>
       <div className="w-full min-h-80 h-full sm:h-96 grow relative">
         <div>
-          <LoadingOverlay visible={loading} zIndex={1000} />
+          <LoadingOverlay
+            visible={loading}
+            zIndex={1000}
+            data-testid="loading-overlay"
+          />
           {graphData && graphData.data ? (
-            <Plot
-              data={graphData.data}
-              layout={layout}
-              config={config}
-              style={{ width: "100%", height: "100%" }}
-            />
+            <div data-testid="plot-container">
+              <Plot
+                data={graphData.data}
+                layout={layout}
+                config={config}
+                style={{ width: "100%", height: "100%" }}
+              />
+            </div>
           ) : (
             <></>
           )}

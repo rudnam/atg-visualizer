@@ -9,7 +9,7 @@ test("has title", async ({ page }) => {
 test("renders atg when draw button is clicked", async ({ page }) => {
   await page.goto("./");
 
-  const plotDiv = page.getByTestId("plot-div");
+  const plotDiv = page.getByTestId("plot-container");
 
   await expect(plotDiv).toBeEmpty();
 
