@@ -28,11 +28,11 @@ describe("Graph", () => {
     } as GraphData;
 
     render(<GraphComponent loading={false} graphData={mockGraphData} />);
-    expect(screen.getByTestId("plot-container")).toBeInTheDocument();
+    expect(screen.getByTestId("plot-div")).toBeInTheDocument();
   });
 
   it("does not render Plotly graph when graphData is null", () => {
     render(<GraphComponent loading={false} graphData={null} />);
-    expect(screen.queryByTestId("plot-container")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("plot-div")).not.toBeInTheDocument();
   });
 });

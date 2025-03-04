@@ -9,13 +9,12 @@ test("has title", async ({ page }) => {
 test("renders atg when draw button is clicked", async ({ page }) => {
   await page.goto("./");
 
-  const plotDiv = page.getByTestId("plot-container");
-
-  await expect(plotDiv).toBeEmpty();
+  await expect(page.getByTestId("plot-div")).toHaveCount(0);
 
   await page.getByTestId("draw-button").click();
 
-  await expect(plotDiv).not.toBeEmpty();
+  await expect(page.getByTestId("plot-div")).toHaveCount(1);
+  await expect(page.getByTestId("plot-div")).toBeVisible();
 });
 
 test("renders poset results when solve button is clicked", async ({ page }) => {
