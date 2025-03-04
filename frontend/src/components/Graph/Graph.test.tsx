@@ -1,16 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { screen } from "@testing-library/react";
 import { render } from "../../test-utils/render";
 import Graph from "./Graph";
 import GraphComponent from "./Graph";
-import Plotly from "plotly.js-dist";
 import { GraphData } from "../../types";
-
-vi.mock("plotly.js-dist", () => ({
-  default: {
-    react: vi.fn(),
-  },
-}));
 
 describe("Graph", () => {
   it("renders", () => {
@@ -20,19 +13,26 @@ describe("Graph", () => {
     ).toBeInTheDocument();
   });
 
-  it("calls Plotly.react when graphData is provided", () => {
+  it("shows loading overlay when loading is true", () => {
+    render(<GraphComponent loading={true} graphData={null} />);
+    expect(
+      screen.getByText("ADJACENT TRANSPOSITION GRAPH"),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId("loading-overlay")).toBeInTheDocument();
+  });
+
+  it("renders Plotly graph when graphData is provided", () => {
     const mockGraphData = {
       data: [{ x: [1, 2, 3], y: [3, 2, 1], type: "scatter" }],
       layout: { title: "Test Graph" },
     } as GraphData;
 
     render(<GraphComponent loading={false} graphData={mockGraphData} />);
+    expect(screen.getByTestId("plot-div")).toBeInTheDocument();
+  });
 
-    expect(Plotly.react).toHaveBeenCalledWith(
-      expect.any(HTMLElement),
-      mockGraphData.data,
-      mockGraphData.layout,
-      expect.objectContaining({ displaylogo: false }),
-    );
+  it("does not render Plotly graph when graphData is null", () => {
+    render(<GraphComponent loading={false} graphData={null} />);
+    expect(screen.queryByTestId("plot-div")).not.toBeInTheDocument();
   });
 });

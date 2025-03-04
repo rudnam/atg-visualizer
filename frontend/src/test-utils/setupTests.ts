@@ -24,3 +24,5 @@ global.ResizeObserver = vi.fn().mockImplementation(() => ({
 }));
 
 vi.spyOn(window, "alert").mockImplementation(() => {});
+global.URL.createObjectURL = vi.fn(() => "mocked-url");
+HTMLCanvasElement.prototype.getContext = vi.fn();
