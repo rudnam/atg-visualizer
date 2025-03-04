@@ -1,7 +1,8 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import Plotly from "plotly.js-dist";
 import { LoadingOverlay } from "@mantine/core";
 import { GraphData } from "../../types";
+import Plot from "react-plotly.js";
 
 interface GraphProps {
   loading: boolean;
@@ -9,28 +10,34 @@ interface GraphProps {
 }
 
 const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
-  const plotRef = useRef<HTMLDivElement>(null);
+  const config: Partial<Plotly.Config> = {
+    displaylogo: false,
+    modeBarButtonsToRemove: [
+      "zoom3d",
+      "pan3d",
+      "resetCameraDefault3d",
+      "resetCameraLastSave3d",
+      "orbitRotation",
+      "tableRotation",
+      "toImage",
+    ],
+  };
 
-  useEffect(() => {
-    if (plotRef.current && graphData) {
-      if (graphData.data !== null && graphData.layout !== null) {
-        const config: Partial<Plotly.Config> = {
-          displaylogo: false,
-          modeBarButtonsToRemove: [
-            "zoom3d",
-            "pan3d",
-            "resetCameraDefault3d",
-            "resetCameraLastSave3d",
-            "orbitRotation",
-            "tableRotation",
-            "toImage",
-          ],
-        };
-
-        Plotly.react(plotRef.current, graphData.data, graphData.layout, config);
-      }
-    }
-  }, [graphData]);
+  const layout: Partial<Plotly.Layout> = {
+    uirevision: "constant",
+    scene: {
+      xaxis: { visible: false },
+      yaxis: { visible: false },
+      zaxis: { visible: false },
+      bgcolor: "rgba(0, 0, 0, 0)",
+    },
+    margin: { l: 0, r: 0, b: 0, t: 0 },
+    legend: {
+      xanchor: "right",
+      yanchor: "top",
+      bgcolor: "rgba(255, 255, 255, 0.3)",
+    },
+  };
 
   return (
     <div className="flex flex-col p-8 w-auto md:w-full max-w-3xl h-full max-h-[36rem] bg-[#fefefe] rounded-xl shadow-lg">
@@ -38,7 +45,16 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
       <div className="w-full min-h-80 h-full sm:h-96 grow relative">
         <div>
           <LoadingOverlay visible={loading} zIndex={1000} />
-          <div className="" ref={plotRef} data-testid="plot-div" />
+          {graphData && graphData.data ? (
+            <Plot
+              data={graphData.data}
+              layout={layout}
+              config={config}
+              style={{ width: "100%", height: "100%" }}
+            />
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>
