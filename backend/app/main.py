@@ -9,8 +9,11 @@ import plotly.graph_objects as go
 import plotly.io as pio
 
 from app.posetvisualizer import PosetVisualizer
+from app.posetgraph import PosetGraph
 from app.posetsolver import PosetSolver
 from app.posetutils import PosetUtils
+
+from classes import CoverRelation
 
 
 class GraphRequest(BaseModel):
@@ -66,6 +69,21 @@ def get_graph(
 
         fig_data = visualizer.get_figure_data()
 
+        return JSONResponse(content=pio.to_json(fig_data))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/posetgraph", response_model=GraphData)
+def get_posetgraph(permutation_length: int, cover_relation: CoverRelation):
+    try:
+        if permutation_length < 2 or permutation_length > PosetVisualizer.MAX_SIZE:
+            raise ValueError(
+                f"Permutation length must be between 2 and {PosetVisualizer.MAX_SIZE}."
+            )
+
+        posetgraph = PosetGraph(cover_relation, permutation_length)
+        fig_data = posetgraph.get_figure_data()
         return JSONResponse(content=pio.to_json(fig_data))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
