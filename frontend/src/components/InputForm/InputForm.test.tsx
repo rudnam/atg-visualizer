@@ -11,7 +11,7 @@ describe("InputForm", () => {
   it("renders", () => {
     render(
       <InputForm
-        fetchEntireGraphData={mockFetchGraphData}
+        fetchGraphData={mockFetchGraphData}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
@@ -22,7 +22,7 @@ describe("InputForm", () => {
   it("renders all form elements", () => {
     render(
       <InputForm
-        fetchEntireGraphData={mockFetchGraphData}
+        fetchGraphData={mockFetchGraphData}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
@@ -37,7 +37,7 @@ describe("InputForm", () => {
   it("calls fetchEntireGraphData with correct parameters when Draw button is clicked", async () => {
     render(
       <InputForm
-        fetchEntireGraphData={mockFetchGraphData}
+        fetchGraphData={mockFetchGraphData}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
@@ -55,7 +55,7 @@ describe("InputForm", () => {
   it("calls fetchPosetCoverResults with correct parameters when Solve button is clicked", async () => {
     render(
       <InputForm
-        fetchEntireGraphData={mockFetchGraphData}
+        fetchGraphData={mockFetchGraphData}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,

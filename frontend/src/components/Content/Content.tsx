@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import InputForm from "../InputForm/InputForm";
 import Graph from "../Graph/Graph";
-import { GraphData, PosetResult } from "../../types";
+import { GraphData, PosetResult, Relation } from "../../types";
 import ResultsPanel from "../ResultsPanel/ResultsPanel";
 import posetService from "../../services/poset";
 
@@ -12,7 +12,7 @@ const Content: React.FC = () => {
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
 
-  const fetchEntireGraphData = async (size: number, upsilon: string[]) => {
+  const fetchGraphData = async (size: number, upsilon: string[]) => {
     try {
       if (upsilon.length > 0 && size !== upsilon[0].length) {
         throw new Error(
@@ -24,6 +24,29 @@ const Content: React.FC = () => {
       setHighlightedPosetIndex(-1);
 
       const atgGraphData = await posetService.getAtgGraphData(size, upsilon);
+      setAtgGraph(atgGraphData);
+    } catch (error) {
+      console.error("Error rendering the plot:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGraphDataFromCoverRelation = async (
+    size: number,
+    coverRelation: Relation[],
+  ) => {
+    try {
+      setLoading(true);
+      setPosetResults([]);
+      setHighlightedPosetIndex(-1);
+
+      console.log("a", coverRelation);
+
+      const atgGraphData = await posetService.getAtgGraphDataFromCoverRelation(
+        size,
+        coverRelation,
+      );
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
@@ -86,7 +109,8 @@ const Content: React.FC = () => {
   return (
     <div className="h-full px-4 md:px-8 grow flex flex-col sm:flex-row justify-center gap-12 w-full max-w-6xl mx-auto">
       <InputForm
-        fetchEntireGraphData={fetchEntireGraphData}
+        fetchGraphData={fetchGraphData}
+        fetchGraphDataFromCoverRelation={fetchGraphDataFromCoverRelation}
         fetchPosetCoverResults={fetchPosetCoverResults}
         loading={loading}
       />
