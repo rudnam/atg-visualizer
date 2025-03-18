@@ -437,7 +437,7 @@ def test_select_and_highlight_nodes():
     verify_edges_have_different_colors(tester, *diff_swap)
 
 
-def test_extra_test_case():
+def test_hexsquare_as_selected_nodes():
     LINEAR_EXTENSIONS = ["1234", "1243", "1324", "1342", "1423", "1432", "4123", "4132"]
     visualizer = PosetVisualizer(4)
     selected_nodes = LINEAR_EXTENSIONS
