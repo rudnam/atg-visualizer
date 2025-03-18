@@ -13,7 +13,7 @@ from app.posetgraph import PosetGraph
 from app.posetsolver import PosetSolver
 from app.posetutils import PosetUtils
 
-from classes import CoverRelation
+from app.classes import CoverRelation
 
 
 class GraphRequest(BaseModel):
