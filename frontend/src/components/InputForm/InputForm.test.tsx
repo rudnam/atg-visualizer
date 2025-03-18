@@ -6,12 +6,14 @@ import userEvent from "@testing-library/user-event";
 
 describe("InputForm", () => {
   const mockFetchGraphData: () => Promise<void> = vi.fn();
+  const mockFetchGraphDataFromCoverRelation: () => Promise<void> = vi.fn();
   const mockFetchPosetCover: () => Promise<void> = vi.fn();
 
   it("renders", () => {
     render(
       <InputForm
         fetchGraphData={mockFetchGraphData}
+        fetchGraphDataFromCoverRelation={mockFetchGraphDataFromCoverRelation}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
@@ -23,6 +25,7 @@ describe("InputForm", () => {
     render(
       <InputForm
         fetchGraphData={mockFetchGraphData}
+        fetchGraphDataFromCoverRelation={mockFetchGraphDataFromCoverRelation}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
@@ -38,6 +41,7 @@ describe("InputForm", () => {
     render(
       <InputForm
         fetchGraphData={mockFetchGraphData}
+        fetchGraphDataFromCoverRelation={mockFetchGraphDataFromCoverRelation}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
@@ -56,6 +60,7 @@ describe("InputForm", () => {
     render(
       <InputForm
         fetchGraphData={mockFetchGraphData}
+        fetchGraphDataFromCoverRelation={mockFetchGraphDataFromCoverRelation}
         fetchPosetCoverResults={mockFetchPosetCover}
         loading={false}
       />,
