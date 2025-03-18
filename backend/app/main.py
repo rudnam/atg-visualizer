@@ -12,6 +12,8 @@ from app.posetvisualizer import PosetVisualizer
 from app.posetsolver import PosetSolver
 from app.posetutils import PosetUtils
 
+from app.classes import CoverRelation, LinearExtensions
+
 
 class GraphRequest(BaseModel):
     sequence: str
@@ -66,6 +68,31 @@ def get_graph(
 
         fig_data = visualizer.get_figure_data()
 
+        return JSONResponse(content=pio.to_json(fig_data))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/graph_from_cover_relation", response_model=GraphData)
+def get_posetgraph(permutation_length: int, cover_relation: list[list[int]]):
+    try:
+        if permutation_length < 2 or permutation_length > PosetVisualizer.MAX_SIZE:
+            raise ValueError(
+                f"Permutation length must be between 2 and {PosetVisualizer.MAX_SIZE}."
+            )
+
+        cover_relation1: CoverRelation = [
+            (relation[0], relation[1]) for relation in cover_relation
+        ]
+
+        visualizer = PosetVisualizer(permutation_length)
+        sequence: str = "".join(map(str, range(1, permutation_length + 1)))
+        linear_extensions: LinearExtensions = (
+            PosetUtils.get_linear_extensions_from_relation(cover_relation1, sequence)
+        )
+        visualizer.select_nodes(linear_extensions)
+
+        fig_data = visualizer.get_figure_data()
         return JSONResponse(content=pio.to_json(fig_data))
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
