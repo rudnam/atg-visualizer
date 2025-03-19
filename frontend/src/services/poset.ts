@@ -10,21 +10,11 @@ const getAtgGraphData = async (
   selectedNodes: string[] | null = null,
   highlightedNodes: string[] | null = null,
 ): Promise<GraphData> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const params: Record<string, any> = { size };
-
-  if (selectedNodes !== null) {
-    params.selected_nodes = selectedNodes;
-  }
-  if (highlightedNodes !== null) {
-    params.highlighted_nodes = highlightedNodes;
-  }
-
-  const response = await api.get(`/graph`, {
-    params,
-    paramsSerializer: {
-      indexes: null,
-    },
+  const response = await api.post(`/graph`, {
+    input_mode: "Upsilon",
+    size,
+    selected_nodes: selectedNodes ?? [],
+    highlighted_nodes: highlightedNodes ?? [],
   });
 
   const parsedData: GraphData = JSON.parse(response.data);
@@ -35,17 +25,10 @@ const getAtgGraphDataFromCoverRelation = async (
   size: number,
   coverRelation: Relation[],
 ): Promise<GraphData> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const params: Record<string, any> = {
-    permutation_length: size,
-    cover_relation: coverRelation,
-  };
-
-  const response = await api.get(`/graph_from_cover_relation`, {
-    params,
-    paramsSerializer: {
-      indexes: null,
-    },
+  const response = await api.post(`/graph`, {
+    input_mode: "Poset",
+    size,
+    cover_relation: coverRelation ?? [],
   });
 
   const parsedData: GraphData = JSON.parse(response.data);

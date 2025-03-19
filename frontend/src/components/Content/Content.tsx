@@ -41,8 +41,6 @@ const Content: React.FC = () => {
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      console.log("a", coverRelation);
-
       const atgGraphData = await posetService.getAtgGraphDataFromCoverRelation(
         size,
         coverRelation,
