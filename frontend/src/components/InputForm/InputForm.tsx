@@ -101,7 +101,7 @@ const InputForm: React.FC<InputFormProps> = ({
           autosize
           minRows={4}
           maxRows={8}
-          data-testid="input-cover-relations"
+          data-testid="input-cover-relation"
         />
       )}
 

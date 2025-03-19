@@ -29,7 +29,7 @@ test("renders atg when draw button is clicked for poset input", async ({
   await expect(page.getByTestId("plot-div")).toHaveCount(0);
 
   await page.getByTestId("input-mode-control").getByText("Poset").click();
-  await page.getByTestId("input-cover-relations").fill("1,2");
+  await page.getByTestId("input-cover-relation").fill("1,2");
 
   await page.getByTestId("draw-button").click();
 
