@@ -6,10 +6,30 @@ test("has title", async ({ page }) => {
   await expect(page).toHaveTitle(/ATG Visualizer/);
 });
 
-test("renders atg when draw button is clicked", async ({ page }) => {
+test("renders atg when draw button is clicked for upsilon input", async ({
+  page,
+}) => {
   await page.goto("./");
 
   await expect(page.getByTestId("plot-div")).toHaveCount(0);
+
+  await page.getByTestId("input-y").fill("1234\n3124\n1324\n3142");
+
+  await page.getByTestId("draw-button").click();
+
+  await expect(page.getByTestId("plot-div")).toHaveCount(1);
+  await expect(page.getByTestId("plot-div")).toBeVisible();
+});
+
+test("renders atg when draw button is clicked for poset input", async ({
+  page,
+}) => {
+  await page.goto("./");
+
+  await expect(page.getByTestId("plot-div")).toHaveCount(0);
+
+  await page.getByTestId("input-mode-control").getByText("Poset").click();
+  await page.getByTestId("input-cover-relations").fill("1,2");
 
   await page.getByTestId("draw-button").click();
 

@@ -53,6 +53,7 @@ const InputForm: React.FC<InputFormProps> = ({
         value={mode}
         onChange={setMode}
         data={["Upsilon", "Poset"]}
+        data-testid="input-mode-control"
       />
       <InputWrapper>
         <InputLabel>Permutation Length</InputLabel>
