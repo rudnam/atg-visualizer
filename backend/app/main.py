@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Literal, Optional
+from typing import Literal
 
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -11,8 +11,6 @@ import plotly.io as pio
 from app.posetvisualizer import PosetVisualizer
 from app.posetsolver import PosetSolver
 from app.posetutils import PosetUtils
-
-from app.classes import CoverRelation, LinearExtensions
 
 
 class GraphRequest(BaseModel):
