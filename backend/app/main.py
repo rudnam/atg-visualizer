@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Literal
 
 import plotly.graph_objects as go
 import plotly.io as pio
@@ -12,13 +12,13 @@ from app.posetvisualizer import PosetVisualizer
 from app.posetsolver import PosetSolver
 from app.posetutils import PosetUtils
 
-from app.classes import CoverRelation, LinearExtensions
-
 
 class GraphRequest(BaseModel):
-    sequence: str
-    selected_nodes: Optional[list[str]] = []
-    opacity_others: Optional[float] = 0.1
+    input_mode: Literal["Upsilon", "Poset"]
+    size: int
+    selected_nodes: list[str] = []
+    highlighted_nodes: list[str] = []
+    cover_relation: list[tuple[int, int]] = []
 
 
 class GraphData(BaseModel):
@@ -47,53 +47,46 @@ app.add_middleware(
 )
 
 
-@app.get("/graph", response_model=GraphData)
-def get_graph(
-    size: int,
-    selected_nodes: list[str] = Query(None),
-    highlighted_nodes: list[str] = Query(None),
-):
+@app.post("/graph", response_model=GraphData)
+async def get_graph(graphRequest: GraphRequest):
     try:
-        if size < 2 or size > PosetVisualizer.MAX_SIZE:
-            raise ValueError(f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}.")
+        if graphRequest.input_mode == "Upsilon":
+            size = graphRequest.size
+            selected_nodes = graphRequest.selected_nodes
+            highlighted_nodes = graphRequest.highlighted_nodes
 
-        visualizer = PosetVisualizer(size)
+            if size < 2 or size > PosetVisualizer.MAX_SIZE:
+                raise ValueError(
+                    f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}."
+                )
 
-        if selected_nodes and highlighted_nodes:
-            visualizer.select_and_highlight_nodes(
-                select_nodes=selected_nodes, highlight_nodes=highlighted_nodes
+            visualizer = PosetVisualizer(size)
+
+            if selected_nodes and highlighted_nodes:
+                visualizer.select_and_highlight_nodes(
+                    select_nodes=selected_nodes, highlight_nodes=highlighted_nodes
+                )
+            elif selected_nodes:
+                visualizer.select_nodes(select_nodes=selected_nodes)
+
+            fig_data = visualizer.get_figure_data()
+
+            return JSONResponse(content=pio.to_json(fig_data))
+        elif graphRequest.input_mode == "Poset":
+            size = graphRequest.size
+            cover_relation = graphRequest.cover_relation
+
+            visualizer = PosetVisualizer(size)
+            sequence = "".join(map(str, range(1, size + 1)))
+            linear_extensions = PosetUtils.get_linear_extensions_from_relation(
+                cover_relation, sequence
             )
-        elif selected_nodes:
-            visualizer.select_nodes(select_nodes=selected_nodes)
+            visualizer.select_nodes(linear_extensions)
 
-        fig_data = visualizer.get_figure_data()
-
-        return JSONResponse(content=pio.to_json(fig_data))
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-
-@app.get("/graph_from_cover_relation", response_model=GraphData)
-def get_posetgraph(permutation_length: int, cover_relation: list[list[int]]):
-    try:
-        if permutation_length < 2 or permutation_length > PosetVisualizer.MAX_SIZE:
-            raise ValueError(
-                f"Permutation length must be between 2 and {PosetVisualizer.MAX_SIZE}."
-            )
-
-        cover_relation1: CoverRelation = [
-            (relation[0], relation[1]) for relation in cover_relation
-        ]
-
-        visualizer = PosetVisualizer(permutation_length)
-        sequence: str = "".join(map(str, range(1, permutation_length + 1)))
-        linear_extensions: LinearExtensions = (
-            PosetUtils.get_linear_extensions_from_relation(cover_relation1, sequence)
-        )
-        visualizer.select_nodes(linear_extensions)
-
-        fig_data = visualizer.get_figure_data()
-        return JSONResponse(content=pio.to_json(fig_data))
+            fig_data = visualizer.get_figure_data()
+            return JSONResponse(content=pio.to_json(fig_data))
+        else:
+            raise ValueError(f"Invalid input_mode value.")
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 

@@ -5,6 +5,8 @@ export interface GraphData {
   layout: Partial<Layout>;
 }
 
+export type InputMode = "Upsilon" | "Poset";
+
 export type Relation = [number, number];
 
 export interface PosetCoverResultData {

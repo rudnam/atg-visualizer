@@ -1,4 +1,4 @@
-import { GraphData, PosetCoverResultData } from "../types";
+import { GraphData, PosetCoverResultData, Relation } from "../types";
 import axios from "axios";
 
 const api = axios.create({
@@ -10,21 +10,25 @@ const getAtgGraphData = async (
   selectedNodes: string[] | null = null,
   highlightedNodes: string[] | null = null,
 ): Promise<GraphData> => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const params: Record<string, any> = { size };
+  const response = await api.post(`/graph`, {
+    input_mode: "Upsilon",
+    size,
+    selected_nodes: selectedNodes ?? [],
+    highlighted_nodes: highlightedNodes ?? [],
+  });
 
-  if (selectedNodes !== null) {
-    params.selected_nodes = selectedNodes;
-  }
-  if (highlightedNodes !== null) {
-    params.highlighted_nodes = highlightedNodes;
-  }
+  const parsedData: GraphData = JSON.parse(response.data);
+  return parsedData;
+};
 
-  const response = await api.get(`/graph`, {
-    params,
-    paramsSerializer: {
-      indexes: null,
-    },
+const getAtgGraphDataFromCoverRelation = async (
+  size: number,
+  coverRelation: Relation[],
+): Promise<GraphData> => {
+  const response = await api.post(`/graph`, {
+    input_mode: "Poset",
+    size,
+    cover_relation: coverRelation ?? [],
   });
 
   const parsedData: GraphData = JSON.parse(response.data);
@@ -51,5 +55,6 @@ const solveOptimalKPosetCover = async (
 
 export default {
   getAtgGraphData,
+  getAtgGraphDataFromCoverRelation,
   solveOptimalKPosetCover,
 };
