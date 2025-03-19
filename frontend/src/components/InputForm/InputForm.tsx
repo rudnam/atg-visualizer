@@ -2,7 +2,6 @@ import {
   Button,
   InputLabel,
   InputWrapper,
-  ScrollArea,
   SegmentedControl,
   Slider,
   Textarea,
@@ -72,37 +71,35 @@ const InputForm: React.FC<InputFormProps> = ({
         />
       </InputWrapper>
       {mode === "Upsilon" ? (
-        <ScrollArea.Autosize mah={"60%"}>
-          <Textarea
-            className="w-36 mx-auto"
-            label="Input Y"
-            description="Input permutations"
-            placeholder={`1234\n4321\n3214`}
-            resize="vertical"
-            onChange={(event) => setTextareaValue(event.currentTarget.value)}
-            onBlur={textareaOnBlur}
-            disabled={loading}
-            autosize
-            minRows={4}
-            data-testid="input-y"
-          />
-        </ScrollArea.Autosize>
+        <Textarea
+          className="w-36 mx-auto"
+          label="Input Y"
+          description="Input permutations"
+          placeholder={`1234\n4321\n3214`}
+          resize="vertical"
+          onChange={(event) => setTextareaValue(event.currentTarget.value)}
+          onBlur={textareaOnBlur}
+          disabled={loading}
+          autosize
+          minRows={4}
+          maxRows={8}
+          data-testid="input-y"
+        />
       ) : (
-        <ScrollArea.Autosize mah={"60%"}>
-          <Textarea
-            className="w-36 mx-auto"
-            label="Cover relations"
-            description="Input cover relations"
-            placeholder={`(1,2)\n(3,2)\n(1,4)`}
-            resize="vertical"
-            onChange={(event) => setTextareaValue(event.currentTarget.value)}
-            onBlur={textareaOnBlur}
-            disabled={loading}
-            autosize
-            minRows={4}
-            data-testid="input-cover-relations"
-          />
-        </ScrollArea.Autosize>
+        <Textarea
+          className="w-36 mx-auto"
+          label="Cover relations"
+          description="Input cover relations"
+          placeholder={`(1,2)\n(3,2)\n(1,4)`}
+          resize="vertical"
+          onChange={(event) => setTextareaValue(event.currentTarget.value)}
+          onBlur={textareaOnBlur}
+          disabled={loading}
+          autosize
+          minRows={4}
+          maxRows={8}
+          data-testid="input-cover-relations"
+        />
       )}
 
       <Button
