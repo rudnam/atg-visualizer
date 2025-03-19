@@ -34,6 +34,8 @@ const InputForm: React.FC<InputFormProps> = ({
   const [mode, setMode] = useState("Upsilon");
 
   const textareaOnBlur = () => {
+    if (mode !== "Upsilon") return;
+
     const upsilon = textareaValue
       .split("\n")
       .map((line) => line.trim())
