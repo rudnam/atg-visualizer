@@ -92,7 +92,7 @@ const InputForm: React.FC<InputFormProps> = ({
           className="w-36 mx-auto"
           label="Cover relations"
           description="Input cover relations"
-          placeholder={`(1,2)\n(3,2)\n(1,4)`}
+          placeholder={`1,2\n3,2\n1,4`}
           resize="vertical"
           onChange={(event) => setTextareaValue(event.currentTarget.value)}
           onBlur={textareaOnBlur}
@@ -126,10 +126,7 @@ const InputForm: React.FC<InputFormProps> = ({
                 .map((line) => line.trim())
                 .filter((line) => line !== "")
                 .map((line) => {
-                  const [x, y] = line
-                    .replace(/[()]/g, "")
-                    .split(",")
-                    .map(Number);
+                  const [x, y] = line.split(",").map(Number);
                   return [x, y] as Relation;
                 }),
             );
