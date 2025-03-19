@@ -2,7 +2,6 @@ import {
   Button,
   InputLabel,
   InputWrapper,
-  ScrollArea,
   SegmentedControl,
   Slider,
   Textarea,
