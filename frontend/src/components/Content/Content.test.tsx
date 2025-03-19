@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { screen, waitFor, within } from "@testing-library/react";
 import { render } from "../../test-utils/render";
 import Content from "./Content";
 import posetService from "../../services/poset";
@@ -14,6 +14,7 @@ vi.mock("plotly.js-dist", () => ({
 vi.mock("../../services/poset", () => ({
   default: {
     getAtgGraphData: vi.fn(),
+    getAtgGraphDataFromCoverRelation: vi.fn(),
     solveOptimalKPosetCover: vi.fn(),
   },
 }));
@@ -28,7 +29,7 @@ describe("Content", () => {
     expect(screen.getByText("RESULTS")).toBeInTheDocument();
   });
 
-  it("calls fetchEntireGraphData with correct parameters when draw button is clicked", async () => {
+  it("calls getAtgGraphData with correct parameters when draw button is clicked with upsilon as input", async () => {
     render(<Content />);
 
     const textarea = screen.getByTestId("input-y");
@@ -45,7 +46,31 @@ describe("Content", () => {
     );
   });
 
-  it("calls fetchPosetCoverResults with correct parameters when solve button is clicked", async () => {
+  it("calls getAtgGraphData with correct parameters when draw button is clicked with poset as input", async () => {
+    render(<Content />);
+
+    const posetModeButton = within(
+      screen.getByTestId("input-mode-control"),
+    ).getByText("Poset");
+    await userEvent.click(posetModeButton);
+
+    const textarea = screen.getByTestId("input-cover-relation");
+    await userEvent.type(textarea, "1,2\n2,3");
+
+    const drawButton = screen.getByTestId("draw-button");
+    await userEvent.click(drawButton);
+
+    await waitFor(() =>
+      expect(
+        posetService.getAtgGraphDataFromCoverRelation,
+      ).toHaveBeenCalledWith(4, [
+        [1, 2],
+        [2, 3],
+      ]),
+    );
+  });
+
+  it("calls solveOptimalKPosetCover with correct parameters when solve button is clicked", async () => {
     render(<Content />);
 
     const textarea = screen.getByTestId("input-y");
