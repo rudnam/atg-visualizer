@@ -5,7 +5,7 @@ export interface GraphData {
   layout: Partial<Layout>;
 }
 
-export type InputMode = "Upsilon" | "Poset";
+export type InputMode = "Linear Orders" | "Poset";
 
 export type Relation = [number, number];
 
