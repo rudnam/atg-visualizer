@@ -13,7 +13,7 @@ test("renders atg when draw button is clicked for upsilon input", async ({
 
   await expect(page.getByTestId("plot-div")).toHaveCount(0);
 
-  await page.getByTestId("input-y").fill("1234\n3124\n1324\n3142");
+  await page.getByTestId("input-linear-orders").fill("1234\n3124\n1324\n3142");
 
   await page.getByTestId("draw-button").click();
 
@@ -40,7 +40,7 @@ test("renders atg when draw button is clicked for poset input", async ({
 test("renders poset results when solve button is clicked", async ({ page }) => {
   await page.goto("./");
 
-  const yTextarea = page.getByTestId("input-y");
+  const yTextarea = page.getByTestId("input-linear-orders");
 
   await expect(page.getByTestId("poset-result-component")).toHaveCount(0);
 

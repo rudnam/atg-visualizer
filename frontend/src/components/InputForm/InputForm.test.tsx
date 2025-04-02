@@ -30,13 +30,13 @@ describe("InputForm", () => {
       expect(
         screen.getByTestId("permutation-length-slider"),
       ).toBeInTheDocument();
-      expect(screen.getByTestId("input-y")).toBeInTheDocument();
+      expect(screen.getByTestId("input-linear-orders")).toBeInTheDocument();
       expect(screen.getByTestId("draw-button")).toBeInTheDocument();
       expect(screen.getByTestId("solve-button")).toBeInTheDocument();
     });
 
     it("calls fetchGraphData with correct parameters when Draw button is clicked", async () => {
-      const textarea = screen.getByTestId("input-y");
+      const textarea = screen.getByTestId("input-linear-orders");
       await userEvent.type(textarea, "1234\n4321");
 
       const drawButton = screen.getByTestId("draw-button");
@@ -46,7 +46,7 @@ describe("InputForm", () => {
     });
 
     it("calls fetchPosetCoverResults with correct parameters when Solve button is clicked", async () => {
-      const textarea = screen.getByTestId("input-y");
+      const textarea = screen.getByTestId("input-linear-orders");
       await userEvent.type(textarea, "1234\n4321");
 
       const solveButton = screen.getByTestId("solve-button");

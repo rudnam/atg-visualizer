@@ -56,7 +56,7 @@ const InputForm: React.FC<InputFormProps> = ({
         data-testid="input-mode-control"
       />
       <InputWrapper>
-        <InputLabel>Permutation Length</InputLabel>
+        <InputLabel>Linear Order Length</InputLabel>
         <Slider
           defaultValue={4}
           min={2}
@@ -76,8 +76,8 @@ const InputForm: React.FC<InputFormProps> = ({
       {mode === "Linear Orders" ? (
         <Textarea
           className="w-36 mx-auto"
-          label="Input Linear orders"
-          description="Input permutations"
+          label="Linear orders"
+          description="Input linear orders"
           placeholder={`1234\n4321\n3214`}
           resize="vertical"
           onChange={(event) => setTextareaValue(event.currentTarget.value)}
@@ -86,7 +86,7 @@ const InputForm: React.FC<InputFormProps> = ({
           autosize
           minRows={4}
           maxRows={8}
-          data-testid="input-y"
+          data-testid="input-linear-orders"
         />
       ) : (
         <Textarea
