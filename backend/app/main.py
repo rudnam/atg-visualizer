@@ -14,7 +14,7 @@ from app.posetutils import PosetUtils
 
 
 class GraphRequest(BaseModel):
-    input_mode: Literal["Upsilon", "Poset"]
+    input_mode: Literal["Linear Orders", "Poset"]
     size: int
     selected_nodes: list[str] = []
     highlighted_nodes: list[str] = []
@@ -50,7 +50,7 @@ app.add_middleware(
 @app.post("/graph", response_model=GraphData)
 async def get_graph(graphRequest: GraphRequest):
     try:
-        if graphRequest.input_mode == "Upsilon":
+        if graphRequest.input_mode == "Linear Orders":
             size = graphRequest.size
             selected_nodes = graphRequest.selected_nodes
             highlighted_nodes = graphRequest.highlighted_nodes

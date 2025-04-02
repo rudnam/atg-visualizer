@@ -31,10 +31,10 @@ const InputForm: React.FC<InputFormProps> = ({
 }) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
-  const [mode, setMode] = useState("Upsilon");
+  const [mode, setMode] = useState("Linear Orders");
 
   const textareaOnBlur = () => {
-    if (mode !== "Upsilon") return;
+    if (mode !== "Linear Orders") return;
 
     const upsilon = textareaValue
       .split("\n")
@@ -52,11 +52,11 @@ const InputForm: React.FC<InputFormProps> = ({
         size="sm"
         value={mode}
         onChange={setMode}
-        data={["Upsilon", "Poset"]}
+        data={["Linear Orders", "Poset"]}
         data-testid="input-mode-control"
       />
       <InputWrapper>
-        <InputLabel>Permutation Length</InputLabel>
+        <InputLabel>Linear Order Length</InputLabel>
         <Slider
           defaultValue={4}
           min={2}
@@ -73,11 +73,11 @@ const InputForm: React.FC<InputFormProps> = ({
           data-testid="permutation-length-slider"
         />
       </InputWrapper>
-      {mode === "Upsilon" ? (
+      {mode === "Linear Orders" ? (
         <Textarea
           className="w-36 mx-auto"
-          label="Input Y"
-          description="Input permutations"
+          label="Linear orders"
+          description="Input linear orders"
           placeholder={`1234\n4321\n3214`}
           resize="vertical"
           onChange={(event) => setTextareaValue(event.currentTarget.value)}
@@ -86,7 +86,7 @@ const InputForm: React.FC<InputFormProps> = ({
           autosize
           minRows={4}
           maxRows={8}
-          data-testid="input-y"
+          data-testid="input-linear-orders"
         />
       ) : (
         <Textarea
@@ -111,7 +111,7 @@ const InputForm: React.FC<InputFormProps> = ({
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
         disabled={loading}
         onClick={() => {
-          if (mode === "Upsilon") {
+          if (mode === "Linear Orders") {
             fetchGraphData(
               size,
               textareaValue
@@ -138,7 +138,7 @@ const InputForm: React.FC<InputFormProps> = ({
         Draw
       </Button>
 
-      {mode === "Upsilon" ? (
+      {mode === "Linear Orders" ? (
         <Button
           className="mx-auto"
           variant="gradient"

@@ -11,7 +11,7 @@ const getAtgGraphData = async (
   highlightedNodes: string[] | null = null,
 ): Promise<GraphData> => {
   const response = await api.post(`/graph`, {
-    input_mode: "Upsilon",
+    input_mode: "Linear Orders",
     size,
     selected_nodes: selectedNodes ?? [],
     highlighted_nodes: highlightedNodes ?? [],
