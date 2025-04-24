@@ -80,11 +80,10 @@ describe("Content", () => {
     await userEvent.click(solveButton);
 
     await waitFor(() =>
-      expect(posetService.solveOptimalKPosetCover).toHaveBeenCalledWith(
-        2,
-        "Default",
-        ["1234", "4321"],
-      ),
+      expect(posetService.solveOptimalKPosetCover).toHaveBeenCalledWith(2, [
+        "1234",
+        "4321",
+      ]),
     );
   });
 

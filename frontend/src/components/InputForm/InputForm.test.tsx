@@ -42,7 +42,10 @@ describe("InputForm", () => {
       const drawButton = screen.getByTestId("draw-button");
       await userEvent.click(drawButton);
 
-      expect(mockFetchGraphData).toHaveBeenCalledWith(4, ["1234", "4321"]);
+      expect(mockFetchGraphData).toHaveBeenCalledWith(4, "Default", [
+        "1234",
+        "4321",
+      ]);
     });
 
     it("calls fetchPosetCoverResults with correct parameters when Solve button is clicked", async () => {
@@ -52,7 +55,10 @@ describe("InputForm", () => {
       const solveButton = screen.getByTestId("solve-button");
       await userEvent.click(solveButton);
 
-      expect(mockFetchPosetCover).toHaveBeenCalledWith(4, 2, ["1234", "4321"]);
+      expect(mockFetchPosetCover).toHaveBeenCalledWith(4, "Default", 2, [
+        "1234",
+        "4321",
+      ]);
     });
   });
 
