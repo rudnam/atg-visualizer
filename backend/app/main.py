@@ -64,12 +64,10 @@ async def get_graph(graphRequest: GraphRequest):
 
             if selected_nodes and highlighted_nodes:
                 visualizer = PosetVisualizer(
-                    size, [], False, False, False, highlighted_nodes
+                    size, selected_nodes, False, False, False, highlighted_nodes
                 )
-                visualizer.select_nodes(selected_nodes)
             elif selected_nodes:
-                visualizer = PosetVisualizer(size, [], False, False, False)
-                visualizer.select_nodes(selected_nodes)
+                visualizer = PosetVisualizer(size, selected_nodes, False, False, False)
 
             fig_data = visualizer.get_figure_data()
 
