@@ -67,6 +67,9 @@ describe("InputForm", () => {
     it("renders all form elements", () => {
       expect(screen.getByTestId("input-mode-control")).toBeInTheDocument();
       expect(
+        screen.getByTestId("input-select-drawing-method"),
+      ).toBeInTheDocument();
+      expect(
         screen.getByTestId("permutation-length-slider"),
       ).toBeInTheDocument();
       expect(screen.getByTestId("input-cover-relation")).toBeInTheDocument();
@@ -81,10 +84,14 @@ describe("InputForm", () => {
       const drawButton = screen.getByTestId("draw-button");
       await userEvent.click(drawButton);
 
-      expect(mockFetchGraphDataFromCoverRelation).toHaveBeenCalledWith(4, [
-        [1, 2],
-        [2, 3],
-      ]);
+      expect(mockFetchGraphDataFromCoverRelation).toHaveBeenCalledWith(
+        4,
+        "Default",
+        [
+          [1, 2],
+          [2, 3],
+        ],
+      );
     });
   });
 
