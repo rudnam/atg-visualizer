@@ -63,11 +63,12 @@ async def get_graph(graphRequest: GraphRequest):
             visualizer = PosetVisualizer(size)
 
             if selected_nodes and highlighted_nodes:
-                visualizer.select_and_highlight_nodes(
-                    select_nodes=selected_nodes, highlight_nodes=highlighted_nodes
+                visualizer = PosetVisualizer(
+                    size, [], False, False, False, highlighted_nodes
                 )
             elif selected_nodes:
-                visualizer.select_nodes(select_nodes=selected_nodes)
+                visualizer = PosetVisualizer(size, [], False, False, False)
+                visualizer.select_nodes(selected_nodes)
 
             fig_data = visualizer.get_figure_data()
 
@@ -76,12 +77,11 @@ async def get_graph(graphRequest: GraphRequest):
             size = graphRequest.size
             cover_relation = graphRequest.cover_relation
 
-            visualizer = PosetVisualizer(size)
             sequence = "".join(map(str, range(1, size + 1)))
             linear_extensions = PosetUtils.get_linear_extensions_from_relation(
                 cover_relation, sequence
             )
-            visualizer.select_nodes(linear_extensions)
+            visualizer = PosetVisualizer(size, linear_extensions, False, False, False)
 
             fig_data = visualizer.get_figure_data()
             return JSONResponse(content=pio.to_json(fig_data))
