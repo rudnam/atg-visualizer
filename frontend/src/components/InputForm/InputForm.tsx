@@ -3,20 +3,27 @@ import {
   InputLabel,
   InputWrapper,
   SegmentedControl,
+  Select,
   Slider,
   Textarea,
 } from "@mantine/core";
 import { useState } from "react";
-import { Relation } from "../../types";
+import { DrawingMethod, Relation } from "../../types";
 
 interface InputFormProps {
-  fetchGraphData: (size: number, upsilon: string[]) => Promise<void>;
+  fetchGraphData: (
+    size: number,
+    drawingMethod: DrawingMethod,
+    upsilon: string[],
+  ) => Promise<void>;
   fetchGraphDataFromCoverRelation: (
     size: number,
+    drawingMethod: DrawingMethod,
     coverRelation: Relation[],
   ) => Promise<void>;
   fetchPosetCoverResults: (
     size: number,
+    drawingMethod: DrawingMethod,
     k: number,
     upsilon: string[],
   ) => Promise<void>;
@@ -31,6 +38,7 @@ const InputForm: React.FC<InputFormProps> = ({
 }) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
+  const [drawingMethod, setDrawingMethod] = useState<string | null>("Default");
   const [mode, setMode] = useState("Linear Orders");
 
   const textareaOnBlur = () => {
@@ -48,6 +56,20 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">INPUT</div>
+      <Select
+        label="Drawing method"
+        value={drawingMethod}
+        onChange={setDrawingMethod}
+        data={[
+          "Default",
+          "Supercover",
+          "Hexagonal",
+          "Supercover + Hexagonal",
+          "Hexagonal1",
+          "Supercover + Hexagonal 1",
+        ]}
+        data-testid="input-select-drawing-method"
+      />
       <SegmentedControl
         size="sm"
         value={mode}
@@ -85,7 +107,7 @@ const InputForm: React.FC<InputFormProps> = ({
           disabled={loading}
           autosize
           minRows={4}
-          maxRows={8}
+          maxRows={6}
           data-testid="input-linear-orders"
         />
       ) : (
@@ -114,6 +136,7 @@ const InputForm: React.FC<InputFormProps> = ({
           if (mode === "Linear Orders") {
             fetchGraphData(
               size,
+              drawingMethod as DrawingMethod,
               textareaValue
                 .split("\n")
                 .map((line) => line.trim())
@@ -122,6 +145,7 @@ const InputForm: React.FC<InputFormProps> = ({
           } else {
             fetchGraphDataFromCoverRelation(
               size,
+              drawingMethod as DrawingMethod,
               textareaValue
                 .split("\n")
                 .map((line) => line.trim())
@@ -147,6 +171,7 @@ const InputForm: React.FC<InputFormProps> = ({
           onClick={() =>
             fetchPosetCoverResults(
               size,
+              drawingMethod as DrawingMethod,
               2,
               textareaValue
                 .split("\n")

@@ -15,6 +15,14 @@ from app.posetutils import PosetUtils
 
 class GraphRequest(BaseModel):
     input_mode: Literal["Linear Orders", "Poset"]
+    drawing_method: Literal[
+        "Default",
+        "Supercover",
+        "Hexagonal",
+        "Supercover + Hexagonal",
+        "Hexagonal1",
+        "Supercover + Hexagonal 1",
+    ]
     size: int
     selected_nodes: list[str] = []
     highlighted_nodes: list[str] = []
@@ -27,6 +35,16 @@ class GraphData(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+METHOD_MAP = {
+    "Default": (False, False, False),
+    "Supercover": (True, False, False),
+    "Hexagonal": (False, True, False),
+    "Supercover + Hexagonal": (True, True, False),
+    "Hexagonal1": (False, True, True),
+    "Supercover + Hexagonal1": (True, True, True),
+}
 
 
 app = FastAPI()
@@ -52,6 +70,7 @@ async def get_graph(graphRequest: GraphRequest):
     try:
         if graphRequest.input_mode == "Linear Orders":
             size = graphRequest.size
+            drawing_method = graphRequest.drawing_method
             selected_nodes = graphRequest.selected_nodes
             highlighted_nodes = graphRequest.highlighted_nodes
 
@@ -64,23 +83,28 @@ async def get_graph(graphRequest: GraphRequest):
 
             if selected_nodes and highlighted_nodes:
                 visualizer = PosetVisualizer(
-                    size, selected_nodes, False, False, False, highlighted_nodes
+                    size, selected_nodes, *METHOD_MAP[drawing_method], highlighted_nodes
                 )
             elif selected_nodes:
-                visualizer = PosetVisualizer(size, selected_nodes, False, False, False)
+                visualizer = PosetVisualizer(
+                    size, selected_nodes, *METHOD_MAP[drawing_method]
+                )
 
             fig_data = visualizer.get_figure_data()
 
             return JSONResponse(content=pio.to_json(fig_data))
         elif graphRequest.input_mode == "Poset":
             size = graphRequest.size
+            drawing_method = graphRequest.drawing_method
             cover_relation = graphRequest.cover_relation
 
             sequence = "".join(map(str, range(1, size + 1)))
             linear_extensions = PosetUtils.get_linear_extensions_from_relation(
                 cover_relation, sequence
             )
-            visualizer = PosetVisualizer(size, linear_extensions, False, False, False)
+            visualizer = PosetVisualizer(
+                size, linear_extensions, *METHOD_MAP[drawing_method]
+            )
 
             fig_data = visualizer.get_figure_data()
             return JSONResponse(content=pio.to_json(fig_data))

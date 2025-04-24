@@ -7,6 +7,14 @@ export interface GraphData {
 
 export type InputMode = "Linear Orders" | "Poset";
 
+export type DrawingMethod =
+  | "Default"
+  | "Supercover"
+  | "Hexagonal"
+  | "Supercover + Hexagonal"
+  | "Hexagonal1"
+  | "Supercover + Hexagonal 1";
+
 export type Relation = [number, number];
 
 export interface PosetCoverResultData {
