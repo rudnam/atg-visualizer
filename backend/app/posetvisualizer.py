@@ -120,7 +120,7 @@ class PosetVisualizer:
 
         # Section: Compute coordinates
         self._pos: dict[LinearOrder, NDArray[np.float64]] = nx.spring_layout(
-            self._graph, dim=3, seed=42
+            self._graph, dim=3, seed=42, iterations=70
         )
 
         # Section: Drawing traces
@@ -232,7 +232,7 @@ class PosetVisualizer:
                         support_nodes |= set(two_hexagons)
 
         support_nodes -= set(upsilon)
-        return list(support_nodes)
+        return sorted(support_nodes)
 
     @staticmethod
     def _get_hexagonal_support_nodes(

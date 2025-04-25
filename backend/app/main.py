@@ -79,7 +79,7 @@ async def get_graph(graphRequest: GraphRequest):
                     f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}."
                 )
 
-            visualizer = PosetVisualizer(size)
+            # visualizer = PosetVisualizer(size)
 
             if selected_nodes and highlighted_nodes:
                 visualizer = PosetVisualizer(
