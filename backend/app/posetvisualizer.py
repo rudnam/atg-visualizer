@@ -87,10 +87,6 @@ class PosetVisualizer:
             ValueError:
         """
 
-        print(
-            f"Im called with these options: {temp_permutahedron_embed} {temp_include_supercover} {temp_include_hexagonal} {temp_one_hexagon_only}"
-        )
-
         if not isinstance(size, int):
             raise TypeError("Invalid size. Size must be an integer.")
         if size < 2 or size > self.MAX_SIZE:
@@ -101,6 +97,7 @@ class PosetVisualizer:
         # Section: Get support nodes according to upsilon
         self._support_nodes = self._get_support_nodes(
             upsilon,
+            permutahedron_embed=temp_permutahedron_embed,
             include_supercover=temp_include_supercover,
             include_hexagonal=temp_include_hexagonal,
             one_hexagon_only=temp_one_hexagon_only,
@@ -171,7 +168,7 @@ class PosetVisualizer:
         """Sets up graph and swap types"""
         perm_strings = self.selected_nodes
         graph = nx.Graph()
-        graph.add_nodes_from(perm_strings)
+        # graph.add_nodes_from(perm_strings)
         edges_by_swap: dict[tuple[str, str], list[tuple[LinearOrder, LinearOrder]]] = (
             dict()
         )
@@ -211,6 +208,7 @@ class PosetVisualizer:
     def _get_support_nodes(
         self,
         upsilon: list[LinearOrder],
+        permutahedron_embed=False,
         include_supercover=False,
         include_hexagonal=False,
         one_hexagon_only=False,
@@ -218,6 +216,14 @@ class PosetVisualizer:
         if not upsilon:
             print("Warn: Upsilon is empty.")
             return []
+
+        if permutahedron_embed:
+            size = len(upsilon[0])
+            sequence: str = "".join(map(str, range(1, size + 1)))
+            perm_strings = ["".join(p) for p in permutations(sequence)]
+            support_nodes = set(perm_strings) - set(upsilon)
+            return sorted(support_nodes)
+
         support_nodes: set[LinearOrder] = set()
         if include_supercover:
             support_nodes |= set(PosetUtils.generate_convex(upsilon))
