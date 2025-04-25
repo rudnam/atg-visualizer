@@ -17,6 +17,7 @@ class GraphRequest(BaseModel):
     input_mode: Literal["Linear Orders", "Poset"]
     drawing_method: Literal[
         "Default",
+        "Permutahedron",
         "Supercover",
         "Hexagonal",
         "Supercover + Hexagonal",
@@ -38,12 +39,13 @@ class GraphData(BaseModel):
 
 
 METHOD_MAP = {
-    "Default": (False, False, False),
-    "Supercover": (True, False, False),
-    "Hexagonal": (False, True, False),
-    "Supercover + Hexagonal": (True, True, False),
-    "Hexagonal1": (False, True, True),
-    "Supercover + Hexagonal1": (True, True, True),
+    "Default": (False, False, False, False),
+    "Permutahedron": (True, False, False, False),
+    "Supercover": (False, True, False, False),
+    "Hexagonal": (False, False, True, False),
+    "Supercover + Hexagonal": (False, True, True, False),
+    "Hexagonal1": (False, False, True, True),
+    "Supercover + Hexagonal1": (False, True, True, True),
 }
 
 

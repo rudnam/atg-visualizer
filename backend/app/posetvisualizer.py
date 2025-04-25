@@ -69,6 +69,7 @@ class PosetVisualizer:
         size: int,
         upsilon: list[LinearOrder] = [],
         # highlighted_poset: LinearExtensions = [],
+        temp_permutahedron_embed=False,
         temp_include_supercover=False,
         temp_include_hexagonal=False,
         temp_one_hexagon_only=False,
@@ -85,6 +86,11 @@ class PosetVisualizer:
             TypeError:
             ValueError:
         """
+
+        print(
+            f"Im called with these options: {temp_permutahedron_embed} {temp_include_supercover} {temp_include_hexagonal} {temp_one_hexagon_only}"
+        )
+
         if not isinstance(size, int):
             raise TypeError("Invalid size. Size must be an integer.")
         if size < 2 or size > self.MAX_SIZE:
