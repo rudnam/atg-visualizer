@@ -168,7 +168,7 @@ class PosetVisualizer:
         """Sets up graph and swap types"""
         perm_strings = self.selected_nodes
         graph = nx.Graph()
-        # graph.add_nodes_from(perm_strings)
+        graph.add_nodes_from(perm_strings)
         edges_by_swap: dict[tuple[str, str], list[tuple[LinearOrder, LinearOrder]]] = (
             dict()
         )
@@ -181,7 +181,9 @@ class PosetVisualizer:
                 swapped_nums = self._get_swapped_numbers(perm1, perm2)
 
                 if swapped_nums:
-                    graph.add_edge(perm1, perm2)
+                    graph.add_edge(
+                        perm1, perm2
+                    )  # this works even if any perm_i is not a node in the nx.Graph yet
 
                     # update edges by swap
                     if (
