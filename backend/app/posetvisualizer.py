@@ -58,7 +58,8 @@ type DrawingMethod = Literal[
 
 
 class PosetVisualizer:
-    MAX_SIZE = 8
+    MAX_SIZE = 9
+    PERMUTAHEDRON_MAX = 6
 
     RENDER_TYPE_SPECS: RenderTypeSpecs = {
         "node": {
@@ -108,6 +109,10 @@ class PosetVisualizer:
         if size < 2 or size > self.MAX_SIZE:
             raise ValueError(
                 f"Invalid size. Size must have a value of at least 2 and at most {self.MAX_SIZE}."
+            )
+        if size > self.PERMUTAHEDRON_MAX and drawing_method == "Permutahedron":
+            raise ValueError(
+                f"Permutahedron method not supported for linear orders longer than {size}."
             )
 
         # Section: Get support nodes according to upsilon

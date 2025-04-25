@@ -60,6 +60,7 @@ const InputForm: React.FC<InputFormProps> = ({
         label="Drawing method"
         value={drawingMethod}
         onChange={setDrawingMethod}
+        disabled={loading}
         data={[
           "Default",
           "Permutahedron",
@@ -75,6 +76,7 @@ const InputForm: React.FC<InputFormProps> = ({
         size="sm"
         value={mode}
         onChange={setMode}
+        disabled={loading}
         data={["Linear Orders", "Poset"]}
         data-testid="input-mode-control"
       />
@@ -83,15 +85,19 @@ const InputForm: React.FC<InputFormProps> = ({
         <Slider
           defaultValue={4}
           min={2}
-          max={6}
+          max={9}
           onChange={setSize}
           value={size}
+          disabled={loading}
           marks={[
             { value: 2, label: 2 },
             { value: 3 },
-            { value: 4 },
+            { value: 4, label: 4 },
             { value: 5 },
             { value: 6, label: 6 },
+            { value: 7 },
+            { value: 8 },
+            { value: 9, label: 9 },
           ]}
           data-testid="permutation-length-slider"
         />
@@ -108,7 +114,7 @@ const InputForm: React.FC<InputFormProps> = ({
           disabled={loading}
           autosize
           minRows={4}
-          maxRows={6}
+          maxRows={5}
           data-testid="input-linear-orders"
         />
       ) : (
@@ -123,7 +129,7 @@ const InputForm: React.FC<InputFormProps> = ({
           disabled={loading}
           autosize
           minRows={4}
-          maxRows={8}
+          maxRows={7}
           data-testid="input-cover-relation"
         />
       )}
