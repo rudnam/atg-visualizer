@@ -38,17 +38,6 @@ class GraphData(BaseModel):
         arbitrary_types_allowed = True
 
 
-METHOD_MAP = {
-    "Default": (False, False, False, False),
-    "Permutahedron": (True, False, False, False),
-    "Supercover": (False, True, False, False),
-    "Hexagonal": (False, False, True, False),
-    "Supercover + Hexagonal": (False, True, True, False),
-    "Hexagonal1": (False, False, True, True),
-    "Supercover + Hexagonal1": (False, True, True, True),
-}
-
-
 app = FastAPI()
 
 origins = [
@@ -82,7 +71,7 @@ async def get_graph(graphRequest: GraphRequest):
                 )
 
             visualizer = PosetVisualizer(
-                size, selected_nodes, *METHOD_MAP[drawing_method], highlighted_nodes
+                size, selected_nodes, highlighted_nodes, drawing_method
             )
 
             fig_data = visualizer.get_figure_data()
@@ -98,7 +87,7 @@ async def get_graph(graphRequest: GraphRequest):
                 cover_relation, sequence
             )
             visualizer = PosetVisualizer(
-                size, linear_extensions, *METHOD_MAP[drawing_method]
+                size, linear_extensions, drawing_method=drawing_method
             )
 
             fig_data = visualizer.get_figure_data()

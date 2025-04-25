@@ -46,6 +46,16 @@ class RenderTypeSpecs(TypedDict):
 
 type RenderType = Literal["selected", "highlighted", "other"]
 
+type DrawingMethod = Literal[
+    "Default",
+    "Permutahedron",
+    "Supercover",
+    "Hexagonal",
+    "Supercover + Hexagonal",
+    "Hexagonal1",
+    "Supercover + Hexagonal 1",
+]
+
 
 class PosetVisualizer:
     MAX_SIZE = 8
@@ -64,16 +74,22 @@ class PosetVisualizer:
         # showlegend is also affected by render_type but not specified in this specs
     }
 
+    METHOD_MAP = {
+        "Default": (False, False, False, False),
+        "Permutahedron": (True, False, False, False),
+        "Supercover": (False, True, False, False),
+        "Hexagonal": (False, False, True, False),
+        "Supercover + Hexagonal": (False, True, True, False),
+        "Hexagonal1": (False, False, True, True),
+        "Supercover + Hexagonal1": (False, True, True, True),
+    }
+
     def __init__(
         self,
         size: int,
         upsilon: list[LinearOrder] = [],
-        # highlighted_poset: LinearExtensions = [],
-        temp_permutahedron_embed=False,
-        temp_include_supercover=False,
-        temp_include_hexagonal=False,
-        temp_one_hexagon_only=False,
         highlighted_poset: LinearExtensions = [],
+        drawing_method: DrawingMethod = "Default",
     ):
         """Draw an Adjacent Transposition Graph optionally with highlighted portion
 
@@ -95,13 +111,7 @@ class PosetVisualizer:
             )
 
         # Section: Get support nodes according to upsilon
-        self._support_nodes = self._get_support_nodes(
-            upsilon,
-            permutahedron_embed=temp_permutahedron_embed,
-            include_supercover=temp_include_supercover,
-            include_hexagonal=temp_include_hexagonal,
-            one_hexagon_only=temp_one_hexagon_only,
-        )
+        self._support_nodes = self._get_support_nodes(upsilon, drawing_method)
 
         # Section: Encode graph information
         if upsilon:
@@ -210,11 +220,12 @@ class PosetVisualizer:
     def _get_support_nodes(
         self,
         upsilon: list[LinearOrder],
-        permutahedron_embed=False,
-        include_supercover=False,
-        include_hexagonal=False,
-        one_hexagon_only=False,
+        drawing_method: DrawingMethod,
     ) -> list[LinearOrder]:
+        permutahedron_embed, include_supercover, include_hexagonal, one_hexagon_only = (
+            self.METHOD_MAP[drawing_method]
+        )
+
         if not upsilon:
             print("Warn: Upsilon is empty.")
             return []
