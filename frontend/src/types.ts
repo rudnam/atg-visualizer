@@ -9,6 +9,7 @@ export type InputMode = "Linear Orders" | "Poset";
 
 export type DrawingMethod =
   | "Default"
+  | "Permutahedron"
   | "Supercover"
   | "Hexagonal"
   | "Supercover + Hexagonal"

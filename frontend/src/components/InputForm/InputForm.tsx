@@ -62,6 +62,7 @@ const InputForm: React.FC<InputFormProps> = ({
         onChange={setDrawingMethod}
         data={[
           "Default",
+          "Permutahedron",
           "Supercover",
           "Hexagonal",
           "Supercover + Hexagonal",
