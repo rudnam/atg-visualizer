@@ -15,6 +15,15 @@ from app.posetutils import PosetUtils
 
 class GraphRequest(BaseModel):
     input_mode: Literal["Linear Orders", "Poset"]
+    drawing_method: Literal[
+        "Default",
+        "Permutahedron",
+        "Supercover",
+        "Hexagonal",
+        "Supercover + Hexagonal",
+        "Hexagonal1",
+        "Supercover + Hexagonal 1",
+    ]
     size: int
     selected_nodes: list[str] = []
     highlighted_nodes: list[str] = []
@@ -52,6 +61,7 @@ async def get_graph(graphRequest: GraphRequest):
     try:
         if graphRequest.input_mode == "Linear Orders":
             size = graphRequest.size
+            drawing_method = graphRequest.drawing_method
             selected_nodes = graphRequest.selected_nodes
             highlighted_nodes = graphRequest.highlighted_nodes
 
@@ -60,28 +70,25 @@ async def get_graph(graphRequest: GraphRequest):
                     f"Size must be between 2 and {PosetVisualizer.MAX_SIZE}."
                 )
 
-            visualizer = PosetVisualizer(size)
-
-            if selected_nodes and highlighted_nodes:
-                visualizer.select_and_highlight_nodes(
-                    select_nodes=selected_nodes, highlight_nodes=highlighted_nodes
-                )
-            elif selected_nodes:
-                visualizer.select_nodes(select_nodes=selected_nodes)
+            visualizer = PosetVisualizer(
+                size, selected_nodes, highlighted_nodes, drawing_method
+            )
 
             fig_data = visualizer.get_figure_data()
 
             return JSONResponse(content=pio.to_json(fig_data))
         elif graphRequest.input_mode == "Poset":
             size = graphRequest.size
+            drawing_method = graphRequest.drawing_method
             cover_relation = graphRequest.cover_relation
 
-            visualizer = PosetVisualizer(size)
             sequence = "".join(map(str, range(1, size + 1)))
             linear_extensions = PosetUtils.get_linear_extensions_from_relation(
                 cover_relation, sequence
             )
-            visualizer.select_nodes(linear_extensions)
+            visualizer = PosetVisualizer(
+                size, linear_extensions, drawing_method=drawing_method
+            )
 
             fig_data = visualizer.get_figure_data()
             return JSONResponse(content=pio.to_json(fig_data))

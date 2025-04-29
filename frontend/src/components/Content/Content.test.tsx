@@ -39,7 +39,7 @@ describe("Content", () => {
     await userEvent.click(drawButton);
 
     await waitFor(() =>
-      expect(posetService.getAtgGraphData).toHaveBeenCalledWith(4, [
+      expect(posetService.getAtgGraphData).toHaveBeenCalledWith(4, "Default", [
         "1234",
         "4321",
       ]),
@@ -63,7 +63,7 @@ describe("Content", () => {
     await waitFor(() =>
       expect(
         posetService.getAtgGraphDataFromCoverRelation,
-      ).toHaveBeenCalledWith(4, [
+      ).toHaveBeenCalledWith(4, "Default", [
         [1, 2],
         [2, 3],
       ]),

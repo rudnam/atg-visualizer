@@ -1,4 +1,9 @@
-import { GraphData, PosetCoverResultData, Relation } from "../types";
+import {
+  DrawingMethod,
+  GraphData,
+  PosetCoverResultData,
+  Relation,
+} from "../types";
 import axios from "axios";
 
 const api = axios.create({
@@ -7,11 +12,13 @@ const api = axios.create({
 
 const getAtgGraphData = async (
   size: number,
+  drawingMethod: DrawingMethod,
   selectedNodes: string[] | null = null,
   highlightedNodes: string[] | null = null,
 ): Promise<GraphData> => {
   const response = await api.post(`/graph`, {
     input_mode: "Linear Orders",
+    drawing_method: drawingMethod,
     size,
     selected_nodes: selectedNodes ?? [],
     highlighted_nodes: highlightedNodes ?? [],
@@ -23,10 +30,12 @@ const getAtgGraphData = async (
 
 const getAtgGraphDataFromCoverRelation = async (
   size: number,
+  drawingMethod: DrawingMethod,
   coverRelation: Relation[],
 ): Promise<GraphData> => {
   const response = await api.post(`/graph`, {
     input_mode: "Poset",
+    drawing_method: drawingMethod,
     size,
     cover_relation: coverRelation ?? [],
   });

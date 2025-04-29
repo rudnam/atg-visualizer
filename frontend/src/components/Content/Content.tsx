@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import InputForm from "../InputForm/InputForm";
 import Graph from "../Graph/Graph";
-import { GraphData, PosetResult, Relation } from "../../types";
+import { DrawingMethod, GraphData, PosetResult, Relation } from "../../types";
 import ResultsPanel from "../ResultsPanel/ResultsPanel";
 import posetService from "../../services/poset";
 
@@ -12,7 +12,11 @@ const Content: React.FC = () => {
   const [highlightedPosetIndex, setHighlightedPosetIndex] =
     useState<number>(-1);
 
-  const fetchGraphData = async (size: number, upsilon: string[]) => {
+  const fetchGraphData = async (
+    size: number,
+    drawingMethod: DrawingMethod,
+    upsilon: string[],
+  ) => {
     try {
       if (upsilon.length > 0 && size !== upsilon[0].length) {
         throw new Error(
@@ -23,7 +27,11 @@ const Content: React.FC = () => {
       setPosetResults([]);
       setHighlightedPosetIndex(-1);
 
-      const atgGraphData = await posetService.getAtgGraphData(size, upsilon);
+      const atgGraphData = await posetService.getAtgGraphData(
+        size,
+        drawingMethod,
+        upsilon,
+      );
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
@@ -34,6 +42,7 @@ const Content: React.FC = () => {
 
   const fetchGraphDataFromCoverRelation = async (
     size: number,
+    drawingMethod: DrawingMethod,
     coverRelation: Relation[],
   ) => {
     try {
@@ -43,6 +52,7 @@ const Content: React.FC = () => {
 
       const atgGraphData = await posetService.getAtgGraphDataFromCoverRelation(
         size,
+        drawingMethod,
         coverRelation,
       );
       setAtgGraph(atgGraphData);
@@ -55,6 +65,7 @@ const Content: React.FC = () => {
 
   const fetchPosetCoverResults = async (
     size: number,
+    drawingMethod: DrawingMethod,
     k: number,
     upsilon: string[],
   ) => {
@@ -81,6 +92,7 @@ const Content: React.FC = () => {
           resultLinearOrders.map(async (result, index) => {
             const posetGraphData = await posetService.getAtgGraphData(
               size,
+              drawingMethod,
               upsilon,
               result,
             );
