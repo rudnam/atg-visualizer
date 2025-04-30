@@ -117,6 +117,7 @@ class PosetVisualizer:
 
         # Section: Get support nodes according to upsilon
         self._support_nodes = self._get_support_nodes(upsilon, drawing_method)
+        self.drawing_method = drawing_method
 
         # Section: Encode graph information
         if upsilon:
@@ -201,11 +202,12 @@ class PosetVisualizer:
                     )  # this works even if any perm_i is not a node in the nx.Graph yet
 
                     # update edges by swap
-                    if (
+                    edge_is_not_support = (
                         not self._support_nodes
                         or perm1 not in self._support_nodes
                         and perm2 not in self._support_nodes
-                    ):
+                    )
+                    if edge_is_not_support or self.drawing_method == "Permutahedron":
                         edge = (perm1, perm2)
                         if swapped_nums in edges_by_swap.keys():
                             edges_by_swap[swapped_nums].append(edge)
@@ -418,9 +420,11 @@ class PosetVisualizer:
         selected_nodes: list[LinearOrder] = [
             node for node in self.selected_nodes if node not in self.highlighted_nodes
         ]
-        other_nodes: list[LinearOrder] = [
-            node for node in self._graph.nodes() if node_is_other(node)
-        ]
+        other_nodes: list[LinearOrder] = (
+            [node for node in self._graph.nodes() if node_is_other(node)]
+            if self.drawing_method == "Permutahedron"
+            else []
+        )
 
         node_traces: list[go.Scatter3d] = []
         if self.highlighted_nodes:
