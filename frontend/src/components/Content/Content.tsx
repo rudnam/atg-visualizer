@@ -56,6 +56,14 @@ const Content: React.FC = () => {
         coverRelation,
       );
       setAtgGraph(atgGraphData);
+
+      // then solve it to get the highlighted graph
+      const permutationsObject = atgGraphData.data.find(
+        (trace) => trace.name == "Permutations",
+      )!;
+      const linearExtensions = (permutationsObject as { text: string[] }).text;
+
+      fetchPosetCoverResults(size, drawingMethod, 2, linearExtensions);
     } catch (error) {
       console.error("Error rendering the plot:", error);
     } finally {
