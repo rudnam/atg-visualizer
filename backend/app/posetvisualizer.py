@@ -80,7 +80,7 @@ class PosetVisualizer:
         "Permutahedron": (True, False, False, False),
         "Supercover": (False, True, False, False),
         "Hexagonal": (False, False, True, False),
-        "Supercover + Hexagonal": (False, True, True, False),
+        "SuperHex": (False, True, True, False),
         "Hexagonal1": (False, False, True, True),
         "Supercover + Hexagonal1": (False, True, True, True),
     }

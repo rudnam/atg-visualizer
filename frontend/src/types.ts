@@ -11,10 +11,7 @@ export type DrawingMethod =
   | "Default"
   | "Permutahedron"
   | "Supercover"
-  | "Hexagonal"
-  | "Supercover + Hexagonal"
-  | "Hexagonal1"
-  | "Supercover + Hexagonal 1";
+  | "SuperHex"
 
 export type Relation = [number, number];
 

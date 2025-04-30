@@ -80,7 +80,7 @@ const InputForm: React.FC<InputFormProps> = ({
         <Slider
           defaultValue={4}
           min={2}
-          max={9}
+          max={6}
           onChange={setSize}
           value={size}
           disabled={loading}
@@ -89,10 +89,10 @@ const InputForm: React.FC<InputFormProps> = ({
             { value: 3 },
             { value: 4 },
             { value: 5 },
-            { value: 6 },
-            { value: 7 },
-            { value: 8 },
-            { value: 9, label: 9 },
+            { value: 6, label: 6 },
+            // { value: 7 },
+            // { value: 8 },
+            // { value: 9, label: 9 },
           ]}
           data-testid="permutation-length-slider"
         />
@@ -134,15 +134,7 @@ const InputForm: React.FC<InputFormProps> = ({
         value={drawingMethod}
         onChange={setDrawingMethod}
         disabled={loading}
-        data={[
-          "Default",
-          "Permutahedron",
-          "Supercover",
-          "Hexagonal",
-          "Supercover + Hexagonal",
-          "Hexagonal1",
-          "Supercover + Hexagonal 1",
-        ]}
+        data={["Default", "Supercover", "SuperHex", "Permutahedron"]}
         data-testid="input-select-drawing-method"
         comboboxProps={{
           shadow: "md",
