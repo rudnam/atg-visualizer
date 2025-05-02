@@ -90,9 +90,6 @@ const InputForm: React.FC<InputFormProps> = ({
             { value: 4 },
             { value: 5 },
             { value: 6, label: 6 },
-            // { value: 7 },
-            // { value: 8 },
-            // { value: 9, label: 9 },
           ]}
           data-testid="permutation-length-slider"
         />
