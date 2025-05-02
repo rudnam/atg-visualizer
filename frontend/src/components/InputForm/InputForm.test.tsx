@@ -91,7 +91,7 @@ describe("InputForm", () => {
       await userEvent.click(drawButton);
 
       expect(mockFetchGraphDataFromCoverRelation).toHaveBeenCalledWith(
-        3,
+        4,
         "Default",
         [
           [1, 2],
