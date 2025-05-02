@@ -58,7 +58,7 @@ const InputForm: React.FC<InputFormProps> = ({
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .map(([num1, _, num2]) => [parseInt(num1), parseInt(num2)])
         .flat();
-      if (numbers.length > 0) {
+      if (numbers.length > 0 && size < Math.max(...numbers)) {
         setSize(Math.max(...numbers));
       }
     }
