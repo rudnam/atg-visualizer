@@ -55,7 +55,7 @@ describe("Content", () => {
     await userEvent.click(posetModeButton);
 
     const textarea = screen.getByTestId("input-cover-relation");
-    await userEvent.type(textarea, "1,2\n2,3");
+    await userEvent.type(textarea, "1,2\n3,4");
 
     const drawButton = screen.getByTestId("draw-button");
     await userEvent.click(drawButton);
@@ -65,7 +65,7 @@ describe("Content", () => {
         posetService.getAtgGraphDataFromCoverRelation,
       ).toHaveBeenCalledWith(4, "Default", [
         [1, 2],
-        [2, 3],
+        [3, 4],
       ]),
     );
   });

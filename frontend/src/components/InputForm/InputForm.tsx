@@ -42,36 +42,31 @@ const InputForm: React.FC<InputFormProps> = ({
   const [mode, setMode] = useState("Linear Orders");
 
   const textareaOnBlur = () => {
-    if (mode !== "Linear Orders") return;
-
-    const upsilon = textareaValue
-      .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line !== "");
-    if (upsilon.length > 0) {
-      setSize(upsilon[0].length);
+    if (mode == "Linear Orders") {
+      const upsilon = textareaValue
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line !== "");
+      if (upsilon.length > 0) {
+        setSize(upsilon[0].length);
+      }
+    } else if (mode == "Poset") {
+      const numbers = textareaValue
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line !== "")
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        .map(([num1, _, num2]) => [parseInt(num1), parseInt(num2)])
+        .flat();
+      if (numbers.length > 0 && size < Math.max(...numbers)) {
+        setSize(Math.max(...numbers));
+      }
     }
   };
 
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">INPUT</div>
-      <Select
-        label="Drawing method"
-        value={drawingMethod}
-        onChange={setDrawingMethod}
-        disabled={loading}
-        data={[
-          "Default",
-          "Permutahedron",
-          "Supercover",
-          "Hexagonal",
-          "Supercover + Hexagonal",
-          "Hexagonal1",
-          "Supercover + Hexagonal 1",
-        ]}
-        data-testid="input-select-drawing-method"
-      />
       <SegmentedControl
         size="sm"
         value={mode}
@@ -85,7 +80,7 @@ const InputForm: React.FC<InputFormProps> = ({
         <Slider
           defaultValue={4}
           min={2}
-          max={9}
+          max={6}
           onChange={setSize}
           value={size}
           disabled={loading}
@@ -94,10 +89,7 @@ const InputForm: React.FC<InputFormProps> = ({
             { value: 3 },
             { value: 4 },
             { value: 5 },
-            { value: 6 },
-            { value: 7 },
-            { value: 8 },
-            { value: 9, label: 9 },
+            { value: 6, label: 6 },
           ]}
           data-testid="permutation-length-slider"
         />
@@ -133,6 +125,19 @@ const InputForm: React.FC<InputFormProps> = ({
           data-testid="input-cover-relation"
         />
       )}
+      <Select
+        className="w-40 mx-auto"
+        label="Drawing method"
+        value={drawingMethod}
+        onChange={setDrawingMethod}
+        disabled={loading}
+        data={["Default", "Supercover", "SuperHex", "Permutahedron"]}
+        data-testid="input-select-drawing-method"
+        comboboxProps={{
+          shadow: "md",
+          transitionProps: { transition: "pop", duration: 200 },
+        }}
+      />
 
       <Button
         className="mx-auto"
