@@ -30,6 +30,7 @@ const GraphComponent: React.FC<GraphProps> = ({ loading, graphData }) => {
       yaxis: { visible: false },
       zaxis: { visible: false },
       bgcolor: "rgba(0, 0, 0, 0)",
+      dragmode: "orbit",
     },
     margin: { l: 0, r: 0, b: 0, t: 0 },
     legend: {

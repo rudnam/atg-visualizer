@@ -19,10 +19,7 @@ class GraphRequest(BaseModel):
         "Default",
         "Permutahedron",
         "Supercover",
-        "Hexagonal",
-        "Supercover + Hexagonal",
-        "Hexagonal1",
-        "Supercover + Hexagonal 1",
+        "SuperHex",
     ]
     size: int
     selected_nodes: list[str] = []
