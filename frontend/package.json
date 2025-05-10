@@ -15,6 +15,7 @@
     "@mantine/colors-generator": "^7.16.0",
     "@mantine/core": "^7.15.3",
     "@mantine/hooks": "^7.15.3",
+    "@mantine/notifications": "^7.17.7",
     "@types/plotly.js-dist": "npm:@types/plotly.js@^2.35.2",
     "axios": "^1.8.2",
     "chroma-js": "^3.1.2",

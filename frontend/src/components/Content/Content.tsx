@@ -4,6 +4,7 @@ import Graph from "../Graph/Graph";
 import { DrawingMethod, GraphData, PosetResult, Relation } from "../../types";
 import ResultsPanel from "../ResultsPanel/ResultsPanel";
 import posetService from "../../services/poset";
+import notifService from "../../services/notification";
 
 const Content: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -35,6 +36,7 @@ const Content: React.FC = () => {
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
+      notifService.showError("Error rendering the plot", `${error}`);
     } finally {
       setLoading(false);
     }
@@ -58,6 +60,7 @@ const Content: React.FC = () => {
       setAtgGraph(atgGraphData);
     } catch (error) {
       console.error("Error rendering the plot:", error);
+      notifService.showError("Error rendering the plot", `${error}`);
     } finally {
       setLoading(false);
     }
@@ -107,10 +110,11 @@ const Content: React.FC = () => {
 
         setPosetResults(resolvedResults);
       } else {
-        alert("No result found.");
+        notifService.showToast("Poset Cover Result", "No result found.");
       }
     } catch (error) {
       console.error("Error rendering the plot:", error);
+      notifService.showError("Error rendering the plot", `${error}`);
     } finally {
       setLoading(false);
     }
