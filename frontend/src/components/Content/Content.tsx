@@ -35,8 +35,13 @@ const Content: React.FC = () => {
       );
       setAtgGraph(atgGraphData);
     } catch (error) {
-      console.error("Error rendering the plot:", error);
-      notifService.showError("Error rendering the plot", `${error}`);
+      if (error instanceof Error) {
+        console.error("Error rendering the plot:", error.message);
+        notifService.showError("Error rendering the plot", `${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        notifService.showError("Unexpected error", `${error}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -59,8 +64,13 @@ const Content: React.FC = () => {
       );
       setAtgGraph(atgGraphData);
     } catch (error) {
-      console.error("Error rendering the plot:", error);
-      notifService.showError("Error rendering the plot", `${error}`);
+      if (error instanceof Error) {
+        console.error("Error rendering the plot:", error.message);
+        notifService.showError("Error rendering the plot", `${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        notifService.showError("Unexpected error", `${error}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -113,8 +123,13 @@ const Content: React.FC = () => {
         notifService.showToast("Poset Cover Result", "No result found.");
       }
     } catch (error) {
-      console.error("Error rendering the plot:", error);
-      notifService.showError("Error rendering the plot", `${error}`);
+      if (error instanceof Error) {
+        console.error("Error rendering the plot:", error.message);
+        notifService.showError("Error rendering the plot", `${error.message}`);
+      } else {
+        console.error("Unexpected error:", error);
+        notifService.showError("Unexpected error", `${error}`);
+      }
     } finally {
       setLoading(false);
     }
