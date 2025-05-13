@@ -217,7 +217,7 @@ const InputForm: React.FC<InputFormProps> = ({
         className="mx-auto"
         variant="gradient"
         gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        disabled={loading}
+        disabled={loading || textareaError !== ""}
         onClick={() => {
           if (mode === "Linear Orders") {
             fetchGraphData(
@@ -253,7 +253,7 @@ const InputForm: React.FC<InputFormProps> = ({
           className="mx-auto"
           variant="gradient"
           gradient={{ from: "purple", to: "maroon", deg: 90 }}
-          disabled={loading}
+          disabled={loading || textareaError !== ""}
           onClick={() =>
             fetchPosetCoverResults(
               size,
