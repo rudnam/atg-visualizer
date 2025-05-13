@@ -33,15 +33,25 @@ const getAtgGraphDataFromCoverRelation = async (
   drawingMethod: DrawingMethod,
   coverRelation: Relation[],
 ): Promise<GraphData> => {
-  const response = await api.post(`/graph`, {
-    input_mode: "Poset",
-    drawing_method: drawingMethod,
-    size,
-    cover_relation: coverRelation ?? [],
-  });
+  try {
+    const response = await api.post(`/graph`, {
+      input_mode: "Poset",
+      drawing_method: drawingMethod,
+      size,
+      cover_relation: coverRelation ?? [],
+    });
 
-  const parsedData: GraphData = JSON.parse(response.data);
-  return parsedData;
+    const parsedData: GraphData = JSON.parse(response.data);
+    return parsedData;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const serverMessage = error.response?.data?.detail || error.message;
+
+      throw new Error(`${serverMessage}`);
+    } else {
+      throw new Error(`Unexpected error: ${error}`);
+    }
+  }
 };
 
 const solveOptimalKPosetCover = async (
