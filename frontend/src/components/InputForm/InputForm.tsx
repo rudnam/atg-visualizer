@@ -66,6 +66,7 @@ const InputForm: React.FC<InputFormProps> = ({
         setSize(Math.max(...numbers));
       }
     }
+    validateInput();
   };
 
   const validateLinearOrderArray = (arr: string[], size: number) => {
