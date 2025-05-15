@@ -67,40 +67,6 @@ const InputForm: React.FC<InputFormProps> = ({
     }
   };
 
-  // const isValidLinearOrderArray = (arr: string[], size: number) => {
-  //   const expected = new Set();
-  //   for (let i = 1; i <= size; i++) {
-  //     expected.add(i.toString());
-  //   }
-
-  //   return arr.every((str) => {
-  //     if (str.length !== size) return false;
-
-  //     const chars = str.split("");
-  //     const unique = new Set(chars);
-
-  //     return unique.size === size && chars.every((c) => expected.has(c));
-  //   });
-  // };
-
-  // const isValidCoverRelationArray = (arr: string[], size: number) => {
-  //   return arr.every((str) => {
-  //     const parts = str.split(",");
-  //     if (parts.length !== 2) return false;
-
-  //     const [a, b] = parts.map(Number);
-
-  //     return (
-  //       Number.isInteger(a) &&
-  //       Number.isInteger(b) &&
-  //       a >= 1 &&
-  //       a <= size &&
-  //       b >= 1 &&
-  //       b <= size
-  //     );
-  //   });
-  // };
-
   const validateLinearOrderArray = (arr: string[], size: number) => {
     const expected = new Set();
     for (let i = 1; i <= size; i++) {
@@ -134,7 +100,7 @@ const InputForm: React.FC<InputFormProps> = ({
 
       const isCorrectSize = a <= size && b <= size;
       if (!isCorrectSize)
-        return `'${str}' implies that the linear order length is ${a > b ? a : b}. Please use the smallest numbers possible (1-9).`;
+        return `'${str}' implies that the linear order length is ${a > b ? a : b}`;
     }
     return null;
   };
