@@ -7,8 +7,9 @@ import {
   Slider,
   Textarea,
 } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DrawingMethod, Relation } from "../../types";
+import { useDebouncedCallback } from "@mantine/hooks";
 
 interface InputFormProps {
   fetchGraphData: (
@@ -82,7 +83,8 @@ const InputForm: React.FC<InputFormProps> = ({
       const unique = new Set(chars);
       const all_unique =
         unique.size === size && chars.every((c) => expected.has(c));
-      if (!all_unique) return `Invalid linear order '${str}'`;
+      if (!all_unique)
+        return `Invalid linear order '${str}'. Linear orders must contain digits 1-${size}.`;
     }
     return null;
   };
@@ -105,32 +107,28 @@ const InputForm: React.FC<InputFormProps> = ({
     return null;
   };
 
-  useEffect(() => {
-    const validateInput = () => {
-      const lines = textareaValue
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean);
+  const validateInput = useDebouncedCallback(() => {
+    const lines = textareaValue
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
 
-      if (lines.length && mode === "Linear Orders") {
-        const errorMessage = validateLinearOrderArray(lines, size);
-        if (errorMessage) {
-          setTextareaError(errorMessage);
-          return;
-        }
-      } else if (lines.length && mode === "Poset") {
-        const errorMessage = validateCoverRelationArray(lines, size);
-        if (errorMessage) {
-          setTextareaError(errorMessage);
-          return;
-        }
+    if (lines.length && mode === "Linear Orders") {
+      const errorMessage = validateLinearOrderArray(lines, size);
+      if (errorMessage) {
+        setTextareaError(errorMessage);
+        return;
       }
+    } else if (lines.length && mode === "Poset") {
+      const errorMessage = validateCoverRelationArray(lines, size);
+      if (errorMessage) {
+        setTextareaError(errorMessage);
+        return;
+      }
+    }
 
-      setTextareaError("");
-    };
-
-    validateInput();
-  }, [size, mode, textareaValue]);
+    setTextareaError("");
+  }, 500);
 
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
@@ -149,7 +147,10 @@ const InputForm: React.FC<InputFormProps> = ({
           defaultValue={4}
           min={2}
           max={6}
-          onChange={setSize}
+          onChange={(value: number) => {
+            setSize(value);
+            validateInput();
+          }}
           value={size}
           disabled={loading}
           marks={[
@@ -170,6 +171,7 @@ const InputForm: React.FC<InputFormProps> = ({
           placeholder={`1234\n4321\n3214`}
           onChange={(event) => {
             setTextareaValue(event.currentTarget.value);
+            validateInput();
           }}
           onBlur={() => {
             updateSize();
@@ -187,7 +189,10 @@ const InputForm: React.FC<InputFormProps> = ({
           label="Cover relations"
           description="Input cover relations"
           placeholder={`1,2\n3,2\n1,4`}
-          onChange={(event) => setTextareaValue(event.currentTarget.value)}
+          onChange={(event) => {
+            setTextareaValue(event.currentTarget.value);
+            validateInput();
+          }}
           onBlur={() => {
             updateSize();
           }}
