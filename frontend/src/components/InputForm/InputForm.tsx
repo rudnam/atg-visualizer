@@ -67,38 +67,76 @@ const InputForm: React.FC<InputFormProps> = ({
     }
   };
 
-  const isValidLinearOrderArray = (arr: string[], size: number) => {
+  // const isValidLinearOrderArray = (arr: string[], size: number) => {
+  //   const expected = new Set();
+  //   for (let i = 1; i <= size; i++) {
+  //     expected.add(i.toString());
+  //   }
+
+  //   return arr.every((str) => {
+  //     if (str.length !== size) return false;
+
+  //     const chars = str.split("");
+  //     const unique = new Set(chars);
+
+  //     return unique.size === size && chars.every((c) => expected.has(c));
+  //   });
+  // };
+
+  // const isValidCoverRelationArray = (arr: string[], size: number) => {
+  //   return arr.every((str) => {
+  //     const parts = str.split(",");
+  //     if (parts.length !== 2) return false;
+
+  //     const [a, b] = parts.map(Number);
+
+  //     return (
+  //       Number.isInteger(a) &&
+  //       Number.isInteger(b) &&
+  //       a >= 1 &&
+  //       a <= size &&
+  //       b >= 1 &&
+  //       b <= size
+  //     );
+  //   });
+  // };
+
+  const validateLinearOrderArray = (arr: string[], size: number) => {
     const expected = new Set();
     for (let i = 1; i <= size; i++) {
       expected.add(i.toString());
     }
 
-    return arr.every((str) => {
-      if (str.length !== size) return false;
+    for (let i = 0; i < arr.length; i++) {
+      const str = arr[i];
+      if (str.length !== size)
+        return `'${str}' does not match specified length`;
 
       const chars = str.split("");
       const unique = new Set(chars);
-
-      return unique.size === size && chars.every((c) => expected.has(c));
-    });
+      const all_unique =
+        unique.size === size && chars.every((c) => expected.has(c));
+      if (!all_unique) return `Invalid linear order '${str}'`;
+    }
+    return null;
   };
 
-  const isValidCoverRelationArray = (arr: string[], size: number) => {
-    return arr.every((str) => {
+  const validateCoverRelationArray = (arr: string[], size: number) => {
+    for (let i = 0; i < arr.length; i++) {
+      const str = arr[i];
       const parts = str.split(",");
-      if (parts.length !== 2) return false;
+      if (parts.length !== 2) return `Invalid relation '${str}'`;
 
       const [a, b] = parts.map(Number);
+      const isNumbers =
+        Number.isInteger(a) && Number.isInteger(b) && a >= 1 && b >= 1;
+      if (!isNumbers) return `Invalid relation '${str}'`;
 
-      return (
-        Number.isInteger(a) &&
-        Number.isInteger(b) &&
-        a >= 1 &&
-        a <= size &&
-        b >= 1 &&
-        b <= size
-      );
-    });
+      const isCorrectSize = a <= size && b <= size;
+      if (!isCorrectSize)
+        return `'${str}' implies that the linear order length is ${a > b ? a : b}. Please use the smallest numbers possible (1-9).`;
+    }
+    return null;
   };
 
   useEffect(() => {
@@ -108,18 +146,16 @@ const InputForm: React.FC<InputFormProps> = ({
         .map((line) => line.trim())
         .filter(Boolean);
 
-      if (mode === "Linear Orders") {
-        if (lines.length && !isValidLinearOrderArray(lines, size)) {
-          setTextareaError(
-            'Invalid format: Each entry should be a sequence of digits e.g. "1234" or "3412".',
-          );
+      if (lines.length && mode === "Linear Orders") {
+        const errorMessage = validateLinearOrderArray(lines, size);
+        if (errorMessage) {
+          setTextareaError(errorMessage);
           return;
         }
-      } else if (mode === "Poset") {
-        if (lines.length && !isValidCoverRelationArray(lines, size)) {
-          setTextareaError(
-            'Invalid format: Each entry must be a pair of numbers separated by a comma e.g. "1,2" or "3,4".',
-          );
+      } else if (lines.length && mode === "Poset") {
+        const errorMessage = validateCoverRelationArray(lines, size);
+        if (errorMessage) {
+          setTextareaError(errorMessage);
           return;
         }
       }
@@ -166,7 +202,6 @@ const InputForm: React.FC<InputFormProps> = ({
           label="Linear orders"
           description="Input linear orders"
           placeholder={`1234\n4321\n3214`}
-          resize="vertical"
           onChange={(event) => {
             setTextareaValue(event.currentTarget.value);
           }}
@@ -186,7 +221,6 @@ const InputForm: React.FC<InputFormProps> = ({
           label="Cover relations"
           description="Input cover relations"
           placeholder={`1,2\n3,2\n1,4`}
-          resize="vertical"
           onChange={(event) => setTextareaValue(event.currentTarget.value)}
           onBlur={() => {
             updateSize();
