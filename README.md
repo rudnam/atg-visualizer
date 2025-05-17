@@ -22,7 +22,7 @@ Web-based visualization tool for adjacent transposition graphs (ATGs) and associ
 
    ```shell
    cd ./backend
-   fastapi run
+   fastapi dev
    ```
 
 3. Run frontend

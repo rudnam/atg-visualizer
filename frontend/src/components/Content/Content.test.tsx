@@ -32,7 +32,7 @@ describe("Content", () => {
   it("calls getAtgGraphData with correct parameters when draw button is clicked with upsilon as input", async () => {
     render(<Content />);
 
-    const textarea = screen.getByTestId("input-linear-orders");
+    const textarea = screen.getByTestId("input-textarea");
     await userEvent.type(textarea, "1234\n4321");
 
     const drawButton = screen.getByTestId("draw-button");
@@ -54,7 +54,7 @@ describe("Content", () => {
     ).getByText("Poset");
     await userEvent.click(posetModeButton);
 
-    const textarea = screen.getByTestId("input-cover-relation");
+    const textarea = screen.getByTestId("input-textarea");
     await userEvent.type(textarea, "1,2\n3,4");
 
     const drawButton = screen.getByTestId("draw-button");
@@ -73,7 +73,7 @@ describe("Content", () => {
   it("calls solveOptimalKPosetCover with correct parameters when solve button is clicked", async () => {
     render(<Content />);
 
-    const textarea = screen.getByTestId("input-linear-orders");
+    const textarea = screen.getByTestId("input-textarea");
     await userEvent.type(textarea, "1234\n4321");
 
     const solveButton = screen.getByTestId("solve-button");
