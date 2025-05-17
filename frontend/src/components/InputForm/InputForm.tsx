@@ -1,15 +1,13 @@
-import {
-  Button,
-  InputLabel,
-  InputWrapper,
-  SegmentedControl,
-  Select,
-  Slider,
-  Textarea,
-} from "@mantine/core";
 import { useState } from "react";
 import { DrawingMethod, Relation } from "../../types";
 import { useDebouncedCallback } from "@mantine/hooks";
+import InputModeControl from "./InputModeControl";
+import PermutationLengthSlider from "./PermutationLengthSlider";
+import InputLinearOrders from "./InputLinearOrders";
+import InputCoverRelations from "./InputCoverRelations";
+import InputSelectDrawingMethod from "./InputSelectDrawingMethod";
+import DrawButton from "./DrawButton";
+import SolveButton from "./SolveButton";
 
 interface InputFormProps {
   fetchGraphData: (
@@ -134,42 +132,17 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">INPUT</div>
-      <SegmentedControl
-        size="sm"
-        value={mode}
-        onChange={setMode}
+      <InputModeControl value={mode} onChange={setMode} disabled={loading} />
+      <PermutationLengthSlider
+        value={size}
+        onChange={(value: number) => {
+          setSize(value);
+          validateInput();
+        }}
         disabled={loading}
-        data={["Linear Orders", "Poset"]}
-        data-testid="input-mode-control"
       />
-      <InputWrapper>
-        <InputLabel>Linear Order Length</InputLabel>
-        <Slider
-          defaultValue={4}
-          min={2}
-          max={6}
-          onChange={(value: number) => {
-            setSize(value);
-            validateInput();
-          }}
-          value={size}
-          disabled={loading}
-          marks={[
-            { value: 2, label: 2 },
-            { value: 3 },
-            { value: 4 },
-            { value: 5 },
-            { value: 6, label: 6 },
-          ]}
-          data-testid="permutation-length-slider"
-        />
-      </InputWrapper>
       {mode === "Linear Orders" ? (
-        <Textarea
-          className="w-36 mx-auto"
-          label="Linear orders"
-          description="Input linear orders"
-          placeholder={`1234\n4321\n3214`}
+        <InputLinearOrders
           onChange={(event) => {
             setTextareaValue(event.currentTarget.value);
             validateInput();
@@ -178,18 +151,10 @@ const InputForm: React.FC<InputFormProps> = ({
             updateSize();
           }}
           disabled={loading}
-          autosize
-          minRows={4}
-          maxRows={5}
           error={textareaError}
-          data-testid="input-linear-orders"
         />
       ) : (
-        <Textarea
-          className="w-36 mx-auto"
-          label="Cover relations"
-          description="Input cover relations"
-          placeholder={`1,2\n3,2\n1,4`}
+        <InputCoverRelations
           onChange={(event) => {
             setTextareaValue(event.currentTarget.value);
             validateInput();
@@ -198,32 +163,15 @@ const InputForm: React.FC<InputFormProps> = ({
             updateSize();
           }}
           disabled={loading}
-          autosize
-          minRows={4}
-          maxRows={7}
           error={textareaError}
-          data-testid="input-cover-relation"
         />
       )}
-      <Select
-        className="w-40 mx-auto"
-        label="Drawing method"
+      <InputSelectDrawingMethod
         value={drawingMethod}
         onChange={setDrawingMethod}
         disabled={loading}
-        data={["Default", "Supercover", "SuperHex", "Permutahedron"]}
-        data-testid="input-select-drawing-method"
-        comboboxProps={{
-          shadow: "md",
-          transitionProps: { transition: "pop", duration: 200 },
-        }}
       />
-
-      <Button
-        className="mx-auto"
-        variant="gradient"
-        gradient={{ from: "purple", to: "maroon", deg: 90 }}
-        disabled={loading || textareaError !== ""}
+      <DrawButton
         onClick={() => {
           if (mode === "Linear Orders") {
             fetchGraphData(
@@ -249,17 +197,11 @@ const InputForm: React.FC<InputFormProps> = ({
             );
           }
         }}
-        data-testid="draw-button"
-      >
-        Draw
-      </Button>
+        disabled={loading || textareaError !== ""}
+      />
 
       {mode === "Linear Orders" ? (
-        <Button
-          className="mx-auto"
-          variant="gradient"
-          gradient={{ from: "purple", to: "maroon", deg: 90 }}
-          disabled={loading || textareaError !== ""}
+        <SolveButton
           onClick={() =>
             fetchPosetCoverResults(
               size,
@@ -271,10 +213,8 @@ const InputForm: React.FC<InputFormProps> = ({
                 .filter((line) => line !== ""),
             )
           }
-          data-testid="solve-button"
-        >
-          Solve
-        </Button>
+          disabled={loading || textareaError !== ""}
+        />
       ) : (
         <></>
       )}
