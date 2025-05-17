@@ -131,7 +131,14 @@ const InputForm: React.FC<InputFormProps> = ({
   return (
     <div className="w-72 h-full max-h-[36rem] flex flex-col mx-auto md:mx-0 gap-4 bg-[#fefefe] p-8 rounded-xl shadow-lg">
       <div className="text-xl font-bold">INPUT</div>
-      <InputModeControl value={mode} onChange={setMode} disabled={loading} />
+      <InputModeControl
+        value={mode}
+        onChange={(value: string) => {
+          setMode(value);
+          validateInput();
+        }}
+        disabled={loading}
+      />
       <PermutationLengthSlider
         value={size}
         onChange={(value: number) => {
