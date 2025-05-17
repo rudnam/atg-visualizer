@@ -4,7 +4,7 @@ import { useDebouncedCallback } from "@mantine/hooks";
 import InputModeControl from "./InputModeControl";
 import PermutationLengthSlider from "./PermutationLengthSlider";
 import InputLinearOrders from "./InputLinearOrders";
-import InputCoverRelations from "./InputCoverRelations";
+import InputCoverRelation from "./InputCoverRelation";
 import InputSelectDrawingMethod from "./InputSelectDrawingMethod";
 import DrawButton from "./DrawButton";
 import SolveButton from "./SolveButton";
@@ -154,7 +154,7 @@ const InputForm: React.FC<InputFormProps> = ({
           error={textareaError}
         />
       ) : (
-        <InputCoverRelations
+        <InputCoverRelation
           onChange={(event) => {
             setTextareaValue(event.currentTarget.value);
             validateInput();

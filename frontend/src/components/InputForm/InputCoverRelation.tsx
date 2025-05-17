@@ -1,13 +1,13 @@
 import { Textarea } from "@mantine/core";
 
-interface InputCoverRelationsProps {
+interface InputCoverRelationProps {
   onChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
   onBlur: React.FocusEventHandler<HTMLTextAreaElement> | undefined;
   disabled: boolean | undefined;
   error: React.ReactNode;
 }
 
-const InputCoverRelations: React.FC<InputCoverRelationsProps> = ({
+const InputCoverRelation: React.FC<InputCoverRelationProps> = ({
   onChange,
   onBlur,
   disabled,
@@ -31,4 +31,4 @@ const InputCoverRelations: React.FC<InputCoverRelationsProps> = ({
   );
 };
 
-export default InputCoverRelations;
+export default InputCoverRelation;
