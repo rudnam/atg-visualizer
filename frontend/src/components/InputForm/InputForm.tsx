@@ -3,11 +3,10 @@ import { DrawingMethod, Relation } from "../../types";
 import { useDebouncedCallback } from "@mantine/hooks";
 import InputModeControl from "./InputModeControl";
 import PermutationLengthSlider from "./PermutationLengthSlider";
-import InputLinearOrders from "./InputLinearOrders";
-import InputCoverRelation from "./InputCoverRelation";
 import InputSelectDrawingMethod from "./InputSelectDrawingMethod";
 import DrawButton from "./DrawButton";
 import SolveButton from "./SolveButton";
+import InputTextarea from "./InputTextarea";
 
 interface InputFormProps {
   fetchGraphData: (
@@ -141,31 +140,27 @@ const InputForm: React.FC<InputFormProps> = ({
         }}
         disabled={loading}
       />
-      {mode === "Linear Orders" ? (
-        <InputLinearOrders
-          onChange={(event) => {
-            setTextareaValue(event.currentTarget.value);
-            validateInput();
-          }}
-          onBlur={() => {
-            updateSize();
-          }}
-          disabled={loading}
-          error={textareaError}
-        />
-      ) : (
-        <InputCoverRelation
-          onChange={(event) => {
-            setTextareaValue(event.currentTarget.value);
-            validateInput();
-          }}
-          onBlur={() => {
-            updateSize();
-          }}
-          disabled={loading}
-          error={textareaError}
-        />
-      )}
+      <InputTextarea
+        label={mode === "Linear Orders" ? "Linear orders" : "Cover relations"}
+        description={
+          mode === "Linear Orders"
+            ? "Input linear orders"
+            : "Input cover relations"
+        }
+        placeholder={
+          mode === "Linear Orders" ? "1234\n4321\n3214" : "1,2\n3,2\n1,4"
+        }
+        onChange={(event) => {
+          setTextareaValue(event.currentTarget.value);
+          validateInput();
+        }}
+        onBlur={() => {
+          updateSize();
+        }}
+        disabled={loading}
+        error={textareaError}
+      />
+
       <InputSelectDrawingMethod
         value={drawingMethod}
         onChange={setDrawingMethod}

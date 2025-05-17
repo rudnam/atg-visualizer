@@ -30,13 +30,13 @@ describe("InputForm", () => {
       expect(
         screen.getByTestId("permutation-length-slider"),
       ).toBeInTheDocument();
-      expect(screen.getByTestId("input-linear-orders")).toBeInTheDocument();
+      expect(screen.getByTestId("input-textarea")).toBeInTheDocument();
       expect(screen.getByTestId("draw-button")).toBeInTheDocument();
       expect(screen.getByTestId("solve-button")).toBeInTheDocument();
     });
 
     it("calls fetchGraphData with correct parameters when Draw button is clicked", async () => {
-      const textarea = screen.getByTestId("input-linear-orders");
+      const textarea = screen.getByTestId("input-textarea");
       await userEvent.type(textarea, "1234\n4321");
 
       const drawButton = screen.getByTestId("draw-button");
@@ -49,7 +49,7 @@ describe("InputForm", () => {
     });
 
     it("calls fetchPosetCoverResults with correct parameters when Solve button is clicked", async () => {
-      const textarea = screen.getByTestId("input-linear-orders");
+      const textarea = screen.getByTestId("input-textarea");
       await userEvent.type(textarea, "1234\n4321");
 
       const solveButton = screen.getByTestId("solve-button");
@@ -78,13 +78,13 @@ describe("InputForm", () => {
       expect(
         screen.getByTestId("permutation-length-slider"),
       ).toBeInTheDocument();
-      expect(screen.getByTestId("input-cover-relation")).toBeInTheDocument();
+      expect(screen.getByTestId("input-textarea")).toBeInTheDocument();
       expect(screen.getByTestId("draw-button")).toBeInTheDocument();
       expect(screen.queryByTestId("solve-button")).not.toBeInTheDocument();
     });
 
     it("calls fetchGraphData with correct parameters when Draw button is clicked", async () => {
-      const textarea = screen.getByTestId("input-cover-relation");
+      const textarea = screen.getByTestId("input-textarea");
       await userEvent.type(textarea, "1,2\n2,3");
 
       const drawButton = screen.getByTestId("draw-button");

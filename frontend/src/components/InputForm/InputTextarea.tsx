@@ -1,13 +1,19 @@
 import { Textarea } from "@mantine/core";
 
-interface InputCoverRelationProps {
+interface InputTextareaProps {
+  label: React.ReactNode;
+  description: React.ReactNode;
+  placeholder: string | undefined;
   onChange: React.ChangeEventHandler<HTMLTextAreaElement> | undefined;
   onBlur: React.FocusEventHandler<HTMLTextAreaElement> | undefined;
   disabled: boolean | undefined;
   error: React.ReactNode;
 }
 
-const InputCoverRelation: React.FC<InputCoverRelationProps> = ({
+const InputTextarea: React.FC<InputTextareaProps> = ({
+  label,
+  description,
+  placeholder,
   onChange,
   onBlur,
   disabled,
@@ -16,19 +22,19 @@ const InputCoverRelation: React.FC<InputCoverRelationProps> = ({
   return (
     <Textarea
       className="w-36 mx-auto"
-      label="Cover relations"
-      description="Input cover relations"
-      placeholder={`1,2\n3,2\n1,4`}
+      label={label}
+      description={description}
+      placeholder={placeholder}
       onChange={onChange}
       onBlur={onBlur}
       disabled={disabled}
       autosize
       minRows={4}
-      maxRows={7}
+      maxRows={5}
       error={error}
-      data-testid="input-cover-relation"
+      data-testid="input-textarea"
     />
   );
 };
 
-export default InputCoverRelation;
+export default InputTextarea;
