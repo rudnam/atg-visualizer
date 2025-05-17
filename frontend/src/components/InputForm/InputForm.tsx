@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { DrawingMethod, Relation } from "../../types";
+import { useMemo, useState } from "react";
+import { DrawingMethod, InputMode, Relation } from "../../types";
 import { useDebouncedCallback } from "@mantine/hooks";
 import InputModeControl from "./InputModeControl";
 import PermutationLengthSlider from "./PermutationLengthSlider";
@@ -36,9 +36,18 @@ const InputForm: React.FC<InputFormProps> = ({
 }) => {
   const [size, setSize] = useState<number>(4);
   const [textareaValue, setTextareaValue] = useState<string>("");
-  const [drawingMethod, setDrawingMethod] = useState<string | null>("Default");
-  const [mode, setMode] = useState("Linear Orders");
+  const [drawingMethod, setDrawingMethod] = useState<DrawingMethod>("Default");
+  const [mode, setMode] = useState<InputMode>("Linear Orders");
   const [textareaError, setTextareaError] = useState<string>("");
+
+  const parsedLines = useMemo(
+    () =>
+      textareaValue
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean),
+    [textareaValue],
+  );
 
   const updateSize = () => {
     if (mode == "Linear Orders") {
@@ -106,19 +115,14 @@ const InputForm: React.FC<InputFormProps> = ({
   };
 
   const validateInput = useDebouncedCallback(() => {
-    const lines = textareaValue
-      .split("\n")
-      .map((line) => line.trim())
-      .filter(Boolean);
-
-    if (lines.length && mode === "Linear Orders") {
-      const errorMessage = validateLinearOrderArray(lines, size);
+    if (parsedLines.length && mode === "Linear Orders") {
+      const errorMessage = validateLinearOrderArray(parsedLines, size);
       if (errorMessage) {
         setTextareaError(errorMessage);
         return;
       }
-    } else if (lines.length && mode === "Poset") {
-      const errorMessage = validateCoverRelationArray(lines, size);
+    } else if (parsedLines.length && mode === "Poset") {
+      const errorMessage = validateCoverRelationArray(parsedLines, size);
       if (errorMessage) {
         setTextareaError(errorMessage);
         return;
@@ -134,7 +138,7 @@ const InputForm: React.FC<InputFormProps> = ({
       <InputModeControl
         value={mode}
         onChange={(value: string) => {
-          setMode(value);
+          setMode(value as InputMode);
           validateInput();
         }}
         disabled={loading}
@@ -170,7 +174,9 @@ const InputForm: React.FC<InputFormProps> = ({
 
       <InputSelectDrawingMethod
         value={drawingMethod}
-        onChange={setDrawingMethod}
+        onChange={(value) => {
+          setDrawingMethod(value as DrawingMethod);
+        }}
         disabled={loading}
       />
       <DrawButton
@@ -202,7 +208,7 @@ const InputForm: React.FC<InputFormProps> = ({
         disabled={loading || textareaError !== ""}
       />
 
-      {mode === "Linear Orders" ? (
+      {mode === "Linear Orders" && (
         <SolveButton
           onClick={() =>
             fetchPosetCoverResults(
@@ -217,8 +223,6 @@ const InputForm: React.FC<InputFormProps> = ({
           }
           disabled={loading || textareaError !== ""}
         />
-      ) : (
-        <></>
       )}
     </div>
   );
