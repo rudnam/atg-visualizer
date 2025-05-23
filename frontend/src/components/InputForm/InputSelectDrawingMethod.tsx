@@ -19,6 +19,7 @@ const InputSelectDrawingMethod: React.FC<InputSelectDrawingMethodProps> = ({
       onChange={onChange}
       disabled={disabled}
       data={["Default", "Supercover", "SuperHex", "Permutahedron"]}
+      allowDeselect={false}
       data-testid="input-select-drawing-method"
       comboboxProps={{
         shadow: "md",
