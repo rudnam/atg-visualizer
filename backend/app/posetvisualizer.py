@@ -90,6 +90,8 @@ class PosetVisualizer:
         "Cycles": (False, False, False, False),
     }
 
+    SHOW_SUPPORT_NODES = True
+
     def __init__(
         self,
         size: int,
@@ -505,7 +507,8 @@ class PosetVisualizer:
         ]
         other_nodes: list[LinearOrder] = (
             [node for node in self._graph.nodes() if node_is_other(node)]
-            if self.drawing_method == "Permutahedron"
+            if PosetVisualizer.SHOW_SUPPORT_NODES
+            or self.drawing_method == "Permutahedron"
             else []
         )
 
