@@ -20,6 +20,7 @@ class GraphRequest(BaseModel):
         "Permutahedron",
         "Supercover",
         "SuperHex",
+        "Cycles",
     ]
     size: int
     selected_nodes: list[str] = []

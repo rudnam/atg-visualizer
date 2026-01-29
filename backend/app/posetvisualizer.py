@@ -54,6 +54,7 @@ type DrawingMethod = Literal[
     "Supercover + Hexagonal",
     "Hexagonal1",
     "Supercover + Hexagonal 1",
+    "Cycles",
 ]
 
 
@@ -83,6 +84,10 @@ class PosetVisualizer:
         "SuperHex": (False, True, True, False),
         "Hexagonal1": (False, False, True, True),
         "Supercover + Hexagonal1": (False, True, True, True),
+        # doesnt matter; should be ommited
+        # however, we made ourselves some spag
+        # in the _get_support_nodes method, values in this dict gets destructured right off the bat
+        "Cycles": (False, False, False, False),
     }
 
     def __init__(
@@ -263,6 +268,9 @@ class PosetVisualizer:
                         )
                         support_nodes |= set(two_hexagons)
 
+        if drawing_method == "Cycles":
+            support_nodes |= set(self._get_support_cycles(upsilon))
+
         support_nodes -= set(upsilon)
         return sorted(support_nodes)
 
@@ -315,6 +323,81 @@ class PosetVisualizer:
             support_nodes |= hexagon
 
         return list(support_nodes)
+
+    def _get_support_cycles(self, upsilon: list[LinearOrder]) -> list[LinearOrder]:
+        perm_strings = upsilon
+        support_nodes = set()
+        for i in range(len(perm_strings)):
+            for j in range(i + 1, len(perm_strings)):
+                edge = (perm_strings[i], perm_strings[j])
+                cycle = set(self._get_cycle_from_non_adjacent(edge))
+                support_nodes |= cycle
+        return list(support_nodes)
+
+    @staticmethod
+    def _get_cycle_from_non_adjacent(
+        edge: tuple[LinearOrder, LinearOrder],
+    ) -> list[LinearOrder]:
+        # OOPS this is not an edge. We handle any two linear orders and if both belong to a cycle, we return something
+        edge0, edge1 = edge
+
+        swapped_nums = PosetUtils.edge_label(edge0, edge1)
+        if swapped_nums:
+            return []
+
+        diff_positions = [i for i in range(len(edge0)) if edge0[i] != edge1[i]]
+
+        two_pairs_of_adjacent_diff = (
+            len(diff_positions) == 4
+            and diff_positions[1] - diff_positions[0] == 1
+            and diff_positions[3] - diff_positions[2] == 1
+        )
+
+        if two_pairs_of_adjacent_diff:
+            first_adj_pair_idx = diff_positions[0]
+            second_adj_pair_idx = diff_positions[2]
+
+            # what a mess of chopping strings
+            left_part = edge0[:first_adj_pair_idx]
+            mid_part = edge0[first_adj_pair_idx + 2 : second_adj_pair_idx]
+            right_part = edge0[second_adj_pair_idx + 2 :]
+
+            first_adj_pair = edge0[first_adj_pair_idx : first_adj_pair_idx + 2]
+            second_adj_pair = edge0[second_adj_pair_idx : second_adj_pair_idx + 2]
+            first_perms = list(permutations(first_adj_pair))
+            second_perms = list(permutations(second_adj_pair))
+
+            square = [
+                f'{left_part}{"".join(first_perm)}{mid_part}{"".join(second_perm)}{right_part}'
+                for first_perm in first_perms
+                for second_perm in second_perms
+            ]
+            return square
+
+        opposite_in_a_hexagon = (
+            len(diff_positions) == 2 and diff_positions[1] - diff_positions[0] == 2
+        )
+
+        three_adjacent_diff = (
+            len(diff_positions) == 3
+            and diff_positions[1] - diff_positions[0] == 1
+            and diff_positions[2] - diff_positions[1] == 1
+        )
+
+        if opposite_in_a_hexagon or three_adjacent_diff:
+            adjacent_idx = diff_positions[0]
+
+            left_part = edge0[:adjacent_idx]
+            right_part = edge0[adjacent_idx + 3 :]
+
+            to_permute = edge0[adjacent_idx : adjacent_idx + 3]
+            perms = permutations(to_permute)
+            hexagon = [f'{left_part}{"".join(perm)}{right_part}' for perm in perms]
+
+            return hexagon
+
+        # otherwise, the linear orders are not part of a square or a hex cycle so return no support nodes
+        return []
 
     def _compute_edge_traces(self) -> list[go.Scatter3d]:
         """Categorize edges and create the corresponding traces"""
