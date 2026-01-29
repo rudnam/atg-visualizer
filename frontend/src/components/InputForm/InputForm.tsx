@@ -178,12 +178,6 @@ const InputForm: React.FC<InputFormProps> = ({
           setDrawingMethod(value as DrawingMethod);
         }}
         disabled={loading}
-        data={["Default", "Supercover", "SuperHex", "Permutahedron", "Cycles"]}
-        data-testid="input-select-drawing-method"
-        comboboxProps={{
-          shadow: "md",
-          transitionProps: { transition: "pop", duration: 200 },
-        }}
       />
       <DrawButton
         onClick={() => {
