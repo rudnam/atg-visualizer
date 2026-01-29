@@ -90,7 +90,7 @@ class PosetVisualizer:
         "Cycles": (False, False, False, False),
     }
 
-    SHOW_SUPPORT_NODES = True
+    SHOW_SUPPORT_NODES = False
 
     def __init__(
         self,
@@ -343,9 +343,11 @@ class PosetVisualizer:
         # OOPS this is not an edge. We handle any two linear orders and if both belong to a cycle, we return something
         edge0, edge1 = edge
 
+        support_nodes = []
+
         swapped_nums = PosetUtils.edge_label(edge0, edge1)
         if swapped_nums:
-            return []
+            return support_nodes
 
         diff_positions = [i for i in range(len(edge0)) if edge0[i] != edge1[i]]
 
@@ -353,6 +355,15 @@ class PosetVisualizer:
             len(diff_positions) == 4
             and diff_positions[1] - diff_positions[0] == 1
             and diff_positions[3] - diff_positions[2] == 1
+        )
+
+        within_adjacent_pair_diff_1 = (  # we assume that the other pair is already good if this is true
+            edge0[diff_positions[0]] == edge1[diff_positions[1]]
+            and edge0[diff_positions[1]] == edge1[diff_positions[0]]
+        )
+
+        two_pairs_of_adjacent_diff = (
+            two_pairs_of_adjacent_diff and within_adjacent_pair_diff_1
         )
 
         if two_pairs_of_adjacent_diff:
@@ -374,7 +385,7 @@ class PosetVisualizer:
                 for first_perm in first_perms
                 for second_perm in second_perms
             ]
-            return square
+            support_nodes = square
 
         opposite_in_a_hexagon = (
             len(diff_positions) == 2 and diff_positions[1] - diff_positions[0] == 2
@@ -396,10 +407,12 @@ class PosetVisualizer:
             perms = permutations(to_permute)
             hexagon = [f'{left_part}{"".join(perm)}{right_part}' for perm in perms]
 
-            return hexagon
+            support_nodes = hexagon
 
         # otherwise, the linear orders are not part of a square or a hex cycle so return no support nodes
-        return []
+        if "13245" in support_nodes:
+            print(edge)
+        return support_nodes
 
     def _compute_edge_traces(self) -> list[go.Scatter3d]:
         """Categorize edges and create the corresponding traces"""
