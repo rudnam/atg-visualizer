@@ -205,7 +205,7 @@ const InputForm: React.FC<InputFormProps> = ({
         value={drawingMethod}
         onChange={setDrawingMethod}
         disabled={loading}
-        data={["Default", "Supercover", "SuperHex", "Permutahedron"]}
+        data={["Default", "Supercover", "SuperHex", "Permutahedron", "Cycles"]}
         data-testid="input-select-drawing-method"
         comboboxProps={{
           shadow: "md",

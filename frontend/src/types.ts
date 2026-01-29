@@ -12,6 +12,7 @@ export type DrawingMethod =
   | "Permutahedron"
   | "Supercover"
   | "SuperHex"
+  | "Cycles"
 
 export type Relation = [number, number];
 
